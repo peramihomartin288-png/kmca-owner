@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyimbo za Siku - KMCA Owner</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="favicon.ico">
+</head>
+<body class="dashboard-body">
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-church"></i></div>
+            <h3>KMCA Owner</h3>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" data-page="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></div>
+            <div class="sidebar-item" data-page="posts"><i class="fas fa-newspaper"></i><span>Posts</span></div>
+            <div class="sidebar-item" data-page="events"><i class="fas fa-calendar"></i><span>Matukio</span></div>
+            <div class="sidebar-item" data-page="polls"><i class="fas fa-vote-yea"></i><span>Polls</span></div>
+            <div class="sidebar-item" data-page="bible-verses"><i class="fas fa-bible"></i><span>Bible Verses</span></div>
+            <div class="sidebar-item" data-page="watakatifu"><i class="fas fa-cross"></i><span>Watakatifu</span></div>
+            <div class="sidebar-item active" data-page="nyimbo"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></div>
+            <div class="sidebar-item" data-page="masomo"><i class="fas fa-book-open"></i><span>Masomo</span></div>
+            <div class="sidebar-item" data-page="questions"><i class="fas fa-question-circle"></i><span>Questions</span></div>
+            <div class="sidebar-item" data-page="users"><i class="fas fa-users"></i><span>Users</span></div>
+            <div class="sidebar-item" data-page="announcements"><i class="fas fa-bullhorn"></i><span>Announcements</span></div>
+            <div class="sidebar-item" data-page="ai-schedules"><i class="fas fa-robot"></i><span>AI Schedules</span></div>
+            <div class="sidebar-item" data-page="auto-play-video"><i class="fas fa-play-circle"></i><span>Auto-Play Video</span></div>
+            <div class="sidebar-item" data-page="media"><i class="fas fa-folder"></i><span>Media</span></div>
+            <div class="sidebar-item" data-page="backup-clean"><i class="fas fa-database"></i><span>Backup & Clean</span></div>
+            <div class="sidebar-item" data-page="url-management"><i class="fas fa-link"></i><span>URL Management</span></div>
+            <div class="sidebar-item" data-page="pwa-management"><i class="fas fa-mobile-alt"></i><span>PWA</span></div>
+            <div class="sidebar-item" data-page="owners"><i class="fas fa-user-shield"></i><span>Owners</span></div>
+            <div class="sidebar-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></div>
+            <div class="sidebar-item sidebar-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <button class="icon-btn" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>Nyimbo za Siku</h2>
+        <div class="header-actions">
+            <button class="icon-btn" id="addWimboBtn"><i class="fas fa-plus"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        
+        <!-- Daily Cycle -->
+        <div class="hosting-monitor" style="margin-bottom: 20px;">
+            <h4><i class="fas fa-calendar-check"></i> Daily Cycle</h4>
+            <button class="btn-primary" id="runWimboCycleBtn">
+                <i class="fas fa-play"></i>
+                Run Wimbo Daily Cycle
+            </button>
+        </div>
+        
+        <!-- Nyimbo List -->
+        <div class="table-container">
+            <h3><i class="fas fa-music"></i> Nyimbo Zote</h3>
+            <div id="nyimboList">
+                <p class="no-data">Inapakia nyimbo...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Wimbo Modal -->
+    <div id="addWimboModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" id="addWimboClose">&times;</button>
+            <h3>Add Wimbo wa Siku</h3>
+            
+            <form id="addWimboForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label>Jina la Wimbo *</label>
+                    <input type="text" id="wimboJina" required placeholder="mfano: Wimbo wa Sifa">
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Tarehe ya Post *</label>
+                    <input type="date" id="wimboTarehe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Maelezo</label>
+                    <textarea id="wimboMaelezo" rows="3" placeholder="Maelezo ya wimbo..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Aina ya Media *</label>
+                    <select id="wimboMediaType" required>
+                        <option value="">Chagua...</option>
+                        <option value="audio">Audio</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>File *</label>
+                    <input type="file" id="wimboFile" required>
+                    <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">Audio au Video (max 50MB)</p>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-block">
+                    <i class="fas fa-save"></i>
+                    Hifadhi Wimbo
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <div class="bottom-nav-item" data-page="dashboard"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="bottom-nav-item" data-page="posts"><i class="fas fa-newspaper"></i><span>Posts</span></div>
+        <div class="bottom-nav-item active" data-page="nyimbo"><i class="fas fa-music"></i><span>Nyimbo</span></div>
+        <div class="bottom-nav-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ctzdiiyzoocxmlmeagtt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0emRpaXl6b29jeG1sbWVhZ3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxMjI1NTEsImV4cCI6MjEwMjY5ODU1MX0.Jy_T5XaI5CI4qfFVH7b53MDCurR2olh0a6Tx9BzDOGw';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+    
+    <script src="auth.js"></script>
+    <script src="hosting-config.js"></script>
+    <script src="upload-manager.js"></script>
+    <script src="nyimbo.js"></script>
+    <script src="service-worker-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - KMCA Owner</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="favicon.ico">
+</head>
+<body class="dashboard-body">
+    
+    <!-- ========== SIDEBAR ========== -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-church"></i></div>
+            <h3>KMCA Owner</h3>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item active" data-page="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></div>
+            <div class="sidebar-item" data-page="posts"><i class="fas fa-newspaper"></i><span>Posts</span></div>
+            <div class="sidebar-item" data-page="events"><i class="fas fa-calendar"></i><span>Matukio</span></div>
+            <div class="sidebar-item" data-page="polls"><i class="fas fa-vote-yea"></i><span>Polls</span></div>
+            <div class="sidebar-item" data-page="bible-verses"><i class="fas fa-bible"></i><span>Bible Verses</span></div>
+            <div class="sidebar-item" data-page="watakatifu"><i class="fas fa-cross"></i><span>Watakatifu</span></div>
+            <div class="sidebar-item" data-page="nyimbo"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></div>
+            <div class="sidebar-item" data-page="masomo"><i class="fas fa-book-open"></i><span>Masomo</span></div>
+            <div class="sidebar-item" data-page="questions"><i class="fas fa-question-circle"></i><span>Questions</span></div>
+            <div class="sidebar-item" data-page="users"><i class="fas fa-users"></i><span>Users</span></div>
+            <div class="sidebar-item" data-page="announcements"><i class="fas fa-bullhorn"></i><span>Announcements</span></div>
+            <div class="sidebar-item" data-page="ai-schedules"><i class="fas fa-robot"></i><span>AI Schedules</span></div>
+            <div class="sidebar-item" data-page="auto-play-video"><i class="fas fa-play-circle"></i><span>Auto-Play Video</span></div>
+            <div class="sidebar-item" data-page="media"><i class="fas fa-folder"></i><span>Media</span></div>
+            <div class="sidebar-item" data-page="backup-clean"><i class="fas fa-database"></i><span>Backup & Clean</span></div>
+            <div class="sidebar-item" data-page="url-management"><i class="fas fa-link"></i><span>URL Management</span></div>
+            <div class="sidebar-item" data-page="pwa-management"><i class="fas fa-mobile-alt"></i><span>PWA</span></div>
+            <div class="sidebar-item" data-page="owners"><i class="fas fa-user-shield"></i><span>Owners</span></div>
+            <div class="sidebar-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></div>
+            <div class="sidebar-item sidebar-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></div>
+        </div>
+    </div>
+
+    <!-- ========== HEADER ========== -->
+    <header class="dashboard-header">
+        <button class="icon-btn" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>Dashboard</h2>
+        <div class="header-actions">
+            <button class="icon-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i></button>
+            <button class="icon-btn" id="notificationBtn"><i class="fas fa-bell"></i><span class="notification-badge" id="notificationBadge" style="display:none;">0</span></button>
+            <button class="icon-btn" id="profileBtn"><i class="fas fa-user"></i></button>
+        </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="dashboard-content">
+        
+        <!-- Welcome Banner -->
+        <div class="welcome-banner" id="welcomeBanner">
+            <div>
+                <h3>Karibu <span id="ownerFirstName">Owner</span>! 👋</h3>
+                <p>Hapa kuna muhtasari wa kila kitu kinachotokea kwenye app yako.</p>
+            </div>
+            <div class="welcome-banner-date" id="currentDate"></div>
+        </div>
+        
+        <!-- ========== STATS GRID ========== -->
+        <div class="stats-grid">
+            <div class="stat-card stat-posts">
+                <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                <div class="stat-info">
+                    <h3 id="statsPosts">0</h3>
+                    <p>Posts</p>
+                </div>
+                <div class="stat-trend" id="postsTrend">+0%</div>
+            </div>
+            <div class="stat-card stat-users">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3 id="statsUsers">0</h3>
+                    <p>Users</p>
+                </div>
+                <div class="stat-trend" id="usersTrend">+0%</div>
+            </div>
+            <div class="stat-card stat-likes">
+                <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                <div class="stat-info">
+                    <h3 id="statsLikes">0</h3>
+                    <p>Likes</p>
+                </div>
+                <div class="stat-trend" id="likesTrend">+0%</div>
+            </div>
+            <div class="stat-card stat-comments">
+                <div class="stat-icon"><i class="fas fa-comment"></i></div>
+                <div class="stat-info">
+                    <h3 id="statsComments">0</h3>
+                    <p>Comments</p>
+                </div>
+                <div class="stat-trend" id="commentsTrend">+0%</div>
+            </div>
+        </div>
+        
+        <!-- ========== HOSTING MONITOR ========== -->
+        <div class="hosting-monitor">
+            <h4><i class="fas fa-server"></i> HOSTING MONITOR</h4>
+            
+            <!-- Supabase -->
+            <div class="host-card">
+                <div class="host-header">
+                    <span><i class="fas fa-database"></i> Supabase</span>
+                    <span id="supabaseStorage">0 MB / 1 GB</span>
+                </div>
+                <div class="host-bar"><div class="host-fill" id="supabaseFill" style="width:0%;"></div></div>
+                <div class="host-details">
+                    <p>💾 Database: <span id="supabaseDb">0 MB / 500 MB</span></p>
+                    <p>📊 Bandwidth: <span id="supabaseBandwidth">0 MB / 2 GB</span></p>
+                    <p>👥 Users: <span id="supabaseUsers">0 / 50,000</span></p>
+                </div>
+            </div>
+            
+            <!-- Cloudinary -->
+            <div class="host-card">
+                <div class="host-header">
+                    <span><i class="fas fa-cloud"></i> Cloudinary</span>
+                    <span id="cloudinaryStorage">0 MB / 25 GB</span>
+                </div>
+                <div class="host-bar"><div class="host-fill" id="cloudinaryFill" style="width:0%; background: linear-gradient(90deg, #d4af37, #f59e0b);"></div></div>
+                <div class="host-details">
+                    <p>📊 Bandwidth: <span id="cloudinaryBandwidth">0 MB / 25 GB</span></p>
+                </div>
+            </div>
+            
+            <!-- Uploadcare -->
+            <div class="host-card">
+                <div class="host-header">
+                    <span><i class="fas fa-folder"></i> Uploadcare</span>
+                    <span id="uploadcareStorage">0 MB / 3 GB</span>
+                </div>
+                <div class="host-bar"><div class="host-fill" id="uploadcareFill" style="width:0%; background: linear-gradient(90deg, #10b981, #059669);"></div></div>
+                <div class="host-details">
+                    <p>📊 Bandwidth: <span id="uploadcareBandwidth">0 MB / 10 GB</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ========== CHARTS ========== -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📊 User Activity</h4>
+                    <span class="chart-badge">Mwezi Huu</span>
+                </div>
+                <div id="userActivityChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📈 Users Growth</h4>
+                    <span class="chart-badge">Miezi 3</span>
+                </div>
+                <div id="usersGrowthChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>💾 Storage Distribution</h4>
+                    <span class="chart-badge">Current</span>
+                </div>
+                <div id="storageChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📝 Posts per Day</h4>
+                    <span class="chart-badge">Wiki Hii</span>
+                </div>
+                <div id="postsChart"></div>
+            </div>
+        </div>
+        
+        <!-- ========== QUICK ACTIONS ========== -->
+        <div class="quick-actions-section">
+            <h4>⚡ Quick Actions</h4>
+            <div class="quick-actions">
+                <button class="quick-action" data-page="posts">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Post</span>
+                </button>
+                <button class="quick-action" data-page="events">
+                    <i class="fas fa-calendar-plus"></i>
+                    <span>Add Tukio</span>
+                </button>
+                <button class="quick-action" data-page="polls">
+                    <i class="fas fa-vote-yea"></i>
+                    <span>Add Poll</span>
+                </button>
+                <button class="quick-action" data-page="bible-verses">
+                    <i class="fas fa-bible"></i>
+                    <span>Add Bible</span>
+                </button>
+                <button class="quick-action" data-page="announcements">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Add Tangazo</span>
+                </button>
+                <button class="quick-action" data-page="ai-schedules">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Schedule</span>
+                </button>
+                <button class="quick-action" data-page="auto-play-video">
+                    <i class="fas fa-play-circle"></i>
+                    <span>Auto-Play</span>
+                </button>
+                <button class="quick-action" data-page="backup-clean">
+                    <i class="fas fa-database"></i>
+                    <span>Backup</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- ========== USER ACTIVITY FEED ========== -->
+        <div class="activity-feed">
+            <h4><i class="fas fa-clock"></i> Recent User Activity</h4>
+            <div id="userActivityFeed">
+                <p class="no-data">Inapakia...</p>
+            </div>
+        </div>
+        
+        <!-- ========== OWNER ACTIVITY ========== -->
+        <div class="activity-feed" style="margin-top: 20px;">
+            <h4><i class="fas fa-history"></i> Owner Activity Log</h4>
+            <div id="activityList">
+                <p class="no-data">Inapakia...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========== BOTTOM NAV ========== -->
+    <div class="bottom-nav">
+        <div class="bottom-nav-item active" data-page="dashboard"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="bottom-nav-item" data-page="posts"><i class="fas fa-newspaper"></i><span>Posts</span></div>
+        <div class="bottom-nav-item" data-page="ai-schedules"><i class="fas fa-robot"></i><span>AI</span></div>
+        <div class="bottom-nav-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ctzdiiyzoocxmlmeagtt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0emRpaXl6b29jeG1sbWVhZ3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxMjI1NTEsImV4cCI6MjEwMjY5ODU1MX0.Jy_T5XaI5CI4qfFVH7b53MDCurR2olh0a6Tx9BzDOGw';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+    
+    <!-- JavaScript -->
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="service-worker-register.js"></script>
+</body>
+</html>

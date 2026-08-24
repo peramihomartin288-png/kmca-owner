@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts - KMCA Owner</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="favicon.ico">
+</head>
+<body class="dashboard-body">
+    
+    <!-- ========== SIDEBAR ========== -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-church"></i></div>
+            <h3>KMCA Owner</h3>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" data-page="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></div>
+            <div class="sidebar-item active" data-page="posts"><i class="fas fa-newspaper"></i><span>Posts</span></div>
+            <div class="sidebar-item" data-page="events"><i class="fas fa-calendar"></i><span>Matukio</span></div>
+            <div class="sidebar-item" data-page="polls"><i class="fas fa-vote-yea"></i><span>Polls</span></div>
+            <div class="sidebar-item" data-page="bible-verses"><i class="fas fa-bible"></i><span>Bible Verses</span></div>
+            <div class="sidebar-item" data-page="watakatifu"><i class="fas fa-cross"></i><span>Watakatifu</span></div>
+            <div class="sidebar-item" data-page="nyimbo"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></div>
+            <div class="sidebar-item" data-page="masomo"><i class="fas fa-book-open"></i><span>Masomo</span></div>
+            <div class="sidebar-item" data-page="questions"><i class="fas fa-question-circle"></i><span>Questions</span></div>
+            <div class="sidebar-item" data-page="users"><i class="fas fa-users"></i><span>Users</span></div>
+            <div class="sidebar-item" data-page="announcements"><i class="fas fa-bullhorn"></i><span>Announcements</span></div>
+            <div class="sidebar-item" data-page="ai-schedules"><i class="fas fa-robot"></i><span>AI Schedules</span></div>
+            <div class="sidebar-item" data-page="auto-play-video"><i class="fas fa-play-circle"></i><span>Auto-Play Video</span></div>
+            <div class="sidebar-item" data-page="media"><i class="fas fa-folder"></i><span>Media</span></div>
+            <div class="sidebar-item" data-page="backup-clean"><i class="fas fa-database"></i><span>Backup & Clean</span></div>
+            <div class="sidebar-item" data-page="url-management"><i class="fas fa-link"></i><span>URL Management</span></div>
+            <div class="sidebar-item" data-page="pwa-management"><i class="fas fa-mobile-alt"></i><span>PWA</span></div>
+            <div class="sidebar-item" data-page="owners"><i class="fas fa-user-shield"></i><span>Owners</span></div>
+            <div class="sidebar-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></div>
+            <div class="sidebar-item sidebar-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Log Out</span></div>
+        </div>
+    </div>
+
+    <!-- ========== HEADER ========== -->
+    <header class="dashboard-header">
+        <button class="icon-btn" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h2>Posts Management</h2>
+        <div class="header-actions">
+            <button class="icon-btn" id="addPostBtn"><i class="fas fa-plus"></i></button>
+        </div>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="dashboard-content">
+        
+        <!-- Posts List -->
+        <div class="table-container">
+            <h3><i class="fas fa-newspaper"></i> Posts Zote</h3>
+            <div id="postsList">
+                <p class="no-data">Inapakia posts...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========== ADD POST MODAL ========== -->
+    <div id="addPostModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" id="addPostClose">&times;</button>
+            <h3>Add Post Mpya</h3>
+            
+            <!-- Step 1: Chagua Type -->
+            <div id="stepChooseType">
+                <h4 style="color: #d4af37; margin-bottom: 15px;">Chagua Aina ya Post</h4>
+                <div class="post-type-grid">
+                    <div class="post-type-card" data-type="picha_moja">
+                        <i class="fas fa-image"></i>
+                        <span>Picha Moja</span>
+                    </div>
+                    <div class="post-type-card" data-type="picha_nyingi">
+                        <i class="fas fa-images"></i>
+                        <span>Picha Nyingi</span>
+                    </div>
+                    <div class="post-type-card" data-type="picha_music">
+                        <i class="fas fa-image"></i>
+                        <span>Picha + Music</span>
+                    </div>
+                    <div class="post-type-card" data-type="picha_nyingi_music">
+                        <i class="fas fa-images"></i>
+                        <span>Picha Nyingi + Music</span>
+                    </div>
+                    <div class="post-type-card" data-type="video">
+                        <i class="fas fa-video"></i>
+                        <span>Video</span>
+                    </div>
+                    <div class="post-type-card" data-type="maneno">
+                        <i class="fas fa-font"></i>
+                        <span>Maneno Tu</span>
+                    </div>
+                    <div class="post-type-card" data-type="other_file">
+                        <i class="fas fa-file"></i>
+                        <span>File Nyingine</span>
+                    </div>
+                    <div class="post-type-card" data-type="live_video">
+                        <i class="fas fa-broadcast-tower"></i>
+                        <span>Live Video 🔴</span>
+                    </div>
+                    <div class="post-type-card" data-type="auto_fake_live_video">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Auto Fake Live 🎬</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 2: Source -->
+            <div id="stepSource" style="display: none;">
+                <button class="btn-back" id="backToTypes"><i class="fas fa-arrow-left"></i> Rudi</button>
+                <h4 style="color: #d4af37; margin: 15px 0;">Chagua Source</h4>
+                <div class="source-grid">
+                    <div class="source-card" data-source="file">
+                        <i class="fas fa-folder-open"></i>
+                        <span>File (kutoka device)</span>
+                    </div>
+                    <div class="source-card" data-source="url">
+                        <i class="fas fa-link"></i>
+                        <span>URL (kutoka nje)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Form -->
+            <div id="stepForm" style="display: none;">
+                <button class="btn-back" id="backToSource"><i class="fas fa-arrow-left"></i> Rudi</button>
+                
+                <form id="addPostForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label>Title *</label>
+                        <input type="text" id="postTitle" required placeholder="Kichwa cha post">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="postDescription" rows="3" placeholder="Maelezo ya post"></textarea>
+                    </div>
+                    
+                    <!-- File Upload -->
+                    <div class="form-group" id="fileUploadGroup" style="display: none;">
+                        <label>Chagua File</label>
+                        <input type="file" id="postFile" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.apk,.zip">
+                    </div>
+                    
+                    <!-- URL Input -->
+                    <div class="form-group" id="urlInputGroup" style="display: none;">
+                        <label>URL</label>
+                        <input type="url" id="postUrl" placeholder="https://...">
+                        <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">Weka URL ya picha/video/audio/file</p>
+                    </div>
+                    
+                    <!-- Live Video Note -->
+                    <div class="form-group" id="liveNote" style="display: none;">
+                        <div style="background: rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 8px; color: #ef4444;">
+                            ⚠️ Live video itajifuta baada ya live kuisha
+                        </div>
+                    </div>
+                    
+                    <!-- Auto Fake Live Video Fields -->
+                    <div id="autoFakeLiveFields" style="display: none;">
+                        <div class="form-group">
+                            <label>Muda wa Kuplay (dakika) *</label>
+                            <input type="number" id="fakeLiveDuration" min="1" placeholder="mfano: 60">
+                            <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">Video ya dakika 30 = playback dakika 60 (30 live + 30 repeat)</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Muda wa Kuanza (saa) *</label>
+                            <input type="time" id="fakeLiveStartTime">
+                            <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">Video itaanza kuplay saa hii</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Muda wa Kumaliza (saa) *</label>
+                            <input type="time" id="fakeLiveEndTime">
+                            <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">Video itajifuta saa hii</p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary btn-block">
+                        <i class="fas fa-save"></i>
+                        Hifadhi Post
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== BOTTOM NAV ========== -->
+    <div class="bottom-nav">
+        <div class="bottom-nav-item" data-page="dashboard"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="bottom-nav-item active" data-page="posts"><i class="fas fa-newspaper"></i><span>Posts</span></div>
+        <div class="bottom-nav-item" data-page="ai-schedules"><i class="fas fa-robot"></i><span>AI</span></div>
+        <div class="bottom-nav-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ctzdiiyzoocxmlmeagtt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0emRpaXl6b29jeG1sbWVhZ3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxMjI1NTEsImV4cCI6MjEwMjY5ODU1MX0.Jy_T5XaI5CI4qfFVH7b53MDCurR2olh0a6Tx9BzDOGw';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+    
+    <!-- JavaScript -->
+    <script src="auth.js"></script>
+    <script src="hosting-config.js"></script>
+    <script src="upload-manager.js"></script>
+    <script src="posts.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <!-- Additional Styles -->
+    <style>
+        .post-type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .post-type-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .post-type-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .post-type-card i {
+            font-size: 24px;
+            color: #d4af37;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .post-type-card span {
+            font-size: 12px;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+        
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .source-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .source-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .source-card i {
+            font-size: 24px;
+            color: #2563eb;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .source-card span {
+            font-size: 12px;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+        
+        .btn-back {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 8px 0;
+            transition: color 0.3s ease;
+        }
+        
+        .btn-back:hover {
+            color: #d4af37;
+        }
+        
+        @media (max-width: 480px) {
+            .post-type-grid,
+            .source-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
