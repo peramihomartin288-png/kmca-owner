@@ -1,0 +1,2426 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Matukio — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --orange: #f97316;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================================
+           MENU BUTTON
+           ============================================================ */
+        .menu-toggle {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .owner-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: var(--sidebar-width);
+            max-width: 85vw;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .owner-sidebar.open {
+            left: 0;
+            box-shadow: 8px 0 40px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-close {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .sidebar-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-category {
+            margin-bottom: 4px;
+        }
+
+        .nav-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-category-header:hover {
+            background: var(--primary-soft);
+        }
+
+        .nav-category-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .nav-category.collapsed .nav-category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .nav-category.collapsed .nav-category-items {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .nav-category-items {
+            max-height: 800px;
+            transition: max-height 0.35s ease-out, opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-light);
+            transform: translateX(4px);
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary-light);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer {
+            padding: 12px 8px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .nav-item.logout {
+            color: var(--error);
+        }
+
+        .nav-item.logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 12px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 70px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .page-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header-title i {
+            color: var(--primary);
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+
+        .header-btn .badge.show {
+            display: flex;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* ============================================================
+           BOTTOM NAV
+           ============================================================ */
+        .owner-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 950;
+            backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            position: relative;
+            border-radius: var(--radius-md);
+            min-width: 64px;
+            text-decoration: none;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--text-light);
+            background: var(--bg-hover);
+        }
+
+        .bottom-nav-item i {
+            font-size: 20px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* ============================================================
+           MAIN
+           ============================================================ */
+        .page-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px 12px 42px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .toolbar-btn {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .toolbar-btn.primary:hover {
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Filters */
+        .filters-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .filters-panel.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Events List */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .event-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeSlideIn 0.4s ease-out backwards;
+            position: relative;
+        }
+
+        .event-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .event-item.today {
+            border-left: 4px solid var(--warning);
+        }
+
+        .event-item.upcoming {
+            border-left: 4px solid var(--success);
+        }
+
+        .event-item.past {
+            opacity: 0.7;
+            border-left: 4px solid var(--border-strong);
+        }
+
+        .event-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: var(--bg-dark);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .event-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+            font-size: 64px;
+            color: var(--primary);
+            opacity: 0.4;
+        }
+
+        .event-countdown {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(10px);
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 800;
+            color: white;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .event-countdown.today {
+            background: rgba(245, 158, 11, 0.9);
+        }
+
+        .event-countdown.soon {
+            background: rgba(16, 185, 129, 0.9);
+        }
+
+        .event-countdown.past {
+            background: rgba(71, 85, 105, 0.9);
+        }
+
+        .event-header {
+            padding: 14px;
+        }
+
+        .event-header-info h3 {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-meta-item i {
+            color: var(--primary);
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .event-meta-item span {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-description {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-top: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+
+        .event-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .event-action-btn {
+            flex: 1;
+            padding: 10px 6px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .event-action-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-light);
+        }
+
+        .event-action-btn i {
+            font-size: 14px;
+        }
+
+        .event-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .event-action-btn.primary:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: var(--border-strong);
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .empty-state button {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 540px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 i {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--border);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+        }
+
+        .modal-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .modal-btn.primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--error);
+            margin-left: 3px;
+        }
+
+        .form-label .optional {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-input);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .upload-area i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .upload-area p {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .upload-area span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .upload-preview {
+            margin-top: 12px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-dark);
+            display: none;
+        }
+
+        .upload-preview.show {
+            display: block;
+        }
+
+        .upload-preview img {
+            width: 100%;
+            max-height: 240px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .upload-preview-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            z-index: 5;
+        }
+
+        .upload-preview-remove:hover {
+            background: var(--error);
+            transform: scale(1.1);
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-box i {
+            color: var(--info);
+            font-size: 14px;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        /* View Event Details */
+        .view-detail {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .view-detail:last-child {
+            border-bottom: none;
+        }
+
+        .view-detail-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .view-detail-value {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .form-row { grid-template-columns: 1fr; }
+            .event-action-btn { font-size: 11px; padding: 8px 4px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item active"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Matukio</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tafuta matukio...">
+            </div>
+            <button class="toolbar-btn" id="filterToggle">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            <button class="toolbar-btn primary" id="addEventBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add Tukio</span>
+            </button>
+        </div>
+        
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-group">
+                <span class="filter-group-label">Wakati</span>
+                <div class="filter-chips" data-filter="when">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="today">🔥 Leo</button>
+                    <button class="filter-chip" data-value="upcoming">🟢 Zinakuja</button>
+                    <button class="filter-chip" data-value="this_week">📅 Wiki Hii</button>
+                    <button class="filter-chip" data-value="this_month">📆 Mwezi Huu</button>
+                    <button class="filter-chip" data-value="past">⚫ Zilizopita</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Panga kwa</span>
+                <div class="filter-chips" data-filter="sort">
+                    <button class="filter-chip active" data-value="event_date">📅 Tarehe ya Tukio</button>
+                    <button class="filter-chip" data-value="newest">🕐 Mpya Kwanza</button>
+                    <button class="filter-chip" data-value="oldest">🕰️ Zamani Kwanza</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="events-list" id="eventsList">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Inapakia matukio...</p>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="events.html" class="bottom-nav-item active"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- ADD/EDIT EVENT MODAL -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> <span id="modalTitle">Add Tukio Mpya</span></h3>
+                <button class="modal-close" id="eventModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Jina la Tukio <span class="required">*</span></span></label>
+                        <input type="text" id="eventJina" class="form-input" placeholder="mfano: Sherehe ya Pasaka" maxlength="200">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Picha</span><span class="optional">Optional</span></label>
+                        <div class="upload-area" id="eventImageArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Chagua picha</p>
+                            <span>JPG, PNG, WEBP (max 25 MB)</span>
+                        </div>
+                        <input type="file" id="eventImageInput" accept="image/*" style="display: none;">
+                        <div class="upload-preview" id="eventImagePreview">
+                            <img id="eventImageImg" alt="">
+                            <button type="button" class="upload-preview-remove" id="eventImageRemove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Maelezo</span><span class="optional">Optional</span></label>
+                        <textarea id="eventMaelezo" class="form-textarea" placeholder="Maelezo ya tukio..." maxlength="1000"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Tarehe na Muda wa Kusend <span class="required">*</span></span></label>
+                        <input type="datetime-local" id="eventTareheSend" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Tarehe ya Tukio <span class="required">*</span></span></label>
+                        <input type="date" id="eventTareheTukio" class="form-input">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><span>Muda</span></label>
+                            <input type="time" id="eventMuda" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label"><span>Tarehe ya Kujifuta <span class="required">*</span></span></label>
+                            <input type="date" id="eventTareheDelete" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Mahali</span><span class="optional">Optional</span></label>
+                        <input type="text" id="eventMahali" class="form-input" placeholder="mfano: Kanisa Kuu" maxlength="200">
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            Tukio litaonekana kwa users <strong>tarehe ya kusend</strong>, kisha litaisha <strong>tarehe ya kujifuta</strong>.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelEventBtn">Ghairi</button>
+                <button class="modal-btn primary" id="saveEventBtn">
+                    <i class="fas fa-save"></i>
+                    <span>Hifadhi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- VIEW EVENT MODAL -->
+    <div class="modal" id="viewEventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye"></i> Angalia Tukio</h3>
+                <button class="modal-close" id="viewEventClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="viewEventBody"></div>
+        </div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    <script src="upload-manager.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            events: [],
+            filteredEvents: [],
+            currentPage: 1,
+            perPage: 10,
+            filters: { when: 'all', sort: 'event_date', search: '' },
+            editingId: null,
+            imageUrl: null
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            searchInput: document.getElementById('searchInput'),
+            filterToggle: document.getElementById('filterToggle'),
+            addEventBtn: document.getElementById('addEventBtn'),
+            filtersPanel: document.getElementById('filtersPanel'),
+            eventsList: document.getElementById('eventsList'),
+            pagination: document.getElementById('pagination'),
+            eventModal: document.getElementById('eventModal'),
+            eventModalClose: document.getElementById('eventModalClose'),
+            modalTitle: document.getElementById('modalTitle'),
+            eventJina: document.getElementById('eventJina'),
+            eventMaelezo: document.getElementById('eventMaelezo'),
+            eventTareheSend: document.getElementById('eventTareheSend'),
+            eventTareheTukio: document.getElementById('eventTareheTukio'),
+            eventMuda: document.getElementById('eventMuda'),
+            eventMahali: document.getElementById('eventMahali'),
+            eventTareheDelete: document.getElementById('eventTareheDelete'),
+            eventImageArea: document.getElementById('eventImageArea'),
+            eventImageInput: document.getElementById('eventImageInput'),
+            eventImagePreview: document.getElementById('eventImagePreview'),
+            eventImageImg: document.getElementById('eventImageImg'),
+            eventImageRemove: document.getElementById('eventImageRemove'),
+            cancelEventBtn: document.getElementById('cancelEventBtn'),
+            saveEventBtn: document.getElementById('saveEventBtn'),
+            viewEventModal: document.getElementById('viewEventModal'),
+            viewEventClose: document.getElementById('viewEventClose'),
+            viewEventBody: document.getElementById('viewEventBody'),
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        async function init() {
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            await loadEvents();
+        }
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        async function loadEvents() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('matukio')
+                    .select('*')
+                    .order('tarehe_tukio', { ascending: true });
+                
+                if (error) throw error;
+                state.events = data || [];
+                applyFilters();
+            } catch (e) {
+                console.error('Load events error:', e);
+                els.eventsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Imeshindikana</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function getEventStatus(event) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const eventDate = new Date(event.tarehe_tukio + 'T00:00:00');
+            
+            if (eventDate.getTime() === today.getTime()) return 'today';
+            if (eventDate > today) return 'upcoming';
+            return 'past';
+        }
+        
+        function getEventCountdown(event) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const eventDate = new Date(event.tarehe_tukio + 'T00:00:00');
+            
+            const diff = Math.round((eventDate - today) / (1000 * 60 * 60 * 24));
+            
+            if (diff === 0) return { text: '🔥 LEO!', class: 'today' };
+            if (diff === 1) return { text: '⏰ Kesho', class: 'soon' };
+            if (diff > 1 && diff <= 7) return { text: `📅 Siku ${diff}`, class: 'soon' };
+            if (diff > 7 && diff <= 30) return { text: `📅 Siku ${diff}`, class: '' };
+            if (diff > 30) return { text: `📅 Siku ${diff}`, class: '' };
+            if (diff === -1) return { text: '📌 Jana', class: 'past' };
+            return { text: `📌 Siku ${Math.abs(diff)} zilizopita`, class: 'past' };
+        }
+        
+        function applyFilters() {
+            let r = [...state.events];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // When filter
+            if (state.filters.when === 'today') {
+                r = r.filter(e => getEventStatus(e) === 'today');
+            } else if (state.filters.when === 'upcoming') {
+                r = r.filter(e => getEventStatus(e) === 'upcoming');
+            } else if (state.filters.when === 'past') {
+                r = r.filter(e => getEventStatus(e) === 'past');
+            } else if (state.filters.when === 'this_week') {
+                const weekEnd = new Date(today);
+                weekEnd.setDate(today.getDate() + 7);
+                r = r.filter(e => {
+                    const d = new Date(e.tarehe_tukio + 'T00:00:00');
+                    return d >= today && d <= weekEnd;
+                });
+            } else if (state.filters.when === 'this_month') {
+                const monthEnd = new Date(today);
+                monthEnd.setMonth(today.getMonth() + 1);
+                r = r.filter(e => {
+                    const d = new Date(e.tarehe_tukio + 'T00:00:00');
+                    return d >= today && d <= monthEnd;
+                });
+            }
+            
+            // Search
+            if (state.filters.search) {
+                const t = state.filters.search.toLowerCase();
+                r = r.filter(e => 
+                    (e.jina || '').toLowerCase().includes(t) ||
+                    (e.maelezo || '').toLowerCase().includes(t) ||
+                    (e.mahali || '').toLowerCase().includes(t)
+                );
+            }
+            
+            // Sort
+            if (state.filters.sort === 'event_date') {
+                r.sort((a, b) => new Date(a.tarehe_tukio) - new Date(b.tarehe_tukio));
+            } else if (state.filters.sort === 'newest') {
+                r.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (state.filters.sort === 'oldest') {
+                r.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            }
+            
+            // Past events at bottom
+            r.sort((a, b) => {
+                const aPast = getEventStatus(a) === 'past' ? 1 : 0;
+                const bPast = getEventStatus(b) === 'past' ? 1 : 0;
+                return aPast - bPast;
+            });
+            
+            state.filteredEvents = r;
+            renderEvents();
+        }
+        
+        function renderEvents() {
+            const list = els.eventsList;
+            
+            if (state.filteredEvents.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Hakuna matukio</h3>
+                        <p>Anza ku-add tukio jipya</p>
+                        <button id="emptyAddBtn"><i class="fas fa-plus"></i> Add Tukio</button>
+                    </div>
+                `;
+                document.getElementById('emptyAddBtn')?.addEventListener('click', openAddModal);
+                els.pagination.innerHTML = '';
+                return;
+            }
+            
+            const total = state.filteredEvents.length;
+            const totalPages = Math.ceil(total / state.perPage);
+            if (state.currentPage > totalPages) state.currentPage = 1;
+            
+            const start = (state.currentPage - 1) * state.perPage;
+            const items = state.filteredEvents.slice(start, start + state.perPage);
+            
+            list.innerHTML = items.map((e, i) => renderEventItem(e, i)).join('');
+            items.forEach(e => setupEventItemEvents(e));
+            renderPagination(totalPages);
+        }
+        
+        function renderEventItem(event, idx) {
+            const status = getEventStatus(event);
+            const countdown = getEventCountdown(event);
+            
+            const imageHtml = event.picha_file
+                ? `<div class="event-image"><img src="${event.picha_file}" alt="${escapeHtml(event.jina)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'event-image-placeholder\\'><i class=\\'fas fa-image\\'></i></div>'"></div>`
+                : `<div class="event-image"><div class="event-image-placeholder"><i class="fas fa-calendar-alt"></i></div></div>`;
+            
+            const dateFormatted = new Date(event.tarehe_tukio).toLocaleDateString('sw-TZ', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            });
+            
+            return `
+                <div class="event-item ${status}" data-event-id="${event.id}" style="animation-delay: ${idx * 0.05}s">
+                    ${imageHtml}
+                    
+                    <div class="event-countdown ${countdown.class}">
+                        <i class="fas fa-hourglass-half"></i>
+                        ${countdown.text}
+                    </div>
+                    
+                    <div class="event-header">
+                        <div class="event-header-info">
+                            <h3>${escapeHtml(event.jina || 'Bila Jina')}</h3>
+                            <div class="event-meta">
+                                <div class="event-meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>${dateFormatted}</span>
+                                </div>
+                                ${event.muda ? `
+                                    <div class="event-meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Saa ${escapeHtml(event.muda)}</span>
+                                    </div>
+                                ` : ''}
+                                ${event.mahali ? `
+                                    <div class="event-meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${escapeHtml(event.mahali)}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            ${event.maelezo ? `<div class="event-description">${escapeHtml(event.maelezo)}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="event-actions">
+                        <button class="event-action-btn primary" data-action="view" title="Angalia">
+                            <i class="fas fa-eye"></i>
+                            <span>Ona</span>
+                        </button>
+                        <button class="event-action-btn" data-action="edit" title="Hariri">
+                            <i class="fas fa-edit"></i>
+                            <span>Hariri</span>
+                        </button>
+                        <button class="event-action-btn" data-action="duplicate" title="Duplicate">
+                            <i class="fas fa-copy"></i>
+                            <span>Copy</span>
+                        </button>
+                        <button class="event-action-btn" data-action="share" title="Share">
+                            <i class="fas fa-share"></i>
+                            <span>Share</span>
+                        </button>
+                        <button class="event-action-btn" data-action="export" title="Export JSON">
+                            <i class="fas fa-download"></i>
+                            <span>JSON</span>
+                        </button>
+                        <button class="event-action-btn danger" data-action="delete" title="Futa">
+                            <i class="fas fa-trash"></i>
+                            <span>Futa</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function setupEventItemEvents(event) {
+            const item = document.querySelector(`.event-item[data-event-id="${event.id}"]`);
+            if (!item) return;
+            
+            item.querySelectorAll('.event-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    
+                    if (action === 'view') viewEvent(event);
+                    else if (action === 'edit') editEvent(event);
+                    else if (action === 'duplicate') await duplicateEvent(event);
+                    else if (action === 'share') await shareEvent(event);
+                    else if (action === 'export') exportEvent(event);
+                    else if (action === 'delete') await deleteEvent(event);
+                });
+            });
+        }
+        
+        function viewEvent(event) {
+            const status = getEventStatus(event);
+            const countdown = getEventCountdown(event);
+            
+            const imageHtml = event.picha_file
+                ? `<img src="${event.picha_file}" style="width: 100%; border-radius: 12px; margin-bottom: 16px; max-height: 300px; object-fit: cover;" alt="">`
+                : '';
+            
+            const dateFormatted = new Date(event.tarehe_tukio).toLocaleDateString('sw-TZ', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            });
+            
+            els.viewEventBody.innerHTML = `
+                ${imageHtml}
+                <div style="text-align: center; margin-bottom: 16px;">
+                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; background: var(--bg-input); color: var(--primary);">
+                        <i class="fas fa-hourglass-half"></i>
+                        ${countdown.text}
+                    </span>
+                </div>
+                
+                <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px; text-align: center;">${escapeHtml(event.jina)}</h2>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label">📅 Tarehe ya Tukio</div>
+                    <div class="view-detail-value">${dateFormatted}</div>
+                </div>
+                
+                ${event.muda ? `
+                    <div class="view-detail">
+                        <div class="view-detail-label">⏰ Muda</div>
+                        <div class="view-detail-value">Saa ${escapeHtml(event.muda)}</div>
+                    </div>
+                ` : ''}
+                
+                ${event.mahali ? `
+                    <div class="view-detail">
+                        <div class="view-detail-label">📍 Mahali</div>
+                        <div class="view-detail-value">${escapeHtml(event.mahali)}</div>
+                    </div>
+                ` : ''}
+                
+                ${event.maelezo ? `
+                    <div class="view-detail">
+                        <div class="view-detail-label">📝 Maelezo</div>
+                        <div class="view-detail-value">${escapeHtml(event.maelezo)}</div>
+                    </div>
+                ` : ''}
+                
+                <div class="view-detail">
+                    <div class="view-detail-label">📤 Tarehe ya Kusend</div>
+                    <div class="view-detail-value">${formatDateTime(event.tarehe_send)}</div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label">🗑️ Tarehe ya Kujifuta</div>
+                    <div class="view-detail-value">${formatDate(event.tarehe_delete)}</div>
+                </div>
+            `;
+            
+            openModal(els.viewEventModal);
+        }
+        
+        async function duplicateEvent(event) {
+            try {
+                const { id, created_at, ...rest } = event;
+                const newEvent = {
+                    ...rest,
+                    jina: (event.jina || 'Tukio') + ' (Copy)'
+                };
+                
+                const { error } = await supabaseClient
+                    .from('matukio')
+                    .insert([newEvent]);
+                
+                if (error) throw error;
+                
+                showToast('Tukio limeduplicatewa!', 'success');
+                await loadEvents();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        async function shareEvent(event) {
+            const url = `${window.location.origin}/matukio.html?id=${event.id}`;
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: event.jina,
+                        text: event.maelezo || 'Angalia tukio hili',
+                        url: url
+                    });
+                    return;
+                } catch (e) {}
+            }
+            
+            try {
+                await navigator.clipboard.writeText(url);
+                showToast('Link imecopywa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana kushare', 'error');
+            }
+        }
+        
+        function exportEvent(event) {
+            const data = {
+                event: {
+                    id: event.id,
+                    jina: event.jina,
+                    maelezo: event.maelezo,
+                    tarehe_send: event.tarehe_send,
+                    tarehe_tukio: event.tarehe_tukio,
+                    tarehe_delete: event.tarehe_delete,
+                    muda: event.muda,
+                    mahali: event.mahali,
+                    picha_file: event.picha_file,
+                    created_at: event.created_at
+                },
+                exported_at: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `event-${event.id.substring(0, 8)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast('Tukio lime-export!', 'success');
+        }
+        
+        async function deleteEvent(event) {
+            if (!confirm(`Futa tukio hili?\n\n"${event.jina}"`)) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('matukio')
+                    .delete()
+                    .eq('id', event.id);
+                
+                if (error) throw error;
+                
+                showToast('Tukio limefutwa!', 'success');
+                await loadEvents();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        function editEvent(event) {
+            state.editingId = event.id;
+            state.imageUrl = event.picha_file || null;
+            
+            els.modalTitle.textContent = 'Edit Tukio';
+            els.eventJina.value = event.jina || '';
+            els.eventMaelezo.value = event.maelezo || '';
+            els.eventTareheSend.value = event.tarehe_send || '';
+            els.eventTareheTukio.value = event.tarehe_tukio || '';
+            els.eventMuda.value = event.muda || '';
+            els.eventMahali.value = event.mahali || '';
+            els.eventTareheDelete.value = event.tarehe_delete || '';
+            
+            if (event.picha_file) {
+                els.eventImageImg.src = event.picha_file;
+                els.eventImagePreview.classList.add('show');
+            } else {
+                els.eventImagePreview.classList.remove('show');
+            }
+            
+            openModal(els.eventModal);
+        }
+        
+        function openAddModal() {
+            state.editingId = null;
+            state.imageUrl = null;
+            
+            els.modalTitle.textContent = 'Add Tukio Mpya';
+            els.eventJina.value = '';
+            els.eventMaelezo.value = '';
+            els.eventMuda.value = '';
+            els.eventMahali.value = '';
+            els.eventImagePreview.classList.remove('show');
+            els.eventImageInput.value = '';
+            
+            // Default dates
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            els.eventTareheSend.value = now.toISOString().slice(0, 16);
+            
+            const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            els.eventTareheTukio.value = nextWeek.toISOString().split('T')[0];
+            
+            const nextMonth = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+            els.eventTareheDelete.value = nextMonth.toISOString().split('T')[0];
+            
+            openModal(els.eventModal);
+        }
+        
+        async function handleImageUpload(file) {
+            showToast('Ina-upload picha...', 'info');
+            
+            const result = await uploadFileSmart(file);
+            
+            if (result.success) {
+                state.imageUrl = result.url;
+                els.eventImageImg.src = result.url;
+                els.eventImagePreview.classList.add('show');
+                showToast('Picha ime-uploadwa!', 'success');
+            } else {
+                showToast('Failed: ' + result.error, 'error');
+            }
+        }
+        
+        async function handleSaveEvent() {
+            const jina = els.eventJina.value.trim();
+            const maelezo = els.eventMaelezo.value.trim();
+            const tareheSend = els.eventTareheSend.value;
+            const tareheTukio = els.eventTareheTukio.value;
+            const tareheDelete = els.eventTareheDelete.value;
+            const muda = els.eventMuda.value;
+            const mahali = els.eventMahali.value.trim();
+            
+            if (!jina) {
+                showToast('Weka jina la tukio', 'warning');
+                els.eventJina.focus();
+                return;
+            }
+            
+            if (!tareheSend || !tareheTukio || !tareheDelete) {
+                showToast('Weka tarehe zote muhimu', 'warning');
+                return;
+            }
+            
+            els.saveEventBtn.disabled = true;
+            els.saveEventBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const eventData = {
+                    jina,
+                    maelezo: maelezo || null,
+                    tarehe_send: tareheSend,
+                    tarehe_tukio: tareheTukio,
+                    tarehe_delete: tareheDelete,
+                    muda: muda || null,
+                    mahali: mahali || null,
+                    picha_file: state.imageUrl
+                };
+                
+                let error;
+                
+                if (state.editingId) {
+                    const r = await supabaseClient
+                        .from('matukio')
+                        .update(eventData)
+                        .eq('id', state.editingId);
+                    error = r.error;
+                } else {
+                    const r = await supabaseClient
+                        .from('matukio')
+                        .insert([eventData]);
+                    error = r.error;
+                }
+                
+                if (error) throw error;
+                
+                showToast(state.editingId ? 'Limehaririwa!' : 'Limeongezwa!', 'success');
+                closeModal(els.eventModal);
+                await loadEvents();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                els.saveEventBtn.disabled = false;
+                els.saveEventBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi</span>';
+            }
+        }
+        
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function setupEvents() {
+            els.refreshBtn.addEventListener('click', async function() {
+                this.querySelector('i').style.animation = 'spin 1s linear';
+                await loadEvents();
+                setTimeout(() => this.querySelector('i').style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            let searchTimer;
+            els.searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.filters.search = this.value.trim();
+                    state.currentPage = 1;
+                    applyFilters();
+                }, 300);
+            });
+            
+            els.filterToggle.addEventListener('click', function() {
+                els.filtersPanel.classList.toggle('show');
+                this.classList.toggle('active', els.filtersPanel.classList.contains('show'));
+            });
+            
+            document.querySelectorAll('.filter-chips').forEach(g => {
+                const k = g.getAttribute('data-filter');
+                g.querySelectorAll('.filter-chip').forEach(c => {
+                    c.addEventListener('click', function() {
+                        g.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        state.filters[k] = this.getAttribute('data-value');
+                        state.currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            });
+            
+            els.addEventBtn.addEventListener('click', openAddModal);
+            
+            els.eventImageArea.addEventListener('click', () => els.eventImageInput.click());
+            
+            els.eventImageInput.addEventListener('change', async function() {
+                const file = this.files[0];
+                if (!file) return;
+                
+                if (file.size > 25 * 1024 * 1024) {
+                    showToast('Picha ni kubwa mno. Max 25MB', 'error');
+                    return;
+                }
+                
+                await handleImageUpload(file);
+                this.value = '';
+            });
+            
+            els.eventImageRemove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.imageUrl = null;
+                els.eventImagePreview.classList.remove('show');
+                els.eventImageInput.value = '';
+            });
+            
+            els.eventModalClose.addEventListener('click', () => closeModal(els.eventModal));
+            els.viewEventClose.addEventListener('click', () => closeModal(els.viewEventModal));
+            els.cancelEventBtn.addEventListener('click', () => closeModal(els.eventModal));
+            els.saveEventBtn.addEventListener('click', handleSaveEvent);
+            
+            [els.eventModal, els.viewEventModal].forEach(m => {
+                m.addEventListener('click', (e) => {
+                    if (e.target === m) closeModal(m);
+                });
+            });
+        }
+        
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
+            
+            let h = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                    h += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                    h += `<button class="pagination-btn" disabled>...</button>`;
+                }
+            }
+            
+            h += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            els.pagination.innerHTML = h;
+            
+            els.pagination.querySelectorAll('.pagination-btn[data-page]').forEach(b => {
+                b.addEventListener('click', function() {
+                    const p = parseInt(this.getAttribute('data-page'));
+                    if (p >= 1 && p <= totalPages) {
+                        state.currentPage = p;
+                        renderEvents();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // Helpers
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function formatDate(d) {
+            if (!d) return '—';
+            try {
+                return new Date(d).toLocaleDateString('sw-TZ', { day: 'numeric', month: 'short', year: 'numeric' });
+            } catch (e) { return d; }
+        }
+        
+        function formatDateTime(d) {
+            if (!d) return '—';
+            try {
+                return new Date(d).toLocaleString('sw-TZ', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            } catch (e) { return d; }
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_EVENTS loaded');
+    })();
+    </script>
+</body>
+</html>

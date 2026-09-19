@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Media Library — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: var(--sidebar-width);
+            max-width: 85vw;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .owner-sidebar.open {
+            left: 0;
+            box-shadow: 8px 0 40px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-close {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .sidebar-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-category {
+            margin-bottom: 4px;
+        }
+
+        .nav-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-category-header:hover {
+            background: var(--primary-soft);
+        }
+
+        .nav-category-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .nav-category.collapsed .nav-category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .nav-category.collapsed .nav-category-items {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .nav-category-items {
+            max-height: 800px;
+            transition: max-height 0.35s ease-out, opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-light);
+            transform: translateX(4px);
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary-light);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer {
+            padding: 12px 8px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .nav-item.logout {
+            color: var(--error);
+        }
+
+        .nav-item.logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 12px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* HEADER */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 70px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .page-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header-title i {
+            color: var(--primary);
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+
+        .header-btn .badge.show {
+            display: flex;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 950;
+            backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            position: relative;
+            border-radius: var(--radius-md);
+            min-width: 64px;
+            text-decoration: none;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--text-light);
+            background: var(--bg-hover);
+        }
+
+        .bottom-nav-item i {
+            font-size: 20px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .mini-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 8px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .mini-stat:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .mini-stat-value {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .mini-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px 12px 42px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .toolbar-btn {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .toolbar-btn.primary:hover {
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Type tabs */
+        .type-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+
+        .type-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .type-tab {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .type-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .type-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Filters */
+        .filters-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .filters-panel.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Media Grid */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .media-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeSlideIn 0.4s ease-out backwards;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .media-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .media-preview-box {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .media-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .media-preview-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .media-preview-box .media-icon {
+            font-size: 48px;
+            color: var(--primary);
+            opacity: 0.5;
+        }
+
+        .media-type-chip {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 2;
+        }
+
+        .media-type-chip.image { background: rgba(16, 185, 129, 0.9); }
+        .media-type-chip.video { background: rgba(59, 130, 246, 0.9); }
+        .media-type-chip.audio { background: rgba(168, 85, 247, 0.9); }
+        .media-type-chip.file { background: rgba(212, 175, 55, 0.9); }
+
+        .media-source-chip {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .media-info {
+            padding: 10px;
+        }
+
+        .media-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .media-meta {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .media-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding: 4px;
+            gap: 2px;
+        }
+
+        .media-action-btn {
+            flex: 1;
+            padding: 8px 4px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .media-action-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-light);
+        }
+
+        .media-action-btn:hover {
+            color: var(--primary);
+        }
+
+        .media-action-btn.danger:hover {
+            color: var(--error);
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: var(--border-strong);
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 640px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 i {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--border);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+        }
+
+        .modal-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .modal-btn.danger {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+        }
+
+        .modal-btn.danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+
+        .modal-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* File Preview Modal */
+        .file-preview-content {
+            text-align: center;
+        }
+
+        .file-preview-content img,
+        .file-preview-content video {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: var(--radius-md);
+            background: #000;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .file-preview-content audio {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .file-preview-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            text-align: left;
+        }
+
+        .file-preview-info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .file-preview-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .file-preview-info-row span:first-child {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .file-preview-info-row span:last-child {
+            color: var(--text-light);
+            font-weight: 700;
+            text-align: right;
+            word-break: break-all;
+            max-width: 60%;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 32px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-input);
+            margin-bottom: 16px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .upload-area i {
+            font-size: 42px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .upload-area p {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .upload-area span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+        }
+
+        .upload-progress.show {
+            display: block;
+        }
+
+        .upload-progress-bar {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .upload-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .upload-progress-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Share Modal */
+        .share-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 100000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .share-modal.active {
+            display: flex;
+            animation: fadeSlideIn 0.3s ease-out;
+        }
+
+        .share-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            width: 100%;
+            max-width: 500px;
+            padding: 24px 20px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .share-header h3 {
+            font-size: 17px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .share-header h3 i {
+            color: var(--primary);
+        }
+
+        .share-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 8px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            border: none;
+            color: var(--text-light);
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .share-option:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .share-option i {
+            font-size: 28px;
+        }
+
+        .share-option.whatsapp i { color: #25D366; }
+        .share-option.facebook i { color: #1877F2; }
+        .share-option.twitter i { color: #1DA1F2; }
+        .share-option.telegram i { color: #0088cc; }
+        .share-option.copy i { color: var(--primary); }
+        .share-option.download i { color: var(--success); }
+
+        .share-url-preview {
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            word-break: break-all;
+            border: 1px solid var(--border);
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.9);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            backdrop-filter: blur(8px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-overlay-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* Confirm Modal */
+        .confirm-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 100000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .confirm-modal.active {
+            display: flex;
+            animation: fadeSlideIn 0.3s ease-out;
+        }
+
+        .confirm-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .confirm-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--error);
+        }
+
+        .confirm-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .confirm-btn.cancel {
+            background: var(--bg-input);
+            color: var(--text-light);
+        }
+
+        .confirm-btn.danger {
+            background: var(--error);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .media-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .share-options { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item active"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-photo-video"></i>
+            <span>Media Library</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="uploadBtn" aria-label="Upload" title="Upload mpya">
+                <i class="fas fa-upload"></i>
+            </button>
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Mini Stats -->
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statTotal">—</div>
+                <div class="mini-stat-label">Jumla</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statImages">—</div>
+                <div class="mini-stat-label">Picha</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statVideos">—</div>
+                <div class="mini-stat-label">Video</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statAudio">—</div>
+                <div class="mini-stat-label">Audio</div>
+            </div>
+        </div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tafuta files...">
+            </div>
+            <button class="toolbar-btn" id="filterToggle">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+        </div>
+        
+        <!-- Type Tabs -->
+        <div class="type-tabs" id="typeTabs">
+            <button class="type-tab active" data-type="all">
+                <i class="fas fa-th"></i> Zote
+            </button>
+            <button class="type-tab" data-type="image">
+                <i class="fas fa-image"></i> Picha
+            </button>
+            <button class="type-tab" data-type="video">
+                <i class="fas fa-video"></i> Video
+            </button>
+            <button class="type-tab" data-type="audio">
+                <i class="fas fa-music"></i> Audio
+            </button>
+            <button class="type-tab" data-type="file">
+                <i class="fas fa-file"></i> Files
+            </button>
+        </div>
+        
+        <!-- Filters Panel -->
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-group">
+                <span class="filter-group-label">Source</span>
+                <div class="filter-chips" data-filter="source">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="cloudinary">☁️ Cloudinary</button>
+                    <button class="filter-chip" data-value="uploadcare">📦 Uploadcare</button>
+                    <button class="filter-chip" data-value="supabase">🗄️ Supabase Storage</button>
+                    <button class="filter-chip" data-value="external">🔗 External URL</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Panga kwa</span>
+                <div class="filter-chips" data-filter="sort">
+                    <button class="filter-chip active" data-value="newest">🕐 Mpya Kwanza</button>
+                    <button class="filter-chip" data-value="oldest">🕰️ Zamani Kwanza</button>
+                    <button class="filter-chip" data-value="name">🔤 Jina (A-Z)</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Media Grid -->
+        <div class="media-grid" id="mediaGrid">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Inapakia files...</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="media.html" class="bottom-nav-item active"><i class="fas fa-photo-video"></i><span>Media</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- FILE PREVIEW MODAL -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye"></i> Preview</h3>
+                <button class="modal-close" id="previewClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="previewBody"></div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="previewCloseBtn">
+                    <i class="fas fa-times"></i>
+                    Funga
+                </button>
+                <button class="modal-btn primary" id="previewShareBtn">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+                <button class="modal-btn danger" id="previewDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    Futa
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- UPLOAD MODAL -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-upload"></i> Upload File</h3>
+                <button class="modal-close" id="uploadModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Chagua file ku-upload</p>
+                    <span>Picha, Video, Audio, PDF, DOC, ZIP (max 500 MB)</span>
+                </div>
+                <input type="file" id="uploadInput" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.zip" style="display: none;">
+                
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="upload-progress-bar">
+                        <div class="upload-progress-fill" id="uploadProgressFill"></div>
+                    </div>
+                    <div class="upload-progress-text" id="uploadProgressText">0%</div>
+                </div>
+                
+                <div id="uploadResult"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SHARE MODAL -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-content">
+            <div class="share-header">
+                <h3><i class="fas fa-share-alt"></i> Share File</h3>
+                <button class="share-close" id="shareClose"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="share-options" id="shareOptions"></div>
+            
+            <div class="share-url-preview" id="shareUrlPreview">—</div>
+        </div>
+    </div>
+    
+    <!-- CONFIRM MODAL -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-content">
+            <div class="confirm-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="confirm-title" id="confirmTitle">Una uhakika?</h3>
+            <p class="confirm-message" id="confirmMessage">Hii haiwezi kurudishwa!</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel" id="confirmCancel">Ghairi</button>
+                <button class="confirm-btn danger" id="confirmOk">
+                    <i class="fas fa-trash"></i>
+                    Ndio, Futa
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-overlay-text" id="loadingOverlayText">Inapakia...</div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    <script src="upload-manager.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            settings: {},
+            files: [],
+            filteredFiles: [],
+            currentPage: 1,
+            perPage: 30,
+            filters: { type: 'all', source: 'all', sort: 'newest', search: '' },
+            viewingFile: null,
+            sharingFile: null,
+            confirmCallback: null
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            uploadBtn: document.getElementById('uploadBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            statTotal: document.getElementById('statTotal'),
+            statImages: document.getElementById('statImages'),
+            statVideos: document.getElementById('statVideos'),
+            statAudio: document.getElementById('statAudio'),
+            searchInput: document.getElementById('searchInput'),
+            filterToggle: document.getElementById('filterToggle'),
+            filtersPanel: document.getElementById('filtersPanel'),
+            typeTabs: document.getElementById('typeTabs'),
+            mediaGrid: document.getElementById('mediaGrid'),
+            pagination: document.getElementById('pagination'),
+            // Preview
+            previewModal: document.getElementById('previewModal'),
+            previewClose: document.getElementById('previewClose'),
+            previewCloseBtn: document.getElementById('previewCloseBtn'),
+            previewShareBtn: document.getElementById('previewShareBtn'),
+            previewDeleteBtn: document.getElementById('previewDeleteBtn'),
+            previewBody: document.getElementById('previewBody'),
+            // Upload
+            uploadModal: document.getElementById('uploadModal'),
+            uploadModalClose: document.getElementById('uploadModalClose'),
+            uploadArea: document.getElementById('uploadArea'),
+            uploadInput: document.getElementById('uploadInput'),
+            uploadProgress: document.getElementById('uploadProgress'),
+            uploadProgressFill: document.getElementById('uploadProgressFill'),
+            uploadProgressText: document.getElementById('uploadProgressText'),
+            uploadResult: document.getElementById('uploadResult'),
+            // Share
+            shareModal: document.getElementById('shareModal'),
+            shareClose: document.getElementById('shareClose'),
+            shareOptions: document.getElementById('shareOptions'),
+            shareUrlPreview: document.getElementById('shareUrlPreview'),
+            // Confirm
+            confirmModal: document.getElementById('confirmModal'),
+            confirmTitle: document.getElementById('confirmTitle'),
+            confirmMessage: document.getElementById('confirmMessage'),
+            confirmCancel: document.getElementById('confirmCancel'),
+            confirmOk: document.getElementById('confirmOk'),
+            // Loading
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            loadingOverlayText: document.getElementById('loadingOverlayText'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        async function init() {
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            await loadSettings();
+            await loadAllFiles();
+            updateNotificationBadge();
+        }
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+        
+        async function loadSettings() {
+            try {
+                const { data } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_key, setting_value');
+                
+                const obj = {};
+                (data || []).forEach(s => {
+                    obj[s.setting_key] = s.setting_value;
+                });
+                
+                state.settings = obj;
+            } catch (e) {
+                console.error('Settings load error:', e);
+            }
+        }
+        
+        async function loadAllFiles() {
+            els.mediaGrid.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Inapakia files...</p>
+                </div>
+            `;
+            
+            try {
+                const files = [];
+                
+                // 1. Posts media
+                try {
+                    const { data: posts } = await supabaseClient
+                        .from('posts')
+                        .select('id, title, media_files, audio_file, type, created_at');
+                    
+                    (posts || []).forEach(post => {
+                        if (post.media_files && Array.isArray(post.media_files)) {
+                            post.media_files.forEach((url, idx) => {
+                                if (url) {
+                                    files.push({
+                                        id: `${post.id}-media-${idx}`,
+                                        url: url,
+                                        name: `${post.title || 'Post'} - Media ${idx + 1}`,
+                                        type: detectFileType(url),
+                                        source: detectSource(url),
+                                        origin: 'Post',
+                                        originId: post.id,
+                                        created_at: post.created_at
+                                    });
+                                }
+                            });
+                        }
+                        
+                        if (post.audio_file) {
+                            files.push({
+                                id: `${post.id}-audio`,
+                                url: post.audio_file,
+                                name: `${post.title || 'Post'} - Audio`,
+                                type: 'audio',
+                                source: detectSource(post.audio_file),
+                                origin: 'Post',
+                                originId: post.id,
+                                created_at: post.created_at
+                            });
+                        }
+                    });
+                } catch (e) { console.error('Posts load:', e); }
+                
+                // 2. Nyimbo
+                try {
+                    const { data: songs } = await supabaseClient
+                        .from('nyimbo_za_siku')
+                        .select('id, jina, media_file, media_type, created_at');
+                    
+                    (songs || []).forEach(song => {
+                        if (song.media_file) {
+                            files.push({
+                                id: `song-${song.id}`,
+                                url: song.media_file,
+                                name: song.jina || 'Wimbo',
+                                type: song.media_type || 'audio',
+                                source: detectSource(song.media_file),
+                                origin: 'Wimbo',
+                                originId: song.id,
+                                created_at: song.created_at
+                            });
+                        }
+                    });
+                } catch (e) { console.error('Nyimbo load:', e); }
+                
+                // 3. Watakatifu
+                try {
+                    const { data: saints } = await supabaseClient
+                        .from('watakatifu')
+                        .select('id, jina, picha_file, created_at');
+                    
+                    (saints || []).forEach(saint => {
+                        if (saint.picha_file) {
+                            files.push({
+                                id: `saint-${saint.id}`,
+                                url: saint.picha_file,
+                                name: saint.jina || 'Mtakatifu',
+                                type: 'image',
+                                source: detectSource(saint.picha_file),
+                                origin: 'Mtakatifu',
+                                originId: saint.id,
+                                created_at: saint.created_at
+                            });
+                        }
+                    });
+                } catch (e) { console.error('Watakatifu load:', e); }
+                
+                // 4. Matukio
+                try {
+                    const { data: events } = await supabaseClient
+                        .from('matukio')
+                        .select('id, jina, picha_file, created_at');
+                    
+                    (events || []).forEach(event => {
+                        if (event.picha_file) {
+                            files.push({
+                                id: `event-${event.id}`,
+                                url: event.picha_file,
+                                name: event.jina || 'Tukio',
+                                type: 'image',
+                                source: detectSource(event.picha_file),
+                                origin: 'Tukio',
+                                originId: event.id,
+                                created_at: event.created_at
+                            });
+                        }
+                    });
+                } catch (e) { console.error('Matukio load:', e); }
+                
+                // 5. Announcements attachments
+                try {
+                    const { data: anns } = await supabaseClient
+                        .from('announcements')
+                        .select('id, title, attachment_url, created_at');
+                    
+                    (anns || []).forEach(ann => {
+                        if (ann.attachment_url) {
+                            files.push({
+                                id: `ann-${ann.id}`,
+                                url: ann.attachment_url,
+                                name: ann.title || 'Tangazo',
+                                type: detectFileType(ann.attachment_url),
+                                source: detectSource(ann.attachment_url),
+                                origin: 'Tangazo',
+                                originId: ann.id,
+                                created_at: ann.created_at
+                            });
+                        }
+                    });
+                } catch (e) { console.error('Announcements load:', e); }
+                
+                state.files = files;
+                updateStats();
+                applyFilters();
+                
+            } catch (e) {
+                console.error('Load files error:', e);
+                els.mediaGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Imeshindikana</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function detectFileType(url) {
+            if (!url) return 'file';
+            const clean = url.split('?')[0].toLowerCase();
+            
+            if (clean.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)$/)) return 'image';
+            if (clean.match(/\.(mp4|webm|mov|avi|mkv|m4v)$/)) return 'video';
+            if (clean.match(/\.(mp3|wav|m4a|aac|ogg|flac)$/)) return 'audio';
+            
+            if (clean.includes('/image/upload')) return 'image';
+            if (clean.includes('/video/upload')) return 'video';
+            
+            return 'file';
+        }
+        
+        function detectSource(url) {
+            if (!url) return 'external';
+            if (url.includes('cloudinary.com')) return 'cloudinary';
+            if (url.includes('ucarecdn.com')) return 'uploadcare';
+            if (url.includes('supabase.co/storage')) return 'supabase';
+            return 'external';
+        }
+        
+        function updateStats() {
+            let total = state.files.length;
+            let images = 0;
+            let videos = 0;
+            let audio = 0;
+            
+            state.files.forEach(f => {
+                if (f.type === 'image') images++;
+                else if (f.type === 'video') videos++;
+                else if (f.type === 'audio') audio++;
+            });
+            
+            els.statTotal.textContent = total;
+            els.statImages.textContent = images;
+            els.statVideos.textContent = videos;
+            els.statAudio.textContent = audio;
+        }
+        
+        function applyFilters() {
+            let r = [...state.files];
+            
+            // Type
+            if (state.filters.type !== 'all') {
+                r = r.filter(f => f.type === state.filters.type);
+            }
+            
+            // Source
+            if (state.filters.source !== 'all') {
+                r = r.filter(f => f.source === state.filters.source);
+            }
+            
+            // Search
+            if (state.filters.search) {
+                const t = state.filters.search.toLowerCase();
+                r = r.filter(f => 
+                    (f.name || '').toLowerCase().includes(t) ||
+                    (f.url || '').toLowerCase().includes(t)
+                );
+            }
+            
+            // Sort
+            if (state.filters.sort === 'newest') {
+                r.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (state.filters.sort === 'oldest') {
+                r.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            } else if (state.filters.sort === 'name') {
+                r.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            }
+            
+            state.filteredFiles = r;
+            renderMedia();
+        }
+        
+        function renderMedia() {
+            const grid = els.mediaGrid;
+            
+            if (state.filteredFiles.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-photo-video"></i>
+                        <h3>Hakuna files</h3>
+                        <p>Ongeza files kwenye posts, nyimbo, watakatifu, n.k.</p>
+                    </div>
+                `;
+                els.pagination.innerHTML = '';
+                return;
+            }
+            
+            const total = state.filteredFiles.length;
+            const totalPages = Math.ceil(total / state.perPage);
+            if (state.currentPage > totalPages) state.currentPage = 1;
+            
+            const start = (state.currentPage - 1) * state.perPage;
+            const items = state.filteredFiles.slice(start, start + state.perPage);
+            
+            grid.innerHTML = items.map((f, i) => renderMediaItem(f, i)).join('');
+            items.forEach(f => setupMediaItemEvents(f));
+            renderPagination(totalPages);
+        }
+        
+        function renderMediaItem(file, idx) {
+            const typeIcons = {
+                image: 'fa-image',
+                video: 'fa-video',
+                audio: 'fa-music',
+                file: 'fa-file'
+            };
+            
+            const typeLabels = {
+                image: 'Picha',
+                video: 'Video',
+                audio: 'Audio',
+                file: 'File'
+            };
+            
+            const sourceIcons = {
+                cloudinary: '☁️',
+                uploadcare: '📦',
+                supabase: '🗄️',
+                external: '🔗'
+            };
+            
+            let previewHtml = '';
+            
+            if (file.type === 'image') {
+                previewHtml = `<img src="${file.url}" alt="${escapeHtml(file.name)}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-image media-icon\\'></i>'">`;
+            } else if (file.type === 'video') {
+                previewHtml = `<video src="${file.url}" muted preload="metadata"></video>`;
+            } else {
+                previewHtml = `<i class="fas ${typeIcons[file.type]} media-icon"></i>`;
+            }
+            
+            return `
+                <div class="media-item" data-file-id="${file.id}" style="animation-delay: ${Math.min(idx * 0.03, 0.5)}s">
+                    <div class="media-preview-box">
+                        ${previewHtml}
+                        <div class="media-type-chip ${file.type}">
+                            <i class="fas ${typeIcons[file.type]}"></i>
+                            ${typeLabels[file.type]}
+                        </div>
+                        <div class="media-source-chip">
+                            ${sourceIcons[file.source] || ''}
+                        </div>
+                    </div>
+                    <div class="media-info">
+                        <div class="media-name">${escapeHtml(file.name)}</div>
+                        <div class="media-meta">
+                            <i class="fas fa-tag"></i>
+                            ${escapeHtml(file.origin)}
+                        </div>
+                    </div>
+                    <div class="media-actions">
+                        <button class="media-action-btn" data-action="copy" title="Copy URL">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="media-action-btn" data-action="share" title="Share">
+                            <i class="fas fa-share"></i>
+                        </button>
+                        <button class="media-action-btn" data-action="download" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function setupMediaItemEvents(file) {
+            const item = document.querySelector(`.media-item[data-file-id="${file.id}"]`);
+            if (!item) return;
+            
+            // Click on preview → open modal
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.media-action-btn')) return;
+                showFilePreview(file);
+            });
+            
+            item.querySelectorAll('.media-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    
+                    if (action === 'copy') copyFileUrl(file);
+                    else if (action === 'share') openShareModal(file);
+                    else if (action === 'download') downloadFile(file);
+                });
+            });
+        }
+        
+        function showFilePreview(file) {
+            state.viewingFile = file;
+            
+            let previewHtml = '';
+            
+            if (file.type === 'image') {
+                previewHtml = `<img src="${file.url}" alt="${escapeHtml(file.name)}">`;
+            } else if (file.type === 'video') {
+                previewHtml = `<video src="${file.url}" controls playsinline></video>`;
+            } else if (file.type === 'audio') {
+                previewHtml = `
+                    <div style="text-align: center; padding: 40px 0;">
+                        <i class="fas fa-music" style="font-size: 80px; color: var(--primary); margin-bottom: 20px; display: block; opacity: 0.5;"></i>
+                        <audio src="${file.url}" controls></audio>
+                    </div>
+                `;
+            } else {
+                previewHtml = `
+                    <div style="text-align: center; padding: 40px 0;">
+                        <i class="fas fa-file" style="font-size: 80px; color: var(--primary); margin-bottom: 20px; display: block; opacity: 0.5;"></i>
+                    </div>
+                `;
+            }
+            
+            els.previewBody.innerHTML = `
+                <div class="file-preview-content">
+                    ${previewHtml}
+                    
+                    <div class="file-preview-info">
+                        <div class="file-preview-info-row">
+                            <span>Jina:</span>
+                            <span>${escapeHtml(file.name)}</span>
+                        </div>
+                        <div class="file-preview-info-row">
+                            <span>Aina:</span>
+                            <span>${file.type.toUpperCase()}</span>
+                        </div>
+                        <div class="file-preview-info-row">
+                            <span>Source:</span>
+                            <span>${file.source.toUpperCase()}</span>
+                        </div>
+                        <div class="file-preview-info-row">
+                            <span>Origin:</span>
+                            <span>${file.origin}</span>
+                        </div>
+                        <div class="file-preview-info-row">
+                            <span>URL:</span>
+                            <span style="font-size: 11px;">${escapeHtml(file.url)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            openModal(els.previewModal);
+        }
+        
+        async function copyFileUrl(file) {
+            try {
+                await navigator.clipboard.writeText(file.url);
+                showToast('URL imecopywa!', 'success');
+            } catch (e) {
+                const ta = document.createElement('textarea');
+                ta.value = file.url;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('URL imecopywa!', 'success');
+            }
+        }
+        
+        async function downloadFile(file) {
+            try {
+                showToast('Download inaanza...', 'info');
+                
+                const response = await fetch(file.url);
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                
+                const ext = getFileExtension(file.url);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${file.name || 'file'}.${ext}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showToast('Download imekamilika!', 'success');
+            } catch (e) {
+                console.error('Download error:', e);
+                // Kama fetch imeshindwa, fungua kwenye tab mpya
+                window.open(file.url, '_blank');
+            }
+        }
+        
+        function getFileExtension(url) {
+            if (!url) return 'file';
+            const clean = url.split('?')[0];
+            const parts = clean.split('.');
+            if (parts.length > 1) {
+                return parts[parts.length - 1].substring(0, 5);
+            }
+            return 'file';
+        }
+        
+        function openShareModal(file) {
+            state.sharingFile = file;
+            
+            // Fanya share link kutoka Supabase settings
+            const baseUrl = state.settings.share_link || window.location.origin;
+            const pagePath = state.settings.share_page_path || '/share.html';
+            const shareUrl = `${baseUrl}${pagePath}?file=${encodeURIComponent(file.url)}`;
+            
+            const title = file.name || 'File kutoka KMCA';
+            const shareText = `${title} - kutoka KMCA`;
+            
+            els.shareUrlPreview.textContent = shareUrl;
+            
+            els.shareOptions.innerHTML = `
+                <a href="https://wa.me/?text=${encodeURIComponent(shareText + ' - ' + shareUrl)}" target="_blank" class="share-option whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" class="share-option facebook">
+                    <i class="fab fa-facebook"></i>
+                    Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}" target="_blank" class="share-option twitter">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </a>
+                <a href="https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}" target="_blank" class="share-option telegram">
+                    <i class="fab fa-telegram"></i>
+                    Telegram
+                </a>
+                <button class="share-option copy" id="shareCopyBtn">
+                    <i class="fas fa-link"></i>
+                    Copy Link
+                </button>
+                <button class="share-option download" id="shareDownloadBtn">
+                    <i class="fas fa-download"></i>
+                    Download
+                </button>
+            `;
+            
+            els.shareModal.classList.add('active');
+            
+            // Setup copy & download
+            document.getElementById('shareCopyBtn')?.addEventListener('click', () => {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    showToast('Link imecopywa!', 'success');
+                    els.shareModal.classList.remove('active');
+                }).catch(() => {
+                    showToast('Imeshindikana', 'error');
+                });
+            });
+            
+            document.getElementById('shareDownloadBtn')?.addEventListener('click', () => {
+                els.shareModal.classList.remove('active');
+                downloadFile(file);
+            });
+        }
+        
+        function showConfirm(title, message, callback) {
+            els.confirmTitle.textContent = title;
+            els.confirmMessage.textContent = message;
+            els.confirmModal.classList.add('active');
+            state.confirmCallback = callback;
+        }
+        
+        function hideConfirm() {
+            els.confirmModal.classList.remove('active');
+            state.confirmCallback = null;
+        }
+        
+        async function uploadNewFile(file) {
+            showLoadingOverlay('Ina-upload...');
+            els.uploadProgress.classList.add('show');
+            els.uploadProgressFill.style.width = '0%';
+            els.uploadProgressText.textContent = '0%';
+            
+            try {
+                const result = await uploadFileSmart(file, {
+                    onProgress: (p) => {
+                        els.uploadProgressFill.style.width = p + '%';
+                        els.uploadProgressText.textContent = p + '%';
+                    }
+                });
+                
+                hideLoadingOverlay();
+                els.uploadProgress.classList.remove('show');
+                
+                if (result.success) {
+                    els.uploadResult.innerHTML = `
+                        <div style="padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); border-radius: 12px; margin-bottom: 16px;">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--success); margin-bottom: 8px;">
+                                <i class="fas fa-check-circle"></i> Upload imefanikiwa!
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-muted); word-break: break-all;">
+                                ${escapeHtml(result.url)}
+                            </div>
+                        </div>
+                    `;
+                    
+                    showToast('File ime-uploadwa!', 'success');
+                    
+                    // Reload files (baada ya sekunde 2)
+                    setTimeout(() => {
+                        closeModal(els.uploadModal);
+                        els.uploadResult.innerHTML = '';
+                        loadAllFiles();
+                    }, 2000);
+                } else {
+                    showToast('Imeshindikana: ' + result.error, 'error');
+                }
+            } catch (e) {
+                hideLoadingOverlay();
+                els.uploadProgress.classList.remove('show');
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function setupEvents() {
+            els.refreshBtn.addEventListener('click', async function() {
+                this.querySelector('i').style.animation = 'spin 1s linear';
+                await loadAllFiles();
+                setTimeout(() => this.querySelector('i').style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            els.uploadBtn.addEventListener('click', () => {
+                els.uploadResult.innerHTML = '';
+                els.uploadInput.value = '';
+                els.uploadProgress.classList.remove('show');
+                openModal(els.uploadModal);
+            });
+            
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            // Search
+            let searchTimer;
+            els.searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.filters.search = this.value.trim();
+                    state.currentPage = 1;
+                    applyFilters();
+                }, 300);
+            });
+            
+            // Filter toggle
+            els.filterToggle.addEventListener('click', function() {
+                els.filtersPanel.classList.toggle('show');
+                this.classList.toggle('active', els.filtersPanel.classList.contains('show'));
+            });
+            
+            // Filter chips
+            document.querySelectorAll('.filter-chips').forEach(g => {
+                const k = g.getAttribute('data-filter');
+                g.querySelectorAll('.filter-chip').forEach(c => {
+                    c.addEventListener('click', function() {
+                        g.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        state.filters[k] = this.getAttribute('data-value');
+                        state.currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            });
+            
+            // Type tabs
+            els.typeTabs.querySelectorAll('.type-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    els.typeTabs.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    state.filters.type = this.getAttribute('data-type');
+                    state.currentPage = 1;
+                    applyFilters();
+                });
+            });
+            
+            // Preview Modal
+            els.previewClose.addEventListener('click', () => closeModal(els.previewModal));
+            els.previewCloseBtn.addEventListener('click', () => closeModal(els.previewModal));
+            
+            els.previewShareBtn.addEventListener('click', () => {
+                if (state.viewingFile) {
+                    closeModal(els.previewModal);
+                    setTimeout(() => openShareModal(state.viewingFile), 200);
+                }
+            });
+            
+            els.previewDeleteBtn.addEventListener('click', () => {
+                if (state.viewingFile) {
+                    const file = state.viewingFile;
+                    closeModal(els.previewModal);
+                    
+                    showConfirm(
+                        'Futa File?',
+                        `Una uhakika unataka kufuta "${file.name}"?\n\nHii itaifuta kutoka ${file.origin} pia. HILI HALIWEZI KURUDISHWA!`,
+                        () => deleteFileFromOrigin(file)
+                    );
+                }
+            });
+            
+            els.previewModal.addEventListener('click', (e) => {
+                if (e.target === els.previewModal) closeModal(els.previewModal);
+            });
+            
+            // Upload Modal
+            els.uploadModalClose.addEventListener('click', () => closeModal(els.uploadModal));
+            els.uploadModal.addEventListener('click', (e) => {
+                if (e.target === els.uploadModal) closeModal(els.uploadModal);
+            });
+            
+            els.uploadArea.addEventListener('click', () => els.uploadInput.click());
+            els.uploadInput.addEventListener('change', async function() {
+                const file = this.files[0];
+                if (!file) return;
+                await uploadNewFile(file);
+                this.value = '';
+            });
+            
+            // Share Modal
+            els.shareClose.addEventListener('click', () => els.shareModal.classList.remove('active'));
+            els.shareModal.addEventListener('click', (e) => {
+                if (e.target === els.shareModal) els.shareModal.classList.remove('active');
+            });
+            
+            // Confirm
+            els.confirmCancel.addEventListener('click', hideConfirm);
+            els.confirmOk.addEventListener('click', async () => {
+                const cb = state.confirmCallback;
+                hideConfirm();
+                if (cb) await cb();
+            });
+            
+            els.confirmModal.addEventListener('click', (e) => {
+                if (e.target === els.confirmModal) hideConfirm();
+            });
+        }
+        
+        async function deleteFileFromOrigin(file) {
+            try {
+                showLoadingOverlay('Inafuta file...');
+                
+                // Determine table & field
+                let table = '';
+                let field = '';
+                let idField = 'id';
+                let recordId = file.originId;
+                
+                if (file.origin === 'Wimbo') {
+                    table = 'nyimbo_za_siku';
+                    field = 'media_file';
+                } else if (file.origin === 'Mtakatifu') {
+                    table = 'watakatifu';
+                    field = 'picha_file';
+                } else if (file.origin === 'Tukio') {
+                    table = 'matukio';
+                    field = 'picha_file';
+                } else if (file.origin === 'Tangazo') {
+                    table = 'announcements';
+                    field = 'attachment_url';
+                } else if (file.origin === 'Post') {
+                    // Kwa post, inaweza kuwa kwenye media_files array au audio_file
+                    table = 'posts';
+                    
+                    if (file.id.includes('-audio')) {
+                        field = 'audio_file';
+                    } else {
+                        field = 'media_files'; // Array — tuna-handle tofauti
+                    }
+                }
+                
+                if (table && field) {
+                    if (field === 'media_files') {
+                        // Get current post
+                        const { data: post } = await supabaseClient
+                            .from('posts')
+                            .select('media_files')
+                            .eq('id', recordId)
+                            .single();
+                        
+                        if (post && post.media_files) {
+                            const newFiles = post.media_files.filter(u => u !== file.url);
+                            
+                            await supabaseClient
+                                .from('posts')
+                                .update({ media_files: newFiles.length > 0 ? newFiles : null })
+                                .eq('id', recordId);
+                        }
+                    } else {
+                        // Update field kuwa null
+                        await supabaseClient
+                            .from(table)
+                            .update({ [field]: null })
+                            .eq(idField, recordId);
+                    }
+                }
+                
+                hideLoadingOverlay();
+                showToast('File imefutwa!', 'success');
+                await loadAllFiles();
+                
+            } catch (e) {
+                hideLoadingOverlay();
+                console.error('Delete error:', e);
+                showToast('Imeshindikana kufuta: ' + e.message, 'error');
+            }
+        }
+        
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
+            
+            let h = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                    h += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                    h += `<button class="pagination-btn" disabled>...</button>`;
+                }
+            }
+            
+            h += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            els.pagination.innerHTML = h;
+            
+            els.pagination.querySelectorAll('.pagination-btn[data-page]').forEach(b => {
+                b.addEventListener('click', function() {
+                    const p = parseInt(this.getAttribute('data-page'));
+                    if (p >= 1 && p <= totalPages) {
+                        state.currentPage = p;
+                        renderMedia();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // Helpers
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function showLoadingOverlay(text = 'Inapakia...') {
+            els.loadingOverlayText.textContent = text;
+            els.loadingOverlay.classList.add('active');
+        }
+        
+        function hideLoadingOverlay() {
+            els.loadingOverlay.classList.remove('active');
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_MEDIA loaded');
+    })();
+    </script>
+</body>
+</html>

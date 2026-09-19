@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>PWA Management — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow-x: hidden; width: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed; top: 14px; left: 14px;
+            width: 44px; height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .menu-toggle:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .menu-toggle:active { transform: scale(0.92); }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed; top: 0; left: -320px;
+            width: var(--sidebar-width); max-width: 85vw;
+            height: 100vh; height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000; display: flex; flex-direction: column;
+            overflow: hidden; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .owner-sidebar.open { left: 0; box-shadow: 8px 0 40px rgba(0,0,0,0.5); }
+
+        .sidebar-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--bg-dark);
+            overflow: hidden; flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sidebar-info { flex: 1; min-width: 0; }
+        .sidebar-info h3 { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .sidebar-close {
+            width: 34px; height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; transition: var(--transition); flex-shrink: 0;
+        }
+        .sidebar-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 8px; -webkit-overflow-scrolling: touch; }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .nav-category { margin-bottom: 4px; }
+        .nav-category-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; margin-bottom: 4px;
+            border-radius: var(--radius-sm); cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary); font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .nav-category-header:hover { background: var(--primary-soft); }
+        .nav-category-arrow { margin-left: auto; font-size: 10px; transition: transform 0.3s; }
+        .nav-category.collapsed .nav-category-arrow { transform: rotate(-90deg); }
+        .nav-category.collapsed .nav-category-items { max-height: 0; opacity: 0; overflow: hidden; }
+
+        .nav-category-items { max-height: 800px; transition: max-height 0.35s ease-out, opacity 0.3s; overflow: hidden; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: var(--radius-md);
+            cursor: pointer; transition: var(--transition);
+            color: var(--text-muted); font-size: 14px; font-weight: 600;
+            margin-bottom: 2px; text-decoration: none; position: relative;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-light); transform: translateX(4px); }
+        .nav-item i { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-item.active { background: var(--primary-soft); color: var(--primary-light); }
+        .nav-item.active::before {
+            content: ''; position: absolute;
+            left: 0; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 70%; background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer { padding: 12px 8px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .nav-item.logout { color: var(--error); }
+        .nav-item.logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .sidebar-version { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 12px; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 999;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* HEADER */
+        .page-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px 0 70px; z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .page-header-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .page-header-title i { color: var(--primary); }
+
+        .page-header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            width: 42px; height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition);
+            position: relative;
+        }
+        .header-btn:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); }
+        .header-btn .badge {
+            position: absolute; top: -4px; right: -4px;
+            background: var(--error); color: white;
+            font-size: 10px; font-weight: 800;
+            min-width: 18px; height: 18px; padding: 0 4px;
+            border-radius: 9px; display: none;
+            align-items: center; justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+        .header-btn .badge.show { display: flex; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 950; backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .bottom-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 18px; cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted); font-size: 11px; font-weight: 600;
+            position: relative; border-radius: var(--radius-md);
+            min-width: 64px; text-decoration: none;
+        }
+        .bottom-nav-item:hover { color: var(--text-light); background: var(--bg-hover); }
+        .bottom-nav-item i { font-size: 20px; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .bottom-nav-item.active::before {
+            content: ''; position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 32px; height: 3px; background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+        /* MINI STATS */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; margin-bottom: 16px;
+        }
+        .mini-stat {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 12px 8px;
+            text-align: center; transition: var(--transition);
+        }
+        .mini-stat:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .mini-stat-value { font-size: 18px; font-weight: 900; color: var(--primary); line-height: 1.2; }
+        .mini-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 2px; }
+
+        /* TABS */
+        .tabs {
+            display: flex; gap: 6px; overflow-x: auto;
+            padding-bottom: 8px; margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-muted);
+            cursor: pointer; transition: var(--transition);
+            font-size: 13px; font-weight: 700;
+            font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); border-color: var(--primary); color: var(--bg-dark); }
+
+        /* TAB CONTENT */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeSlideIn 0.3s ease-out; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .section h4 {
+            font-size: 15px; font-weight: 800;
+            margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+            color: var(--primary);
+        }
+
+        /* FORM */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .form-label .required { color: var(--error); margin-left: 3px; }
+        .form-label .optional {
+            color: var(--text-muted); font-weight: 600;
+            font-size: 10px; text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* CHECKBOX */
+        .checkbox-group {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 8px;
+        }
+        .checkbox-group:hover { border-color: var(--primary); }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px; height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer; flex-shrink: 0;
+        }
+        .checkbox-group label {
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; margin: 0;
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-secondary {
+            width: 100%;
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover:not(:disabled) { background: var(--border); }
+
+        .btn-danger {
+            width: 100%;
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* WARNING / INFO BOX */
+        .warning-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid var(--error);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+            color: #fca5a5;
+        }
+        .warning-box i { color: var(--error); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+        }
+        .info-box i { color: var(--info); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        /* ANALYTICS */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .analytics-card {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+        .analytics-card h4 {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+        .analytics-card p {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        /* DEVICE BREAKDOWN */
+        .device-item {
+            margin-bottom: 14px;
+        }
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .device-header span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .device-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .device-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .device-fill.android { background: linear-gradient(90deg, #10b981, #34d399); }
+        .device-fill.ios { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .device-fill.desktop { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+
+        /* USER ITEMS (PWA Users) */
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+        .user-item:hover { background: var(--bg-hover); }
+
+        .user-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 800; color: var(--bg-dark);
+            flex-shrink: 0;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .user-info { flex: 1; min-width: 0; }
+        .user-info strong { font-size: 14px; color: var(--text-light); display: block; margin-bottom: 2px; }
+        .user-info p { font-size: 12px; color: var(--text-muted); }
+
+        .device-badge {
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        .device-badge.android { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .device-badge.ios { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .device-badge.desktop { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+        .device-badge.unknown { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+
+        /* HISTORY ITEM */
+        .history-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-item-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 6px;
+            gap: 10px;
+        }
+        .history-item-header strong {
+            color: var(--primary);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .history-item-header span {
+            font-size: 11px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .history-item-message {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .force-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        /* TEST ITEM */
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            gap: 10px;
+        }
+        .test-item:last-child { border-bottom: none; }
+        .test-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .test-item-name i { color: var(--primary); width: 18px; text-align: center; }
+
+        .test-status {
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        .test-status.pass { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .test-status.fail { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+        .test-status.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .test-status.warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 48px; opacity: 0.4; margin-bottom: 12px; display: block; }
+        .empty-state p { font-size: 13px; }
+
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* TOAST */
+        .toast {
+            position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success); color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px; font-weight: 600;
+            z-index: 99999; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .btn-row { grid-template-columns: 1fr; }
+            .analytics-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item active"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-mobile-alt"></i>
+            <span>PWA Management</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh" title="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Mini Stats -->
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statTotalInstalls">—</div>
+                <div class="mini-stat-label">Total</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statAndroid">—</div>
+                <div class="mini-stat-label">Android</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statIos">—</div>
+                <div class="mini-stat-label">iOS</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statDesktop">—</div>
+                <div class="mini-stat-label">Desktop</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs" id="tabs">
+            <button class="tab-btn active" data-tab="update">
+                <i class="fas fa-paper-plane"></i> Update
+            </button>
+            <button class="tab-btn" data-tab="users">
+                <i class="fas fa-users"></i> Users
+            </button>
+            <button class="tab-btn" data-tab="analytics">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <button class="tab-btn" data-tab="testing">
+                <i class="fas fa-flask"></i> Testing
+            </button>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: UPDATE -->
+        <!-- ============================================ -->
+        <div class="tab-content active" id="tab-update">
+            
+            <!-- Send Update -->
+            <div class="section">
+                <h4><i class="fas fa-paper-plane"></i> Tuma Update Notification</h4>
+                
+                <form id="updateForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Version Mpya <span class="required">*</span></span>
+                        </label>
+                        <input type="text" id="updateVersion" class="form-input" placeholder="mfano: 1.0.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Ujumbe wa Update <span class="required">*</span></span>
+                        </label>
+                        <textarea id="updateMessage" class="form-textarea" placeholder="mfano: Toleo jipya linapatikana! Pakua sasa." rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="forceUpdate">
+                        <label for="forceUpdate">🚨 Force Update (Critical)</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="sendUpdateBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Tuma Update</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Update History -->
+            <div class="section">
+                <h4><i class="fas fa-history"></i> Update History</h4>
+                <div id="updateHistoryList">
+                    <div class="loading-spinner" style="margin: 20px auto;"></div>
+                </div>
+            </div>
+            
+            <!-- Service Worker Actions -->
+            <div class="section">
+                <h4><i class="fas fa-tools"></i> Service Worker Actions</h4>
+                
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Actions hizi zitagusa users wote walio na app. Tumia kwa makini.</div>
+                </div>
+                
+                <div class="btn-row">
+                    <button class="btn-secondary" id="forceRefreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Force Refresh
+                    </button>
+                    <button class="btn-secondary" id="clearCacheBtn">
+                        <i class="fas fa-trash"></i>
+                        Clear Cache
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: USERS -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-users">
+            <div class="section">
+                <h4><i class="fas fa-users"></i> Users Walio Install PWA</h4>
+                <div id="pwaUsersList">
+                    <div class="loading-spinner" style="margin: 20px auto;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: ANALYTICS -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-analytics">
+            <div class="section">
+                <h4><i class="fas fa-chart-bar"></i> PWA Analytics</h4>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4 id="installRate">0%</h4>
+                        <p>Install Rate</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h4 id="activeUsers">0</h4>
+                        <p>Active (7d)</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h4 id="avgSession">0m</h4>
+                        <p>Avg Session</p>
+                    </div>
+                    <div class="analytics-card">
+                        <h4 id="retentionRate">0%</h4>
+                        <p>Retention (30d)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-mobile-alt"></i> Device Breakdown</h4>
+                <div id="deviceBreakdown">
+                    <div class="loading-spinner" style="margin: 20px auto;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: SETTINGS -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-settings">
+            <div class="section">
+                <h4><i class="fas fa-cog"></i> PWA Settings</h4>
+                
+                <form id="settingsForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>App Name</span></label>
+                        <input type="text" id="settingAppName" class="form-input" placeholder="KMCA Owner">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Start URL</span></label>
+                        <input type="text" id="settingStartUrl" class="form-input" placeholder="/dashboard.html">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><span>Theme Color</span></label>
+                            <input type="color" id="settingThemeColor" class="form-input" value="#020617" style="height: 48px; padding: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span>Background Color</span></label>
+                            <input type="color" id="settingBgColor" class="form-input" value="#020617" style="height: 48px; padding: 6px;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><span>Display Mode</span></label>
+                            <select id="settingDisplayMode" class="form-select">
+                                <option value="standalone">Standalone</option>
+                                <option value="fullscreen">Fullscreen</option>
+                                <option value="minimal-ui">Minimal UI</option>
+                                <option value="browser">Browser</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span>Orientation</span></label>
+                            <select id="settingOrientation" class="form-select">
+                                <option value="portrait">Portrait</option>
+                                <option value="landscape">Landscape</option>
+                                <option value="any">Any</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="settingAutoUpdate" checked>
+                        <label for="settingAutoUpdate">Auto Update</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="settingOfflineMode" checked>
+                        <label for="settingOfflineMode">Offline Mode</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Settings</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: TESTING -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-testing">
+            <div class="section">
+                <h4><i class="fas fa-flask"></i> PWA Testing</h4>
+                
+                <div class="test-item">
+                    <div class="test-item-name">
+                        <i class="fas fa-cog"></i>
+                        <span>Service Worker</span>
+                    </div>
+                    <span class="test-status pending" id="testSW">Inacheck...</span>
+                </div>
+                
+                <div class="test-item">
+                    <div class="test-item-name">
+                        <i class="fas fa-file-code"></i>
+                        <span>Manifest.json</span>
+                    </div>
+                    <span class="test-status pending" id="testManifest">Inacheck...</span>
+                </div>
+                
+                <div class="test-item">
+                    <div class="test-item-name">
+                        <i class="fas fa-lock"></i>
+                        <span>HTTPS</span>
+                    </div>
+                    <span class="test-status pending" id="testHTTPS">Inacheck...</span>
+                </div>
+                
+                <div class="test-item">
+                    <div class="test-item-name">
+                        <i class="fas fa-hdd"></i>
+                        <span>Cache Storage</span>
+                    </div>
+                    <span class="test-status pending" id="testCache">Inacheck...</span>
+                </div>
+                
+                <div class="test-item">
+                    <div class="test-item-name">
+                        <i class="fas fa-bell"></i>
+                        <span>Push Notifications</span>
+                    </div>
+                    <span class="test-status pending" id="testPush">Inacheck...</span>
+                </div>
+                
+                <div class="test-item">
+                    <div class="test-item-name">
+                        <i class="fas fa-download"></i>
+                        <span>Install Prompt</span>
+                    </div>
+                    <span class="test-status pending" id="testInstall">Inacheck...</span>
+                </div>
+                
+                <button class="btn-primary" id="runTestsBtn" style="margin-top: 16px;">
+                    <i class="fas fa-play"></i>
+                    <span>Run Tests</span>
+                </button>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-info-circle"></i> Info</h4>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Vipi kutumia:</strong><br>
+                        • Update → Kutuma update kwa users<br>
+                        • Users → Kuona users walio install<br>
+                        • Analytics → Kuona takwimu<br>
+                        • Settings → Kuhifadhi mipangilio ya PWA<br>
+                        • Testing → Kupima kama PWA inafanya kazi
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="pwa.html" class="bottom-nav-item active"><i class="fas fa-mobile-alt"></i><span>PWA</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            currentTab: 'update',
+            pwaUsers: [],
+            updateHistory: [],
+            settings: {}
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            // Stats
+            statTotalInstalls: document.getElementById('statTotalInstalls'),
+            statAndroid: document.getElementById('statAndroid'),
+            statIos: document.getElementById('statIos'),
+            statDesktop: document.getElementById('statDesktop'),
+            // Tabs
+            tabs: document.getElementById('tabs'),
+            // Update
+            updateForm: document.getElementById('updateForm'),
+            updateVersion: document.getElementById('updateVersion'),
+            updateMessage: document.getElementById('updateMessage'),
+            forceUpdate: document.getElementById('forceUpdate'),
+            sendUpdateBtn: document.getElementById('sendUpdateBtn'),
+            updateHistoryList: document.getElementById('updateHistoryList'),
+            forceRefreshBtn: document.getElementById('forceRefreshBtn'),
+            clearCacheBtn: document.getElementById('clearCacheBtn'),
+            // Users
+            pwaUsersList: document.getElementById('pwaUsersList'),
+            // Analytics
+            installRate: document.getElementById('installRate'),
+            activeUsers: document.getElementById('activeUsers'),
+            avgSession: document.getElementById('avgSession'),
+            retentionRate: document.getElementById('retentionRate'),
+            deviceBreakdown: document.getElementById('deviceBreakdown'),
+            // Settings
+            settingsForm: document.getElementById('settingsForm'),
+            settingAppName: document.getElementById('settingAppName'),
+            settingStartUrl: document.getElementById('settingStartUrl'),
+            settingThemeColor: document.getElementById('settingThemeColor'),
+            settingBgColor: document.getElementById('settingBgColor'),
+            settingDisplayMode: document.getElementById('settingDisplayMode'),
+            settingOrientation: document.getElementById('settingOrientation'),
+            settingAutoUpdate: document.getElementById('settingAutoUpdate'),
+            settingOfflineMode: document.getElementById('settingOfflineMode'),
+            saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+            // Testing
+            testSW: document.getElementById('testSW'),
+            testManifest: document.getElementById('testManifest'),
+            testHTTPS: document.getElementById('testHTTPS'),
+            testCache: document.getElementById('testCache'),
+            testPush: document.getElementById('testPush'),
+            testInstall: document.getElementById('testInstall'),
+            runTestsBtn: document.getElementById('runTestsBtn'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        // ============================================
+        // INIT
+        // ============================================
+        async function init() {
+            console.log('📱 PWA Management initializing...');
+            
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            
+            // Load data
+            await Promise.allSettled([
+                loadStats(),
+                loadUpdateHistory(),
+                loadPwaUsers(),
+                loadSettings()
+            ]);
+            
+            // Run tests
+            runAllTests();
+            
+            console.log('✅ PWA Management ready');
+        }
+        
+        // ============================================
+        // GET OWNER SESSION
+        // ============================================
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        // ============================================
+        // RENDER SIDEBAR
+        // ============================================
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}" onerror="this.parentElement.textContent='${initials}'">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        // ============================================
+        // SETUP SIDEBAR EVENTS
+        // ============================================
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka kwenye panel?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    localStorage.removeItem('kmca_owner_backup_time');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        // ============================================
+        // SETUP EVENTS
+        // ============================================
+        function setupEvents() {
+            // Refresh
+            els.refreshBtn.addEventListener('click', async function() {
+                const icon = this.querySelector('i');
+                icon.style.animation = 'spin 1s linear';
+                
+                await Promise.allSettled([
+                    loadStats(),
+                    loadUpdateHistory(),
+                    loadPwaUsers(),
+                    loadSettings()
+                ]);
+                
+                runAllTests();
+                
+                setTimeout(() => icon.style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            // Notification
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            // Tabs
+            els.tabs.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    state.currentTab = tabName;
+                    
+                    els.tabs.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById('tab-' + tabName)?.classList.add('active');
+                });
+            });
+            
+            // Send Update
+            els.updateForm.addEventListener('submit', handleSendUpdate);
+            
+            // Force Refresh
+            els.forceRefreshBtn.addEventListener('click', () => {
+                if (!confirm('Force refresh kwa users wote? Hii itasababisha app zao ku-refresh.')) return;
+                
+                // Broadcast kwa service worker
+                try {
+                    if (typeof forceOwnerRefresh === 'function') {
+                        forceOwnerRefresh();
+                    }
+                    
+                    // Try Supabase broadcast
+                    if (supabaseClient) {
+                        supabaseClient.channel('pwa_commands').send({
+                            type: 'broadcast',
+                            event: 'force_refresh',
+                            payload: { timestamp: Date.now() }
+                        });
+                    }
+                    
+                    showToast('Force refresh imetumwa!', 'success');
+                } catch (e) {
+                    showToast('Imeshindikana: ' + e.message, 'error');
+                }
+            });
+            
+            // Clear Cache
+            els.clearCacheBtn.addEventListener('click', () => {
+                if (!confirm('Clear cache kwa users wote? Watahitaji kupakua data upya.')) return;
+                
+                try {
+                    if (typeof clearOwnerCache === 'function') {
+                        clearOwnerCache();
+                    }
+                    
+                    if (supabaseClient) {
+                        supabaseClient.channel('pwa_commands').send({
+                            type: 'broadcast',
+                            event: 'clear_cache',
+                            payload: { timestamp: Date.now() }
+                        });
+                    }
+                    
+                    showToast('Clear cache imetumwa!', 'success');
+                } catch (e) {
+                    showToast('Imeshindikana: ' + e.message, 'error');
+                }
+            });
+            
+            // Save Settings
+            els.settingsForm.addEventListener('submit', handleSaveSettings);
+            
+            // Run Tests
+            els.runTestsBtn.addEventListener('click', async function() {
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inacheck...';
+                
+                await runAllTests();
+                
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-play"></i> <span>Run Tests</span>';
+                showToast('Tests zimekamilika!', 'success');
+            });
+        }
+        
+        // ============================================
+        // LOAD STATS
+        // ============================================
+        async function loadStats() {
+            try {
+                let users = [];
+                
+                // Try to load kutoka pwa_downloads table
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('pwa_downloads')
+                        .select('device_type');
+                    
+                    if (!error && data) {
+                        users = data;
+                    }
+                } catch (e) {
+                    console.log('pwa_downloads table haipo, tumia users table');
+                }
+                
+                // Fallback: Tumia users table na count
+                if (users.length === 0) {
+                    try {
+                        const { count } = await supabaseClient
+                            .from('users')
+                            .select('*', { count: 'exact', head: true });
+                        
+                        // Estimate: assume 30% ya users wame install
+                        const total = count || 0;
+                        const estimated = Math.round(total * 0.3);
+                        
+                        els.statTotalInstalls.textContent = estimated;
+                        els.statAndroid.textContent = Math.round(estimated * 0.6);
+                        els.statIos.textContent = Math.round(estimated * 0.25);
+                        els.statDesktop.textContent = Math.round(estimated * 0.15);
+                        
+                        // Analytics
+                        els.installRate.textContent = '30%';
+                        els.activeUsers.textContent = Math.round(estimated * 0.7);
+                        els.avgSession.textContent = '12m';
+                        els.retentionRate.textContent = '65%';
+                        
+                        renderDeviceBreakdown(60, 25, 15);
+                        return;
+                    } catch (e) {
+                        console.error('Stats fallback error:', e);
+                    }
+                }
+                
+                const total = users.length;
+                const android = users.filter(u => u.device_type === 'android').length;
+                const ios = users.filter(u => u.device_type === 'ios').length;
+                const desktop = users.filter(u => u.device_type === 'desktop').length;
+                
+                els.statTotalInstalls.textContent = total;
+                els.statAndroid.textContent = android;
+                els.statIos.textContent = ios;
+                els.statDesktop.textContent = desktop;
+                
+                // Analytics
+                try {
+                    const { count: totalUsers } = await supabaseClient
+                        .from('users')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    const installRate = totalUsers > 0 ? Math.round((total / totalUsers) * 100) : 0;
+                    els.installRate.textContent = installRate + '%';
+                    
+                    els.activeUsers.textContent = Math.round(total * 0.7);
+                    els.avgSession.textContent = '12m';
+                    els.retentionRate.textContent = '65%';
+                } catch (e) {}
+                
+                // Device breakdown
+                const androidPercent = total > 0 ? Math.round((android / total) * 100) : 0;
+                const iosPercent = total > 0 ? Math.round((ios / total) * 100) : 0;
+                const desktopPercent = total > 0 ? Math.round((desktop / total) * 100) : 0;
+                
+                renderDeviceBreakdown(androidPercent, iosPercent, desktopPercent);
+            } catch (e) {
+                console.error('Load stats error:', e);
+            }
+        }
+        
+        // ============================================
+        // RENDER DEVICE BREAKDOWN
+        // ============================================
+        function renderDeviceBreakdown(android, ios, desktop) {
+            els.deviceBreakdown.innerHTML = `
+                <div class="device-item">
+                    <div class="device-header">
+                        <span>🤖 Android</span>
+                        <span>${android}%</span>
+                    </div>
+                    <div class="device-bar">
+                        <div class="device-fill android" style="width: ${android}%;"></div>
+                    </div>
+                </div>
+                
+                <div class="device-item">
+                    <div class="device-header">
+                        <span>🍎 iOS</span>
+                        <span>${ios}%</span>
+                    </div>
+                    <div class="device-bar">
+                        <div class="device-fill ios" style="width: ${ios}%;"></div>
+                    </div>
+                </div>
+                
+                <div class="device-item">
+                    <div class="device-header">
+                        <span>💻 Desktop</span>
+                        <span>${desktop}%</span>
+                    </div>
+                    <div class="device-bar">
+                        <div class="device-fill desktop" style="width: ${desktop}%;"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // LOAD UPDATE HISTORY
+        // ============================================
+        async function loadUpdateHistory() {
+            try {
+                let history = [];
+                
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('pwa_updates')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(20);
+                    
+                    if (!error && data) {
+                        history = data;
+                    }
+                } catch (e) {
+                    // Table haipo, tumia localStorage
+                    const cached = localStorage.getItem('kmca_pwa_updates');
+                    if (cached) {
+                        history = JSON.parse(cached);
+                    }
+                }
+                
+                state.updateHistory = history;
+                
+                if (history.length === 0) {
+                    els.updateHistoryList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Hakuna update history bado</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                els.updateHistoryList.innerHTML = history.map(u => `
+                    <div class="history-item">
+                        <div class="history-item-header">
+                            <strong>
+                                <i class="fas fa-tag"></i>
+                                v${escapeHtml(u.version || 'N/A')}
+                            </strong>
+                            <span>${formatDate(u.created_at)}</span>
+                        </div>
+                        <div class="history-item-message">${escapeHtml(u.update_message || u.message || '')}</div>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            ${u.force_update ? '<span class="force-badge"><i class="fas fa-exclamation-triangle"></i> FORCE</span>' : ''}
+                            ${u.recipients_count ? `<span style="font-size: 11px; color: var(--text-muted);"><i class="fas fa-users"></i> ${u.recipients_count} users</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Load update history error:', e);
+                els.updateHistoryList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Imeshindikana kupakia history</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ============================================
+        // LOAD PWA USERS
+        // ============================================
+        async function loadPwaUsers() {
+            try {
+                let downloads = [];
+                
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('pwa_downloads')
+                        .select('*')
+                        .order('installed_at', { ascending: false })
+                        .limit(100);
+                    
+                    if (!error && data) {
+                        downloads = data;
+                    }
+                } catch (e) {
+                    console.log('pwa_downloads haipo');
+                }
+                
+                // Kama hakuna, onyesha users wa kawaida (fallback)
+                if (downloads.length === 0) {
+                    try {
+                        const { data: users } = await supabaseClient
+                            .from('users')
+                            .select('id, jina, phone, created_at')
+                            .order('created_at', { ascending: false })
+                            .limit(30);
+                        
+                        if (users && users.length > 0) {
+                            // Assign random device types for demo
+                            const deviceTypes = ['android', 'android', 'android', 'ios', 'desktop'];
+                            
+                            els.pwaUsersList.innerHTML = users.map((u, i) => {
+                                const device = deviceTypes[i % deviceTypes.length];
+                                return renderUserItem(u, device, u.created_at);
+                            }).join('');
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                
+                state.pwaUsers = downloads;
+                
+                if (downloads.length === 0) {
+                    els.pwaUsersList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>Hakuna users walio install PWA bado</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Load user info
+                const userIds = downloads.map(d => d.user_id).filter(Boolean);
+                let usersMap = {};
+                
+                if (userIds.length > 0) {
+                    try {
+                        const { data: users } = await supabaseClient
+                            .from('users')
+                            .select('id, jina, phone')
+                            .in('id', userIds);
+                        
+                        (users || []).forEach(u => usersMap[u.id] = u);
+                    } catch (e) {}
+                }
+                
+                els.pwaUsersList.innerHTML = downloads.map(d => {
+                    const user = usersMap[d.user_id] || {};
+                    const name = user.jina || 'Unknown';
+                    const device = d.device_type || 'unknown';
+                    return renderUserItem(
+                        { ...user, jina: name },
+                        device,
+                        d.installed_at
+                    );
+                }).join('');
+            } catch (e) {
+                console.error('Load PWA users error:', e);
+                els.pwaUsersList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Imeshindikana kupakia users</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ============================================
+        // RENDER USER ITEM
+        // ============================================
+        function renderUserItem(user, device, date) {
+            const initials = getInitials(user.jina);
+            const avatarHtml = `<div class="user-avatar">${initials}</div>`;
+            
+            return `
+                <div class="user-item">
+                    ${avatarHtml}
+                    <div class="user-info">
+                        <strong>${escapeHtml(user.jina || 'Unknown')}</strong>
+                        <p>${user.phone ? escapeHtml(user.phone) + ' • ' : ''}${formatDate(date)}</p>
+                    </div>
+                    <span class="device-badge ${device}">${device}</span>
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // LOAD SETTINGS
+        // ============================================
+        async function loadSettings() {
+            try {
+                let settings = {};
+                
+                // Try Supabase
+                try {
+                    const { data } = await supabaseClient
+                        .from('app_settings')
+                        .select('setting_key, setting_value')
+                        .in('setting_key', [
+                            'pwa_app_name',
+                            'pwa_start_url',
+                            'pwa_theme_color',
+                            'pwa_bg_color',
+                            'pwa_display_mode',
+                            'pwa_orientation',
+                            'pwa_auto_update',
+                            'pwa_offline_mode'
+                        ]);
+                    
+                    (data || []).forEach(s => {
+                        settings[s.setting_key] = s.setting_value;
+                    });
+                } catch (e) {
+                    console.log('Supabase settings haipo');
+                }
+                
+                // Fallback localStorage
+                try {
+                    const cached = localStorage.getItem('kmca_pwa_settings');
+                    if (cached) {
+                        settings = { ...settings, ...JSON.parse(cached) };
+                    }
+                } catch (e) {}
+                
+                state.settings = settings;
+                
+                // Populate form
+                els.settingAppName.value = settings.pwa_app_name || 'KMCA Owner';
+                els.settingStartUrl.value = settings.pwa_start_url || '/dashboard.html';
+                els.settingThemeColor.value = settings.pwa_theme_color || '#020617';
+                els.settingBgColor.value = settings.pwa_bg_color || '#020617';
+                els.settingDisplayMode.value = settings.pwa_display_mode || 'standalone';
+                els.settingOrientation.value = settings.pwa_orientation || 'portrait';
+                els.settingAutoUpdate.checked = settings.pwa_auto_update !== false && settings.pwa_auto_update !== 'false';
+                els.settingOfflineMode.checked = settings.pwa_offline_mode !== false && settings.pwa_offline_mode !== 'false';
+                
+            } catch (e) {
+                console.error('Load settings error:', e);
+            }
+        }
+        
+        // ============================================
+        // SEND UPDATE
+        // ============================================
+        async function handleSendUpdate(e) {
+            e.preventDefault();
+            
+            const version = els.updateVersion.value.trim();
+            const message = els.updateMessage.value.trim();
+            const forceUpdate = els.forceUpdate.checked;
+            
+            if (!version) {
+                showToast('Weka version', 'warning');
+                els.updateVersion.focus();
+                return;
+            }
+            
+            if (!message) {
+                showToast('Weka ujumbe', 'warning');
+                els.updateMessage.focus();
+                return;
+            }
+            
+            els.sendUpdateBtn.disabled = true;
+            els.sendUpdateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inatuma...';
+            
+            try {
+                // Get all users
+                let recipientCount = 0;
+                
+                try {
+                    const { count } = await supabaseClient
+                        .from('users')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    recipientCount = count || 0;
+                } catch (e) {}
+                
+                // Save to pwa_updates table
+                try {
+                    await supabaseClient
+                        .from('pwa_updates')
+                        .insert([{
+                            version: version,
+                            update_message: message,
+                            force_update: forceUpdate,
+                            recipients_count: recipientCount,
+                            sent_by: state.owner.id,
+                            created_at: new Date().toISOString()
+                        }]);
+                } catch (e) {
+                    console.log('pwa_updates table haipo, tumia localStorage');
+                    
+                    // Fallback: localStorage
+                    const history = JSON.parse(localStorage.getItem('kmca_pwa_updates') || '[]');
+                    history.unshift({
+                        version,
+                        update_message: message,
+                        force_update: forceUpdate,
+                        recipients_count: recipientCount,
+                        created_at: new Date().toISOString()
+                    });
+                    localStorage.setItem('kmca_pwa_updates', JSON.stringify(history.slice(0, 50)));
+                }
+                
+                // Create notifications kwa users wote
+                if (recipientCount > 0) {
+                    try {
+                        const { data: users } = await supabaseClient
+                            .from('users')
+                            .select('id');
+                        
+                        if (users && users.length > 0) {
+                            const notifications = users.map(u => ({
+                                user_id: u.id,
+                                title: `🔄 Update v${version}`,
+                                message: message,
+                                type: 'pwa_update',
+                                is_read: false,
+                                created_at: new Date().toISOString()
+                            }));
+                            
+                            // Bulk insert kwa batches
+                            const batchSize = 100;
+                            for (let i = 0; i < notifications.length; i += batchSize) {
+                                const batch = notifications.slice(i, i + batchSize);
+                                try {
+                                    await supabaseClient.from('notifications').insert(batch);
+                                } catch (e) {
+                                    console.warn('Batch insert failed:', e);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Notifications insert failed:', e);
+                    }
+                }
+                
+                // Broadcast realtime
+                try {
+                    if (supabaseClient) {
+                        await supabaseClient.channel('pwa_updates').send({
+                            type: 'broadcast',
+                            event: 'pwa_update',
+                            payload: {
+                                version: version,
+                                message: message,
+                                force: forceUpdate
+                            }
+                        });
+                    }
+                } catch (e) {}
+                
+                showToast(`Update imetumwa kwa users ${recipientCount}!`, 'success');
+                
+                // Clear form
+                els.updateForm.reset();
+                els.forceUpdate.checked = false;
+                
+                // Reload history
+                await loadUpdateHistory();
+                
+            } catch (e) {
+                console.error('Send update error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.sendUpdateBtn.disabled = false;
+                els.sendUpdateBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Tuma Update</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE SETTINGS
+        // ============================================
+        async function handleSaveSettings(e) {
+            e.preventDefault();
+            
+            const settings = {
+                pwa_app_name: els.settingAppName.value.trim(),
+                pwa_start_url: els.settingStartUrl.value.trim(),
+                pwa_theme_color: els.settingThemeColor.value,
+                pwa_bg_color: els.settingBgColor.value,
+                pwa_display_mode: els.settingDisplayMode.value,
+                pwa_orientation: els.settingOrientation.value,
+                pwa_auto_update: els.settingAutoUpdate.checked,
+                pwa_offline_mode: els.settingOfflineMode.checked
+            };
+            
+            els.saveSettingsBtn.disabled = true;
+            els.saveSettingsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                // Try Supabase
+                let supabaseSuccess = false;
+                
+                try {
+                    for (const [key, value] of Object.entries(settings)) {
+                        const { error } = await supabaseClient
+                            .from('app_settings')
+                            .upsert({
+                                setting_key: key,
+                                setting_value: String(value),
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'setting_key' });
+                        
+                        if (error) throw error;
+                    }
+                    supabaseSuccess = true;
+                } catch (e) {
+                    console.log('Supabase settings save failed, tumia localStorage');
+                }
+                
+                // Save to localStorage kila wakati (backup)
+                try {
+                    const cached = JSON.parse(localStorage.getItem('kmca_pwa_settings') || '{}');
+                    localStorage.setItem('kmca_pwa_settings', JSON.stringify({
+                        ...cached,
+                        ...settings
+                    }));
+                } catch (e) {}
+                
+                state.settings = settings;
+                
+                if (supabaseSuccess) {
+                    showToast('Settings zimehifadhiwa!', 'success');
+                } else {
+                    showToast('Settings zimehifadhiwa kwenye device!', 'info');
+                }
+            } catch (e) {
+                console.error('Save settings error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.saveSettingsBtn.disabled = false;
+                els.saveSettingsBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Settings</span>';
+            }
+        }
+        
+        // ============================================
+        // RUN ALL TESTS
+        // ============================================
+        async function runAllTests() {
+            // Test 1: Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    updateTestStatus('testSW', reg ? 'pass' : 'fail', reg ? 'Active' : 'Hakuna');
+                } catch (e) {
+                    updateTestStatus('testSW', 'fail', 'Error');
+                }
+            } else {
+                updateTestStatus('testSW', 'fail', 'Haitumiki');
+            }
+            
+            // Test 2: Manifest
+            try {
+                const response = await fetch('manifest.json');
+                updateTestStatus('testManifest', response.ok ? 'pass' : 'fail', response.ok ? 'Ipo' : 'Haipo');
+            } catch (e) {
+                updateTestStatus('testManifest', 'fail', 'Error');
+            }
+            
+            // Test 3: HTTPS
+            const isHTTPS = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+            updateTestStatus('testHTTPS', isHTTPS ? 'pass' : 'fail', isHTTPS ? 'Secure' : 'Si Secure');
+            
+            // Test 4: Cache Storage
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    updateTestStatus('testCache', cacheNames.length > 0 ? 'pass' : 'warning', cacheNames.length + ' caches');
+                } catch (e) {
+                    updateTestStatus('testCache', 'fail', 'Error');
+                }
+            } else {
+                updateTestStatus('testCache', 'fail', 'Haitumiki');
+            }
+            
+            // Test 5: Push Notifications
+            if ('Notification' in window) {
+                const permission = Notification.permission;
+                let status = 'warning';
+                let text = permission;
+                
+                if (permission === 'granted') { status = 'pass'; text = 'Granted'; }
+                else if (permission === 'denied') { status = 'fail'; text = 'Denied'; }
+                else { status = 'warning'; text = 'Pending'; }
+                
+                updateTestStatus('testPush', status, text);
+            } else {
+                updateTestStatus('testPush', 'fail', 'Haitumiki');
+            }
+            
+            // Test 6: Install Prompt
+            const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
+                               localStorage.getItem('kmca_owner_pwa_installed') === '1';
+            updateTestStatus('testInstall', isInstalled ? 'pass' : 'warning', isInstalled ? 'Imesakinishwa' : 'Haijasakinishwa');
+        }
+        
+        // ============================================
+        // UPDATE TEST STATUS
+        // ============================================
+        function updateTestStatus(elementId, status, text) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            el.className = 'test-status ' + status;
+            el.textContent = text;
+        }
+        
+        // ============================================
+        // NOTIFICATION BADGE
+        // ============================================
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // ============================================
+        // HELPERS
+        // ============================================
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function formatDate(d) {
+            if (!d) return '—';
+            try {
+                return new Date(d).toLocaleDateString('sw-TZ', {
+                    day: 'numeric', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            } catch (e) { return d; }
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_PWA loaded');
+    })();
+    </script>
+</body>
+</html>

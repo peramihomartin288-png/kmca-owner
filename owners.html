@@ -1,0 +1,2753 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Owners — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow-x: hidden; width: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed; top: 14px; left: 14px;
+            width: 44px; height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .menu-toggle:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .menu-toggle:active { transform: scale(0.92); }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed; top: 0; left: -320px;
+            width: var(--sidebar-width); max-width: 85vw;
+            height: 100vh; height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000; display: flex; flex-direction: column;
+            overflow: hidden; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .owner-sidebar.open { left: 0; box-shadow: 8px 0 40px rgba(0,0,0,0.5); }
+
+        .sidebar-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--bg-dark);
+            overflow: hidden; flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sidebar-info { flex: 1; min-width: 0; }
+        .sidebar-info h3 { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .sidebar-close {
+            width: 34px; height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; transition: var(--transition); flex-shrink: 0;
+        }
+        .sidebar-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 8px; -webkit-overflow-scrolling: touch; }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .nav-category { margin-bottom: 4px; }
+        .nav-category-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; margin-bottom: 4px;
+            border-radius: var(--radius-sm); cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary); font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .nav-category-header:hover { background: var(--primary-soft); }
+        .nav-category-arrow { margin-left: auto; font-size: 10px; transition: transform 0.3s; }
+        .nav-category.collapsed .nav-category-arrow { transform: rotate(-90deg); }
+        .nav-category.collapsed .nav-category-items { max-height: 0; opacity: 0; overflow: hidden; }
+
+        .nav-category-items { max-height: 800px; transition: max-height 0.35s ease-out, opacity 0.3s; overflow: hidden; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: var(--radius-md);
+            cursor: pointer; transition: var(--transition);
+            color: var(--text-muted); font-size: 14px; font-weight: 600;
+            margin-bottom: 2px; text-decoration: none; position: relative;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-light); transform: translateX(4px); }
+        .nav-item i { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-item.active { background: var(--primary-soft); color: var(--primary-light); }
+        .nav-item.active::before {
+            content: ''; position: absolute;
+            left: 0; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 70%; background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer { padding: 12px 8px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .nav-item.logout { color: var(--error); }
+        .nav-item.logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .sidebar-version { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 12px; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 999;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* HEADER */
+        .page-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px 0 70px; z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .page-header-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .page-header-title i { color: var(--primary); }
+
+        .page-header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            width: 42px; height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition);
+            position: relative;
+        }
+        .header-btn:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); }
+        .header-btn .badge {
+            position: absolute; top: -4px; right: -4px;
+            background: var(--error); color: white;
+            font-size: 10px; font-weight: 800;
+            min-width: 18px; height: 18px; padding: 0 4px;
+            border-radius: 9px; display: none;
+            align-items: center; justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+        .header-btn .badge.show { display: flex; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 950; backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .bottom-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 18px; cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted); font-size: 11px; font-weight: 600;
+            position: relative; border-radius: var(--radius-md);
+            min-width: 64px; text-decoration: none;
+        }
+        .bottom-nav-item:hover { color: var(--text-light); background: var(--bg-hover); }
+        .bottom-nav-item i { font-size: 20px; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .bottom-nav-item.active::before {
+            content: ''; position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 32px; height: 3px; background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main { max-width: 1000px; margin: 0 auto; padding: 20px 16px; }
+
+        /* MINI STATS */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; margin-bottom: 16px;
+        }
+        .mini-stat {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 12px 8px;
+            text-align: center; transition: var(--transition);
+            cursor: pointer;
+        }
+        .mini-stat:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .mini-stat.active { border-color: var(--primary); background: var(--primary-soft); }
+        .mini-stat-value { font-size: 18px; font-weight: 900; color: var(--primary); line-height: 1.2; }
+        .mini-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 2px; }
+
+        /* TOOLBAR */
+        .toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+        .search-box { flex: 1; min-width: 200px; position: relative; }
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px 12px 42px;
+            color: var(--text-light); font-size: 14px;
+            outline: none; font-family: inherit;
+            transition: var(--transition);
+        }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+        .search-box i {
+            position: absolute; left: 16px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted); font-size: 14px;
+        }
+
+        .toolbar-btn {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px; font-weight: 700;
+            display: flex; align-items: center; gap: 6px;
+            font-family: inherit; white-space: nowrap;
+        }
+        .toolbar-btn:hover { background: var(--bg-input); border-color: var(--primary); transform: translateY(-2px); }
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark); border-color: var(--primary);
+        }
+        .toolbar-btn.primary:hover { box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .toolbar-btn.active { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+
+        /* FILTERS */
+        .filters-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px; margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+        .filters-panel.show { display: block; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-group { margin-bottom: 16px; }
+        .filter-group:last-child { margin-bottom: 0; }
+        .filter-group-label {
+            font-size: 11px; font-weight: 800;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 8px; display: block;
+        }
+
+        .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-light);
+            font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: var(--transition);
+            font-family: inherit;
+        }
+        .filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-chip.active { background: var(--primary); border-color: var(--primary); color: var(--bg-dark); }
+
+        /* BULK BAR */
+        .bulk-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--primary-soft);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+        .bulk-bar.show { display: flex; }
+        .bulk-info {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .bulk-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .bulk-btn {
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .bulk-btn:hover { background: var(--bg-input); }
+        .bulk-btn.danger { background: var(--error); border-color: var(--error); color: white; }
+        .bulk-btn.danger:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
+
+        /* OWNERS LIST */
+        .owners-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .owner-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeSlideIn 0.4s ease-out backwards;
+            position: relative;
+        }
+        .owner-item:hover { border-color: var(--primary); box-shadow: var(--shadow); transform: translateY(-2px); }
+        .owner-item.selected { background: var(--primary-soft); border-color: var(--primary); }
+        .owner-item.super-admin { border-left: 3px solid var(--primary); }
+        .owner-item.inactive { opacity: 0.5; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .owner-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+        }
+
+        .owner-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        .owner-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 2px solid var(--bg-input);
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .owner-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .owner-crown {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--primary);
+            color: var(--bg-dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border: 2px solid var(--bg-card);
+        }
+
+        .owner-info { flex: 1; min-width: 0; }
+
+        .owner-name {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .owner-badges {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+
+        .owner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .owner-badge.super { background: rgba(212, 175, 55, 0.15); color: var(--primary); }
+        .owner-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .owner-badge.inactive { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+
+        .owner-phone {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .owner-sessions-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 6px;
+        }
+
+        .session-tag-mini {
+            padding: 2px 6px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .session-tag-mini.more { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+        .owner-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding: 4px;
+            gap: 2px;
+        }
+
+        .owner-action-btn {
+            flex: 1;
+            padding: 9px 4px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .owner-action-btn:hover { background: var(--bg-input); color: var(--text-light); }
+        .owner-action-btn i { font-size: 13px; }
+        .owner-action-btn.danger:hover { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        .owner-action-btn.primary:hover { background: var(--primary-soft); color: var(--primary); }
+        .owner-action-btn.warning:hover { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+        /* AUDIT LOG */
+        .audit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .audit-item:last-child { border-bottom: none; }
+
+        .audit-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .audit-icon.add { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .audit-icon.edit { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+        .audit-icon.delete { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+        .audit-icon.reset_pin { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .audit-icon.login { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+        .audit-content { flex: 1; min-width: 0; }
+        .audit-content strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 3px;
+        }
+        .audit-content p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+            line-height: 1.4;
+        }
+        .audit-content span {
+            font-size: 10px;
+            color: var(--text-muted);
+            opacity: 0.8;
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 56px; opacity: 0.5; margin-bottom: 16px; display: block; }
+        .empty-state h3 { font-size: 18px; font-weight: 800; color: var(--text-light); margin-bottom: 8px; }
+        .empty-state p { font-size: 13px; margin-bottom: 12px; }
+
+        .loading-state { text-align: center; padding: 60px 20px; }
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex; justify-content: center; gap: 6px;
+            margin-top: 20px; flex-wrap: wrap;
+        }
+        .pagination-btn {
+            min-width: 40px; height: 40px; padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .pagination-btn:hover:not(:disabled) { background: var(--bg-input); border-color: var(--primary); color: var(--primary); }
+        .pagination-btn.active { background: var(--primary); border-color: var(--primary); color: var(--bg-dark); }
+        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* MODAL */
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px; backdrop-filter: blur(8px);
+            opacity: 0; transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; opacity: 1; }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%; max-width: 540px;
+            max-height: 92vh;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+        .modal-content.large { max-width: 640px; }
+        .modal.active .modal-content { transform: scale(1) translateY(0); }
+
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .modal-header h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .modal-header h3 i { color: var(--primary); }
+
+        .modal-close {
+            width: 36px; height: 36px;
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 50%; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition);
+        }
+        .modal-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .modal-body { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
+        .modal-footer {
+            display: flex; gap: 8px;
+            padding: 16px 20px; border-top: 1px solid var(--border); flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1; padding: 13px;
+            border-radius: var(--radius-md);
+            border: none; font-size: 14px; font-weight: 800;
+            cursor: pointer; transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .modal-btn.cancel { background: var(--bg-input); color: var(--text-light); border: 1px solid var(--border); }
+        .modal-btn.cancel:hover { background: var(--border); }
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+        }
+        .modal-btn.primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .modal-btn.primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .modal-btn.danger {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+        }
+        .modal-btn.danger:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4); }
+
+        /* FORM */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .form-label .required { color: var(--error); margin-left: 3px; }
+        .form-label .optional {
+            color: var(--text-muted); font-weight: 600;
+            font-size: 10px; text-transform: none;
+            letter-spacing: 0;
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px; outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+        .form-input[readonly] { opacity: 0.7; cursor: not-allowed; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        /* PIN input */
+        .pin-input {
+            letter-spacing: 12px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        /* SESSIONS GRID */
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            max-height: 320px;
+            overflow-y: auto;
+            background: var(--bg-input);
+            padding: 10px;
+            border-radius: var(--radius-md);
+            margin-top: 8px;
+        }
+
+        .session-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-light);
+            font-size: 12px;
+        }
+        .session-checkbox:hover { background: var(--bg-hover); }
+        .session-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .sessions-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .sessions-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        .sessions-actions button:hover {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* INFO BOX */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px; line-height: 1.6;
+            margin-top: 12px;
+            display: flex; align-items: flex-start; gap: 8px;
+        }
+        .info-box i { color: var(--info); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid var(--warning);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px; line-height: 1.6;
+            margin-top: 12px;
+            display: flex; align-items: flex-start; gap: 8px;
+            color: #fcd34d;
+        }
+        .warning-box i { color: var(--warning); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        .danger-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid var(--error);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px; line-height: 1.6;
+            margin-top: 12px;
+            display: flex; align-items: flex-start; gap: 8px;
+            color: #fca5a5;
+        }
+        .danger-box i { color: var(--error); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        /* View Details */
+        .view-detail {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .view-detail:last-child { border-bottom: none; }
+        .view-detail-label {
+            font-size: 11px; font-weight: 800;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .view-detail-label i { color: var(--primary); }
+        .view-detail-value {
+            font-size: 14px; color: var(--text-light);
+            line-height: 1.7; word-wrap: break-word;
+        }
+
+        /* Stats grid in details */
+        .detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .detail-stat {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 12px 8px;
+            text-align: center;
+        }
+        .detail-stat-value {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+        .detail-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success); color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px; font-weight: 600;
+            z-index: 99999; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .owner-action-btn { font-size: 10px; padding: 8px 2px; }
+            .sessions-grid { grid-template-columns: 1fr; }
+            .bulk-bar { flex-direction: column; align-items: stretch; }
+            .bulk-actions { justify-content: center; }
+            .detail-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item active"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-user-shield"></i>
+            <span>Owners</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="exportBtn" aria-label="Export" title="Export JSON">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Access Denied Notice (for non-super admin) -->
+        <div id="accessDeniedNotice" style="display: none;"></div>
+        
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="mini-stat" data-filter-role="all">
+                <div class="mini-stat-value" id="statTotal">—</div>
+                <div class="mini-stat-label">Wote</div>
+            </div>
+            <div class="mini-stat" data-filter-role="super">
+                <div class="mini-stat-value" id="statSuperAdmins">—</div>
+                <div class="mini-stat-label">Super</div>
+            </div>
+            <div class="mini-stat" data-filter-role="active">
+                <div class="mini-stat-value" id="statActive">—</div>
+                <div class="mini-stat-label">Active</div>
+            </div>
+            <div class="mini-stat" data-filter-role="inactive">
+                <div class="mini-stat-value" id="statInactive">—</div>
+                <div class="mini-stat-label">Inactive</div>
+            </div>
+        </div>
+        
+        <!-- Bulk Bar -->
+        <div class="bulk-bar" id="bulkBar">
+            <div class="bulk-info">
+                <i class="fas fa-check-circle"></i>
+                <span id="bulkCount">0</span> owners wamechaguliwa
+            </div>
+            <div class="bulk-actions">
+                <button class="bulk-btn" id="bulkExportBtn">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <button class="bulk-btn" id="bulkClearBtn">
+                    <i class="fas fa-times"></i> Safisha
+                </button>
+            </div>
+        </div>
+        
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tafuta owners...">
+            </div>
+            <button class="toolbar-btn" id="filterToggle">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            <button class="toolbar-btn primary" id="addOwnerBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add Owner</span>
+            </button>
+        </div>
+        
+        <!-- Filters Panel -->
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-group">
+                <span class="filter-group-label">Role</span>
+                <div class="filter-chips" data-filter="role">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="super">👑 Super Admin</button>
+                    <button class="filter-chip" data-value="regular">Regular Owner</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Sessions</span>
+                <div class="filter-chips" data-filter="session">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="manage_posts">📝 Posts</button>
+                    <button class="filter-chip" data-value="manage_events">📅 Matukio</button>
+                    <button class="filter-chip" data-value="manage_users">👥 Users</button>
+                    <button class="filter-chip" data-value="manage_announcements">📢 Matangazo</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Panga kwa</span>
+                <div class="filter-chips" data-filter="sort">
+                    <button class="filter-chip active" data-value="newest">🕐 Mpya Kwanza</button>
+                    <button class="filter-chip" data-value="oldest">🕰️ Zamani Kwanza</button>
+                    <button class="filter-chip" data-value="alphabetical">🔤 A-Z</button>
+                    <button class="filter-chip" data-value="role">👑 Role</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Owners List -->
+        <div class="owners-list" id="ownersList">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Inapakia owners...</p>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" id="pagination"></div>
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="users.html" class="bottom-nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+        <a href="owners.html" class="bottom-nav-item active"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+    </nav>
+    
+    <!-- ADD/EDIT OWNER MODAL -->
+    <div class="modal" id="ownerModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-shield"></i> <span id="modalTitle">Add Owner Mpya</span></h3>
+                <button class="modal-close" id="ownerModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="ownerForm" onsubmit="return false;">
+                    <input type="hidden" id="editOwnerId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Jina <span class="required">*</span></span>
+                        </label>
+                        <input type="text" id="ownerJina" class="form-input" placeholder="mfano: Yohana Mwakyusa" maxlength="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Namba ya Simu <span class="required">*</span></span>
+                        </label>
+                        <input type="tel" id="ownerPhone" class="form-input" placeholder="0712345678" inputmode="numeric" maxlength="10">
+                    </div>
+                    
+                    <div class="form-group" id="pinGroup">
+                        <label class="form-label">
+                            <span>PIN (Tarakimu 4) <span class="required">*</span></span>
+                        </label>
+                        <input type="password" id="ownerPin" class="form-input pin-input" placeholder="••••" maxlength="4" inputmode="numeric">
+                        <div class="info-box" style="margin-top: 8px;">
+                            <i class="fas fa-info-circle"></i>
+                            <div>PIN lazima iwe tarakimu 4. Usitumie 0000, 1234, 1111, n.k.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Sessions (Uwezo) <span class="optional">Optional</span></span>
+                        </label>
+                        <div class="sessions-actions">
+                            <button type="button" id="selectAllSessionsBtn">Chagua Zote</button>
+                            <button type="button" id="deselectAllSessionsBtn">Ondoa Zote</button>
+                        </div>
+                        <div class="sessions-grid" id="sessionsGrid">
+                            <!-- Injected via JS -->
+                        </div>
+                        <div class="info-box" style="margin-top: 8px;">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                Super Admin anapata uwezo wote automatically. Kwa regular owner, chagua sessions unazotaka.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="isSuperAdmin">
+                            <label for="isSuperAdmin">👑 Super Admin (Uwezo Wote)</label>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="isActive" checked>
+                            <label for="isActive">🟢 Active (Anaweza kuingia)</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelOwnerBtn">Ghairi</button>
+                <button class="modal-btn primary" id="saveOwnerBtn">
+                    <i class="fas fa-save"></i>
+                    <span>Hifadhi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- VIEW OWNER MODAL -->
+    <div class="modal" id="viewOwnerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-shield"></i> Owner Details</h3>
+                <button class="modal-close" id="viewOwnerClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="viewOwnerBody"></div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="viewOwnerCloseBtn">
+                    <i class="fas fa-times"></i> Funga
+                </button>
+                <button class="modal-btn primary" id="viewOwnerEditBtn">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- RESET PIN MODAL -->
+    <div class="modal" id="resetPinModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Reset PIN</h3>
+                <button class="modal-close" id="resetPinClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="resetPinForm" onsubmit="return false;">
+                    <input type="hidden" id="resetOwnerId">
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Owner</span></label>
+                        <input type="text" id="resetOwnerName" class="form-input" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>PIN Mpya <span class="required">*</span></span>
+                        </label>
+                        <input type="password" id="newPinValue" class="form-input pin-input" placeholder="••••" maxlength="4" inputmode="numeric">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Thibitisha PIN <span class="required">*</span></span>
+                        </label>
+                        <input type="password" id="confirmPinValue" class="form-input pin-input" placeholder="••••" maxlength="4" inputmode="numeric">
+                    </div>
+                    
+                    <div class="warning-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>Owner atahitaji kutumia PIN mpya kuingia. Hakikisha umemwambia.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelResetPinBtn">Ghairi</button>
+                <button class="modal-btn primary" id="confirmResetPinBtn">
+                    <i class="fas fa-key"></i>
+                    <span>Badilisha PIN</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CONFIRM MODAL -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Thibitisha</h3>
+                <button class="modal-close" id="confirmClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage" style="font-size: 14px; line-height: 1.7; color: var(--text-light); white-space: pre-line;"></p>
+                <div class="danger-box" id="confirmDangerBox" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Hii haiwezi kurudishwa!</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="confirmCancel">Ghairi</button>
+                <button class="modal-btn danger" id="confirmOk">
+                    <i class="fas fa-check"></i>
+                    Thibitisha
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        // Sessions list
+        const SESSIONS_LIST = [
+            { key: 'manage_posts', label: 'Posts', icon: '📝' },
+            { key: 'manage_events', label: 'Matukio', icon: '📅' },
+            { key: 'manage_polls', label: 'Polls', icon: '🗳️' },
+            { key: 'manage_bible_verses', label: 'Bible', icon: '📖' },
+            { key: 'manage_watakatifu', label: 'Watakatifu', icon: '✝️' },
+            { key: 'manage_nyimbo', label: 'Nyimbo', icon: '🎵' },
+            { key: 'manage_masomo', label: 'Masomo', icon: '📚' },
+            { key: 'manage_users', label: 'Users', icon: '👥' },
+            { key: 'manage_announcements', label: 'Matangazo', icon: '📢' },
+            { key: 'manage_media', label: 'Media', icon: '📷' },
+            { key: 'manage_backup', label: 'Backup', icon: '💾' },
+            { key: 'manage_urls', label: 'URLs', icon: '🔗' },
+            { key: 'manage_pwa', label: 'PWA', icon: '📱' },
+            { key: 'manage_settings', label: 'Settings', icon: '⚙️' }
+        ];
+        
+        const state = {
+            owner: null,
+            owners: [],
+            filteredOwners: [],
+            ownersSessions: {}, // ownerId -> [sessions]
+            currentPage: 1,
+            perPage: 15,
+            filters: {
+                role: 'all',
+                session: 'all',
+                sort: 'newest',
+                search: '',
+                status: 'all'
+            },
+            selectedIds: new Set(),
+            editingId: null,
+            viewingOwner: null,
+            selectedSessions: new Set(),
+            confirmCallback: null
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            exportBtn: document.getElementById('exportBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            accessDeniedNotice: document.getElementById('accessDeniedNotice'),
+            // Stats
+            statTotal: document.getElementById('statTotal'),
+            statSuperAdmins: document.getElementById('statSuperAdmins'),
+            statActive: document.getElementById('statActive'),
+            statInactive: document.getElementById('statInactive'),
+            // Bulk
+            bulkBar: document.getElementById('bulkBar'),
+            bulkCount: document.getElementById('bulkCount'),
+            bulkExportBtn: document.getElementById('bulkExportBtn'),
+            bulkClearBtn: document.getElementById('bulkClearBtn'),
+            // Toolbar
+            searchInput: document.getElementById('searchInput'),
+            filterToggle: document.getElementById('filterToggle'),
+            addOwnerBtn: document.getElementById('addOwnerBtn'),
+            filtersPanel: document.getElementById('filtersPanel'),
+            ownersList: document.getElementById('ownersList'),
+            pagination: document.getElementById('pagination'),
+            // Add/Edit Modal
+            ownerModal: document.getElementById('ownerModal'),
+            ownerModalClose: document.getElementById('ownerModalClose'),
+            modalTitle: document.getElementById('modalTitle'),
+            editOwnerId: document.getElementById('editOwnerId'),
+            ownerJina: document.getElementById('ownerJina'),
+            ownerPhone: document.getElementById('ownerPhone'),
+            pinGroup: document.getElementById('pinGroup'),
+            ownerPin: document.getElementById('ownerPin'),
+            sessionsGrid: document.getElementById('sessionsGrid'),
+            selectAllSessionsBtn: document.getElementById('selectAllSessionsBtn'),
+            deselectAllSessionsBtn: document.getElementById('deselectAllSessionsBtn'),
+            isSuperAdmin: document.getElementById('isSuperAdmin'),
+            isActive: document.getElementById('isActive'),
+            cancelOwnerBtn: document.getElementById('cancelOwnerBtn'),
+            saveOwnerBtn: document.getElementById('saveOwnerBtn'),
+            // View Modal
+            viewOwnerModal: document.getElementById('viewOwnerModal'),
+            viewOwnerClose: document.getElementById('viewOwnerClose'),
+            viewOwnerCloseBtn: document.getElementById('viewOwnerCloseBtn'),
+            viewOwnerEditBtn: document.getElementById('viewOwnerEditBtn'),
+            viewOwnerBody: document.getElementById('viewOwnerBody'),
+            // Reset PIN Modal
+            resetPinModal: document.getElementById('resetPinModal'),
+            resetPinClose: document.getElementById('resetPinClose'),
+            resetOwnerId: document.getElementById('resetOwnerId'),
+            resetOwnerName: document.getElementById('resetOwnerName'),
+            newPinValue: document.getElementById('newPinValue'),
+            confirmPinValue: document.getElementById('confirmPinValue'),
+            cancelResetPinBtn: document.getElementById('cancelResetPinBtn'),
+            confirmResetPinBtn: document.getElementById('confirmResetPinBtn'),
+            // Confirm Modal
+            confirmModal: document.getElementById('confirmModal'),
+            confirmMessage: document.getElementById('confirmMessage'),
+            confirmDangerBox: document.getElementById('confirmDangerBox'),
+            confirmClose: document.getElementById('confirmClose'),
+            confirmCancel: document.getElementById('confirmCancel'),
+            confirmOk: document.getElementById('confirmOk'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        // ============================================
+        // INIT
+        // ============================================
+        async function init() {
+            console.log('🛡️ Owners Management initializing...');
+            
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Check kama ni super admin
+            if (!state.owner.is_super_admin) {
+                showAccessDenied();
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            
+            await loadOwners();
+            
+            console.log('✅ Owners Management ready');
+        }
+        
+        // ============================================
+        // SHOW ACCESS DENIED
+        // ============================================
+        function showAccessDenied() {
+            // Hide main content
+            document.querySelector('.page-main').innerHTML = `
+                <div class="empty-state" style="margin-top: 60px;">
+                    <i class="fas fa-lock" style="color: var(--error);"></i>
+                    <h3>Huruhusiwi</h3>
+                    <p>Ni Super Admin tu anayeweza kusimamia owners.</p>
+                    <a href="dashboard.html" class="toolbar-btn primary" style="display: inline-flex; margin-top: 16px; text-decoration: none;">
+                        <i class="fas fa-home"></i>
+                        Rudi Dashboard
+                    </a>
+                </div>
+            `;
+            
+            // Hide header actions
+            els.addOwnerBtn.style.display = 'none';
+            els.exportBtn.style.display = 'none';
+            
+            // Still setup sidebar & menu
+            renderSidebar();
+            setupSidebarEvents();
+            
+            console.log('❌ Access denied — not super admin');
+        }
+        
+        // ============================================
+        // GET OWNER SESSION
+        // ============================================
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        // ============================================
+        // RENDER SIDEBAR
+        // ============================================
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}" onerror="this.parentElement.textContent='${initials}'">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        // ============================================
+        // SETUP SIDEBAR EVENTS
+        // ============================================
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka kwenye panel?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    localStorage.removeItem('kmca_owner_backup_time');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    close();
+                    closeModal(els.ownerModal);
+                    closeModal(els.viewOwnerModal);
+                    closeModal(els.resetPinModal);
+                    closeModal(els.confirmModal);
+                }
+            });
+        }
+        
+        // ============================================
+        // LOAD OWNERS
+        // ============================================
+        async function loadOwners() {
+            console.log('📥 Loading owners...');
+            els.ownersList.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Inapakia owners...</p>
+                </div>
+            `;
+            
+            try {
+                // Load owners
+                const { data: owners, error } = await supabaseClient
+                    .from('owners')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                state.owners = owners || [];
+                
+                // Load sessions zote kwa owners
+                await loadAllSessions();
+                
+                updateStats();
+                applyFilters();
+                
+                console.log(`✅ Loaded ${state.owners.length} owners`);
+            } catch (e) {
+                console.error('Load owners error:', e);
+                els.ownersList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--error);"></i>
+                        <h3>Imeshindikana kupakia</h3>
+                        <p>${escapeHtml(e.message)}</p>
+                        <p style="font-size: 11px; margin-top: 8px; opacity: 0.6;">Table: owners</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ============================================
+        // LOAD ALL SESSIONS
+        // ============================================
+        async function loadAllSessions() {
+            state.ownersSessions = {};
+            
+            try {
+                const { data: sessions, error } = await supabaseClient
+                    .from('owner_sessions')
+                    .select('owner_id, session_type');
+                
+                if (error) {
+                    // Kama table haipo, rudi bila sessions
+                    console.log('owner_sessions table haipo au error:', error.message);
+                    return;
+                }
+                
+                (sessions || []).forEach(s => {
+                    if (!state.ownersSessions[s.owner_id]) {
+                        state.ownersSessions[s.owner_id] = [];
+                    }
+                    state.ownersSessions[s.owner_id].push(s.session_type);
+                });
+            } catch (e) {
+                console.log('Load sessions error:', e.message);
+            }
+        }
+        
+        // ============================================
+        // UPDATE STATS
+        // ============================================
+        function updateStats() {
+            const total = state.owners.length;
+            const superAdmins = state.owners.filter(o => o.is_super_admin).length;
+            const active = state.owners.filter(o => o.is_active !== false).length;
+            const inactive = total - active;
+            
+            els.statTotal.textContent = total;
+            els.statSuperAdmins.textContent = superAdmins;
+            els.statActive.textContent = active;
+            els.statInactive.textContent = inactive;
+        }
+        
+        // ============================================
+        // APPLY FILTERS
+        // ============================================
+        function applyFilters() {
+            let r = [...state.owners];
+            
+            // Status filter (kutoka stat cards)
+            if (state.filters.status === 'super') {
+                r = r.filter(o => o.is_super_admin);
+            } else if (state.filters.status === 'active') {
+                r = r.filter(o => o.is_active !== false);
+            } else if (state.filters.status === 'inactive') {
+                r = r.filter(o => o.is_active === false);
+            }
+            
+            // Role filter
+            if (state.filters.role === 'super') {
+                r = r.filter(o => o.is_super_admin);
+            } else if (state.filters.role === 'regular') {
+                r = r.filter(o => !o.is_super_admin);
+            }
+            
+            // Session filter
+            if (state.filters.session !== 'all') {
+                r = r.filter(o => {
+                    const sessions = state.ownersSessions[o.id] || [];
+                    return sessions.includes(state.filters.session);
+                });
+            }
+            
+            // Search
+            if (state.filters.search) {
+                const t = state.filters.search.toLowerCase();
+                r = r.filter(o => 
+                    (o.jina || '').toLowerCase().includes(t) ||
+                    (o.phone || '').includes(t)
+                );
+            }
+            
+            // Sort
+            if (state.filters.sort === 'newest') {
+                r.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+            } else if (state.filters.sort === 'oldest') {
+                r.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+            } else if (state.filters.sort === 'alphabetical') {
+                r.sort((a, b) => (a.jina || '').localeCompare(b.jina || ''));
+            } else if (state.filters.sort === 'role') {
+                r.sort((a, b) => (b.is_super_admin ? 1 : 0) - (a.is_super_admin ? 1 : 0));
+            }
+            
+            // Super admins kwanza
+            r.sort((a, b) => (b.is_super_admin ? 1 : 0) - (a.is_super_admin ? 1 : 0));
+            
+            state.filteredOwners = r;
+            renderOwners();
+        }
+        
+        // ============================================
+        // RENDER OWNERS
+        // ============================================
+        function renderOwners() {
+            const list = els.ownersList;
+            
+            if (state.filteredOwners.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-shield"></i>
+                        <h3>Hakuna owners</h3>
+                        <p>${state.owners.length === 0 ? 'Anza ku-add owner mpya' : 'Filter hizi hazina matokeo'}</p>
+                    </div>
+                `;
+                els.pagination.innerHTML = '';
+                return;
+            }
+            
+            const total = state.filteredOwners.length;
+            const totalPages = Math.ceil(total / state.perPage);
+            if (state.currentPage > totalPages) state.currentPage = 1;
+            
+            const start = (state.currentPage - 1) * state.perPage;
+            const items = state.filteredOwners.slice(start, start + state.perPage);
+            
+            list.innerHTML = items.map((o, i) => renderOwnerItem(o, i)).join('');
+            items.forEach(o => setupOwnerItemEvents(o));
+            renderPagination(totalPages);
+            updateBulkBar();
+        }
+        
+        // ============================================
+        // RENDER OWNER ITEM
+        // ============================================
+        function renderOwnerItem(owner, idx) {
+            const initials = getInitials(owner.jina);
+            const sessions = state.ownersSessions[owner.id] || [];
+            const isSelected = state.selectedIds.has(owner.id);
+            const isActive = owner.is_active !== false;
+            
+            // Avatar
+            const avatarHtml = `<div class="owner-avatar">${initials}${owner.is_super_admin ? '<div class="owner-crown"><i class="fas fa-crown"></i></div>' : ''}</div>`;
+            
+            // Badges
+            let badges = '';
+            if (owner.is_super_admin) {
+                badges += '<span class="owner-badge super">👑 Super Admin</span>';
+            }
+            if (isActive) {
+                badges += '<span class="owner-badge active">🟢 Active</span>';
+            } else {
+                badges += '<span class="owner-badge inactive">⚫ Inactive</span>';
+            }
+            
+            // Sessions preview
+            let sessionsHtml = '';
+            if (owner.is_super_admin) {
+                sessionsHtml = '<span class="session-tag-mini more">👑 Full Access</span>';
+            } else if (sessions.length > 0) {
+                const shown = sessions.slice(0, 4);
+                sessionsHtml = shown.map(s => {
+                    const sessionInfo = SESSIONS_LIST.find(sl => sl.key === s);
+                    return sessionInfo ? `<span class="session-tag-mini">${sessionInfo.icon} ${sessionInfo.label}</span>` : '';
+                }).join('');
+                
+                if (sessions.length > 4) {
+                    sessionsHtml += `<span class="session-tag-mini more">+${sessions.length - 4}</span>`;
+                }
+            } else {
+                sessionsHtml = '<span class="session-tag-mini">No Sessions</span>';
+            }
+            
+            // Joined date
+            const joinedDate = owner.created_at
+                ? new Date(owner.created_at).toLocaleDateString('sw-TZ', { day: 'numeric', month: 'short', year: 'numeric' })
+                : '—';
+            
+            return `
+                <div class="owner-item ${owner.is_super_admin ? 'super-admin' : ''} ${!isActive ? 'inactive' : ''} ${isSelected ? 'selected' : ''}" data-owner-id="${owner.id}" style="animation-delay: ${Math.min(idx * 0.03, 0.5)}s">
+                    <div class="owner-header">
+                        <input type="checkbox" class="owner-checkbox" ${isSelected ? 'checked' : ''} data-owner-id="${owner.id}">
+                        
+                        ${avatarHtml}
+                        
+                        <div class="owner-info">
+                            <div class="owner-name">
+                                ${escapeHtml(owner.jina || 'Bila Jina')}
+                            </div>
+                            
+                            <div class="owner-badges">
+                                ${badges}
+                            </div>
+                            
+                            ${owner.phone ? `
+                                <div class="owner-phone">
+                                    <i class="fas fa-phone"></i>
+                                    ${escapeHtml(owner.phone)}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="owner-phone">
+                                <i class="fas fa-calendar"></i>
+                                Alijiunga: ${joinedDate}
+                            </div>
+                            
+                            <div class="owner-sessions-preview">
+                                ${sessionsHtml}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="owner-actions">
+                        <button class="owner-action-btn primary" data-action="view" title="Angalia">
+                            <i class="fas fa-eye"></i>
+                            <span>Ona</span>
+                        </button>
+                        <button class="owner-action-btn" data-action="edit" title="Hariri">
+                            <i class="fas fa-edit"></i>
+                            <span>Hariri</span>
+                        </button>
+                        <button class="owner-action-btn warning" data-action="reset-pin" title="Reset PIN">
+                            <i class="fas fa-key"></i>
+                            <span>PIN</span>
+                        </button>
+                        <button class="owner-action-btn" data-action="copy-phone" title="Copy Phone">
+                            <i class="fas fa-phone"></i>
+                            <span>Copy</span>
+                        </button>
+                        ${!owner.is_super_admin || owner.id !== state.owner.id ? `
+                            <button class="owner-action-btn danger" data-action="delete" title="Futa">
+                                <i class="fas fa-trash"></i>
+                                <span>Futa</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // SETUP OWNER ITEM EVENTS
+        // ============================================
+        function setupOwnerItemEvents(owner) {
+            const item = document.querySelector(`.owner-item[data-owner-id="${owner.id}"]`);
+            if (!item) return;
+            
+            // Checkbox
+            const cb = item.querySelector('.owner-checkbox');
+            cb.addEventListener('change', () => {
+                if (cb.checked) {
+                    state.selectedIds.add(owner.id);
+                    item.classList.add('selected');
+                } else {
+                    state.selectedIds.delete(owner.id);
+                    item.classList.remove('selected');
+                }
+                updateBulkBar();
+            });
+            
+            // Action buttons
+            item.querySelectorAll('.owner-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    
+                    if (action === 'view') viewOwner(owner);
+                    else if (action === 'edit') editOwner(owner);
+                    else if (action === 'reset-pin') openResetPinModal(owner);
+                    else if (action === 'copy-phone') copyPhone(owner);
+                    else if (action === 'delete') confirmDeleteOwner(owner);
+                });
+            });
+        }
+        
+        // ============================================
+        // VIEW OWNER
+        // ============================================
+        async function viewOwner(owner) {
+            state.viewingOwner = owner;
+            
+            const initials = getInitials(owner.jina);
+            const sessions = state.ownersSessions[owner.id] || [];
+            const isActive = owner.is_active !== false;
+            
+            // Load stats
+            let stats = { actions: 0, logins: 0 };
+            
+            try {
+                const { count } = await supabaseClient
+                    .from('owner_audit_log')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('performed_by', owner.id);
+                
+                stats.actions = count || 0;
+            } catch (e) {}
+            
+            // Sessions list
+            let sessionsText = '';
+            if (owner.is_super_admin) {
+                sessionsText = '👑 Full Access (Super Admin)';
+            } else if (sessions.length > 0) {
+                sessionsText = sessions.map(s => {
+                    const sessionInfo = SESSIONS_LIST.find(sl => sl.key === s);
+                    return sessionInfo ? `${sessionInfo.icon} ${sessionInfo.label}` : s;
+                }).join('<br>');
+            } else {
+                sessionsText = '<span style="color: var(--text-muted);">Hakuna sessions</span>';
+            }
+            
+            const joinedDate = owner.created_at
+                ? new Date(owner.created_at).toLocaleDateString('sw-TZ', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                })
+                : '—';
+            
+            els.viewOwnerBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div class="owner-avatar" style="width: 100px; height: 100px; margin: 0 auto 12px; font-size: 36px;">
+                        ${initials}
+                        ${owner.is_super_admin ? '<div class="owner-crown" style="width: 30px; height: 30px; font-size: 14px;"><i class="fas fa-crown"></i></div>' : ''}
+                    </div>
+                    <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">${escapeHtml(owner.jina)}</h2>
+                    <div class="owner-badges" style="justify-content: center;">
+                        ${owner.is_super_admin ? '<span class="owner-badge super">👑 Super Admin</span>' : ''}
+                        ${isActive ? '<span class="owner-badge active">🟢 Active</span>' : '<span class="owner-badge inactive">⚫ Inactive</span>'}
+                    </div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label"><i class="fas fa-phone"></i> Namba ya Simu</div>
+                    <div class="view-detail-value">${owner.phone ? escapeHtml(owner.phone) : '<span style="color: var(--text-muted);">Haipo</span>'}</div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label"><i class="fas fa-key"></i> PIN</div>
+                    <div class="view-detail-value">
+                        ${state.owner.is_super_admin ? `
+                            <span style="font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: 3px;">${escapeHtml(owner.pin || '••••')}</span>
+                            <button class="owner-action-btn" style="display: inline-flex; margin-left: 8px;" onclick="copyText('${owner.pin || ''}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        ` : '•••• (Siri)'}
+                    </div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label"><i class="fas fa-cog"></i> Sessions</div>
+                    <div class="view-detail-value">${sessionsText}</div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label"><i class="fas fa-calendar"></i> Alijiunga</div>
+                    <div class="view-detail-value">${joinedDate}</div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label"><i class="fas fa-chart-bar"></i> Activity</div>
+                    <div class="detail-stats">
+                        <div class="detail-stat">
+                            <div class="detail-stat-value">${stats.actions}</div>
+                            <div class="detail-stat-label">Actions</div>
+                        </div>
+                        <div class="detail-stat">
+                            <div class="detail-stat-value">${sessions.length}</div>
+                            <div class="detail-stat-label">Sessions</div>
+                        </div>
+                        <div class="detail-stat">
+                            <div class="detail-stat-value">${isActive ? '🟢' : '⚫'}</div>
+                            <div class="detail-stat-label">Status</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        Owner anaweza kubadilisha PIN yake mwenyewe kwenye Settings. We kama Super Admin unaweza kubadilisha PIN yake hapa.
+                    </div>
+                </div>
+            `;
+            
+            openModal(els.viewOwnerModal);
+        }
+        
+        // ============================================
+        // EDIT OWNER
+        // ============================================
+        function editOwner(owner) {
+            state.editingId = owner.id;
+            state.selectedSessions = new Set(state.ownersSessions[owner.id] || []);
+            
+            els.modalTitle.textContent = 'Edit Owner';
+            els.editOwnerId.value = owner.id;
+            els.ownerJina.value = owner.jina || '';
+            els.ownerPhone.value = owner.phone || '';
+            els.ownerPin.value = '';
+            els.pinGroup.style.display = 'none'; // Hide PIN kwa edit
+            els.isSuperAdmin.checked = owner.is_super_admin || false;
+            els.isActive.checked = owner.is_active !== false;
+            
+            renderSessionsGrid();
+            updateSessionsUI();
+            
+            openModal(els.ownerModal);
+        }
+        
+        // ============================================
+        // OPEN ADD MODAL
+        // ============================================
+        function openAddModal() {
+            state.editingId = null;
+            state.selectedSessions = new Set();
+            
+            els.modalTitle.textContent = 'Add Owner Mpya';
+            els.editOwnerId.value = '';
+            els.ownerJina.value = '';
+            els.ownerPhone.value = '';
+            els.ownerPin.value = '';
+            els.pinGroup.style.display = 'block'; // Show PIN kwa add
+            els.isSuperAdmin.checked = false;
+            els.isActive.checked = true;
+            
+            renderSessionsGrid();
+            updateSessionsUI();
+            
+            openModal(els.ownerModal);
+        }
+        
+        // ============================================
+        // RENDER SESSIONS GRID
+        // ============================================
+        function renderSessionsGrid() {
+            els.sessionsGrid.innerHTML = SESSIONS_LIST.map(session => {
+                const checked = state.selectedSessions.has(session.key);
+                return `
+                    <label class="session-checkbox">
+                        <input type="checkbox" value="${session.key}" ${checked ? 'checked' : ''}>
+                        <span>${session.icon} ${session.label}</span>
+                    </label>
+                `;
+            }).join('');
+            
+            els.sessionsGrid.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (this.checked) {
+                        state.selectedSessions.add(this.value);
+                    } else {
+                        state.selectedSessions.delete(this.value);
+                    }
+                });
+            });
+        }
+        
+        // ============================================
+        // UPDATE SESSIONS UI (disable if super admin)
+        // ============================================
+        function updateSessionsUI() {
+            const isSuper = els.isSuperAdmin.checked;
+            els.sessionsGrid.style.opacity = isSuper ? '0.5' : '1';
+            els.sessionsGrid.style.pointerEvents = isSuper ? 'none' : 'auto';
+        }
+        
+        // ============================================
+        // SAVE OWNER
+        // ============================================
+        async function saveOwner() {
+            const jina = els.ownerJina.value.trim();
+            const phone = els.ownerPhone.value.trim();
+            const pin = els.ownerPin.value.trim();
+            const isSuperAdmin = els.isSuperAdmin.checked;
+            const isActive = els.isActive.checked;
+            
+            // Validation
+            if (!jina) {
+                showToast('Weka jina', 'warning');
+                els.ownerJina.focus();
+                return;
+            }
+            
+            if (!phone) {
+                showToast('Weka namba ya simu', 'warning');
+                els.ownerPhone.focus();
+                return;
+            }
+            
+            if (!/^0[67]\d{8}$/.test(phone)) {
+                showToast('Namba si sahihi. Format: 07XXXXXXXX', 'error');
+                els.ownerPhone.focus();
+                return;
+            }
+            
+            // Kama ni add mpya, PIN ni lazima
+            if (!state.editingId) {
+                if (!pin) {
+                    showToast('Weka PIN', 'warning');
+                    els.ownerPin.focus();
+                    return;
+                }
+                
+                if (!/^\d{4}$/.test(pin)) {
+                    showToast('PIN lazima iwe tarakimu 4', 'error');
+                    els.ownerPin.focus();
+                    return;
+                }
+                
+                // Validate PIN strength
+                if (['0000', '1234', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999'].includes(pin)) {
+                    showToast('PIN ni dhaifu. Tumia PIN nyingine.', 'error');
+                    els.ownerPin.focus();
+                    return;
+                }
+            }
+            
+            els.saveOwnerBtn.disabled = true;
+            els.saveOwnerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                let ownerId = state.editingId;
+                
+                if (state.editingId) {
+                    // Update
+                    const updateData = {
+                        jina,
+                        phone,
+                        is_super_admin: isSuperAdmin,
+                        is_active: isActive
+                    };
+                    
+                    const { error } = await supabaseClient
+                        .from('owners')
+                        .update(updateData)
+                        .eq('id', state.editingId);
+                    
+                    if (error) throw error;
+                    
+                    // Delete old sessions
+                    try {
+                        await supabaseClient
+                            .from('owner_sessions')
+                            .delete()
+                            .eq('owner_id', state.editingId);
+                    } catch (e) {}
+                    
+                    // Insert new sessions (kama si super admin)
+                    if (!isSuperAdmin && state.selectedSessions.size > 0) {
+                        try {
+                            const sessionsArray = Array.from(state.selectedSessions).map(s => ({
+                                owner_id: state.editingId,
+                                session_type: s
+                            }));
+                            
+                            await supabaseClient.from('owner_sessions').insert(sessionsArray);
+                        } catch (e) {
+                            console.warn('Session insert error:', e);
+                        }
+                    }
+                    
+                    await logAuditAction('edit', jina, `Owner ${jina} amehaririwa`);
+                    showToast('Owner amehaririwa!', 'success');
+                } else {
+                    // Insert new
+                    const insertData = {
+                        jina,
+                        phone,
+                        pin,
+                        is_super_admin: isSuperAdmin,
+                        is_active: isActive,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    const { data: newOwner, error } = await supabaseClient
+                        .from('owners')
+                        .insert([insertData])
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    ownerId = newOwner[0].id;
+                    
+                    // Insert sessions (kama si super admin)
+                    if (!isSuperAdmin && state.selectedSessions.size > 0) {
+                        try {
+                            const sessionsArray = Array.from(state.selectedSessions).map(s => ({
+                                owner_id: ownerId,
+                                session_type: s
+                            }));
+                            
+                            await supabaseClient.from('owner_sessions').insert(sessionsArray);
+                        } catch (e) {
+                            console.warn('Session insert error:', e);
+                        }
+                    }
+                    
+                    await logAuditAction('add', jina, `Owner ${jina} ameongezwa`);
+                    showToast('Owner ameongezwa!', 'success');
+                }
+                
+                closeModal(els.ownerModal);
+                await loadOwners();
+                
+            } catch (e) {
+                console.error('Save owner error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.saveOwnerBtn.disabled = false;
+                els.saveOwnerBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi</span>';
+            }
+        }
+        
+        // ============================================
+        // OPEN RESET PIN MODAL
+        // ============================================
+        function openResetPinModal(owner) {
+            els.resetOwnerId.value = owner.id;
+            els.resetOwnerName.value = owner.jina;
+            els.newPinValue.value = '';
+            els.confirmPinValue.value = '';
+            
+            openModal(els.resetPinModal);
+        }
+        
+        // ============================================
+        // CONFIRM RESET PIN
+        // ============================================
+        async function confirmResetPin() {
+            const ownerId = els.resetOwnerId.value;
+            const ownerName = els.resetOwnerName.value;
+            const newPin = els.newPinValue.value.trim();
+            const confirmPin = els.confirmPinValue.value.trim();
+            
+            if (!/^\d{4}$/.test(newPin)) {
+                showToast('PIN lazima iwe tarakimu 4', 'error');
+                els.newPinValue.focus();
+                return;
+            }
+            
+            if (newPin !== confirmPin) {
+                showToast('PIN hazifanani', 'error');
+                els.confirmPinValue.focus();
+                return;
+            }
+            
+            if (['0000', '1234', '1111', '2222'].includes(newPin)) {
+                showToast('PIN ni dhaifu', 'error');
+                return;
+            }
+            
+            els.confirmResetPinBtn.disabled = true;
+            els.confirmResetPinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inabadilisha...';
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('owners')
+                    .update({ pin: newPin })
+                    .eq('id', ownerId);
+                
+                if (error) throw error;
+                
+                await logAuditAction('reset_pin', ownerName, `PIN ya ${ownerName} imebadilishwa`);
+                
+                showToast('PIN imebadilishwa!', 'success');
+                closeModal(els.resetPinModal);
+            } catch (e) {
+                console.error('Reset PIN error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.confirmResetPinBtn.disabled = false;
+                els.confirmResetPinBtn.innerHTML = '<i class="fas fa-key"></i> <span>Badilisha PIN</span>';
+            }
+        }
+        
+        // ============================================
+        // CONFIRM DELETE OWNER
+        // ============================================
+        function confirmDeleteOwner(owner) {
+            showConfirm(
+                `Futa owner huyu?\n\n"${owner.jina}"\n\nHii itafuta:\n• Owner profile\n• Sessions zake zote\n• Chats zake\n\nHILI HALIWEZI KURUDISHWA!`,
+                true,
+                async () => {
+                    await deleteOwner(owner);
+                }
+            );
+        }
+        
+        // ============================================
+        // DELETE OWNER
+        // ============================================
+        async function deleteOwner(owner) {
+            try {
+                // Delete sessions
+                try {
+                    await supabaseClient
+                        .from('owner_sessions')
+                        .delete()
+                        .eq('owner_id', owner.id);
+                } catch (e) {}
+                
+                // Delete chats
+                try {
+                    await supabaseClient
+                        .from('owner_chats')
+                        .delete()
+                        .eq('owner_id', owner.id);
+                } catch (e) {}
+                
+                // Delete owner
+                const { error } = await supabaseClient
+                    .from('owners')
+                    .delete()
+                    .eq('id', owner.id);
+                
+                if (error) throw error;
+                
+                await logAuditAction('delete', owner.jina, `Owner ${owner.jina} amefutwa`);
+                
+                showToast('Owner amefutwa!', 'success');
+                state.selectedIds.delete(owner.id);
+                await loadOwners();
+            } catch (e) {
+                console.error('Delete owner error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        // ============================================
+        // COPY PHONE
+        // ============================================
+        async function copyPhone(owner) {
+            if (!owner.phone) {
+                showToast('Hakuna namba ya simu', 'warning');
+                return;
+            }
+            
+            try {
+                await navigator.clipboard.writeText(owner.phone);
+                showToast('Namba imecopywa: ' + owner.phone, 'success');
+            } catch (e) {
+                showToast('Imeshindikana kucopy', 'error');
+            }
+        }
+        
+        // ============================================
+        // COPY TEXT (global helper)
+        // ============================================
+        window.copyText = async function(text) {
+            if (!text) return;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Imecopywa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana kucopy', 'error');
+            }
+        };
+        
+        // ============================================
+        // LOG AUDIT ACTION
+        // ============================================
+        async function logAuditAction(action, targetName, details) {
+            try {
+                await supabaseClient
+                    .from('owner_audit_log')
+                    .insert([{
+                        action: action,
+                        target_name: targetName,
+                        details: details,
+                        performed_by: state.owner.id,
+                        performed_by_name: state.owner.jina || 'Owner',
+                        created_at: new Date().toISOString()
+                    }]);
+            } catch (e) {
+                // Table haipo, ignore
+                console.log('Audit log error (ignored):', e.message);
+            }
+        }
+        
+        // ============================================
+        // BULK ACTIONS
+        // ============================================
+        function updateBulkBar() {
+            const count = state.selectedIds.size;
+            
+            if (count > 0) {
+                els.bulkBar.classList.add('show');
+                els.bulkCount.textContent = count;
+            } else {
+                els.bulkBar.classList.remove('show');
+            }
+        }
+        
+        function bulkExport() {
+            if (state.selectedIds.size === 0) return;
+            
+            const selected = state.filteredOwners.filter(o => state.selectedIds.has(o.id));
+            exportOwnersJSON(selected, `owners-selected-${selected.length}`);
+        }
+        
+        function exportAll() {
+            if (state.filteredOwners.length === 0) {
+                showToast('Hakuna owners', 'warning');
+                return;
+            }
+            
+            exportOwnersJSON(state.filteredOwners, 'owners-all');
+        }
+        
+        function exportOwnersJSON(owners, filename) {
+            const data = {
+                exported_at: new Date().toISOString(),
+                total: owners.length,
+                owners: owners.map(o => ({
+                    id: o.id,
+                    jina: o.jina,
+                    phone: o.phone,
+                    is_super_admin: o.is_super_admin,
+                    is_active: o.is_active,
+                    sessions: state.ownersSessions[o.id] || [],
+                    created_at: o.created_at
+                }))
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${filename}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast(`Owners ${owners.length} wame-export!`, 'success');
+        }
+        
+        // ============================================
+        // MODALS HELPERS
+        // ============================================
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function showConfirm(message, isDanger, callback) {
+            els.confirmMessage.textContent = message;
+            els.confirmDangerBox.style.display = isDanger ? 'flex' : 'none';
+            els.confirmModal.classList.add('active');
+            state.confirmCallback = callback;
+        }
+        
+        function hideConfirm() {
+            els.confirmModal.classList.remove('active');
+            state.confirmCallback = null;
+        }
+        
+        // ============================================
+        // SETUP EVENTS
+        // ============================================
+        function setupEvents() {
+            // Refresh
+            els.refreshBtn.addEventListener('click', async function() {
+                const icon = this.querySelector('i');
+                icon.style.animation = 'spin 1s linear';
+                await loadOwners();
+                setTimeout(() => icon.style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            // Export
+            els.exportBtn.addEventListener('click', exportAll);
+            
+            // Notification
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            // Add Owner
+            els.addOwnerBtn.addEventListener('click', openAddModal);
+            
+            // Search
+            let searchTimer;
+            els.searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.filters.search = this.value.trim();
+                    state.currentPage = 1;
+                    applyFilters();
+                }, 300);
+            });
+            
+            // Filter toggle
+            els.filterToggle.addEventListener('click', function() {
+                els.filtersPanel.classList.toggle('show');
+                this.classList.toggle('active', els.filtersPanel.classList.contains('show'));
+            });
+            
+            // Filter chips
+            document.querySelectorAll('.filter-chips').forEach(g => {
+                const k = g.getAttribute('data-filter');
+                g.querySelectorAll('.filter-chip').forEach(c => {
+                    c.addEventListener('click', function() {
+                        g.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        state.filters[k] = this.getAttribute('data-value');
+                        state.currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            });
+            
+            // Stat cards
+            document.querySelectorAll('.mini-stat').forEach(card => {
+                card.addEventListener('click', function() {
+                    const role = this.getAttribute('data-filter-role');
+                    
+                    document.querySelectorAll('.mini-stat').forEach(c => c.classList.remove('active'));
+                    
+                    if (state.filters.status === role && role !== 'all') {
+                        state.filters.status = 'all';
+                    } else {
+                        state.filters.status = role;
+                        if (role !== 'all') this.classList.add('active');
+                    }
+                    
+                    applyFilters();
+                });
+            });
+            
+            // Bulk
+            els.bulkExportBtn.addEventListener('click', bulkExport);
+            els.bulkClearBtn.addEventListener('click', () => {
+                state.selectedIds.clear();
+                renderOwners();
+            });
+            
+            // Owner Modal
+            els.ownerModalClose.addEventListener('click', () => closeModal(els.ownerModal));
+            els.cancelOwnerBtn.addEventListener('click', () => closeModal(els.ownerModal));
+            els.saveOwnerBtn.addEventListener('click', saveOwner);
+            
+            els.ownerModal.addEventListener('click', (e) => {
+                if (e.target === els.ownerModal) closeModal(els.ownerModal);
+            });
+            
+            // Super admin checkbox → disable sessions
+            els.isSuperAdmin.addEventListener('change', updateSessionsUI);
+            
+            // Sessions actions
+            els.selectAllSessionsBtn.addEventListener('click', () => {
+                SESSIONS_LIST.forEach(s => state.selectedSessions.add(s.key));
+                renderSessionsGrid();
+            });
+            
+            els.deselectAllSessionsBtn.addEventListener('click', () => {
+                state.selectedSessions.clear();
+                renderSessionsGrid();
+            });
+            
+            // Phone input - numbers only
+            els.ownerPhone.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 10);
+            });
+            
+            // PIN input - numbers only
+            els.ownerPin.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 4);
+            });
+            
+            els.newPinValue.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 4);
+            });
+            
+            els.confirmPinValue.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 4);
+            });
+            
+            // View Modal
+            els.viewOwnerClose.addEventListener('click', () => closeModal(els.viewOwnerModal));
+            els.viewOwnerCloseBtn.addEventListener('click', () => closeModal(els.viewOwnerModal));
+            
+            els.viewOwnerEditBtn.addEventListener('click', () => {
+                if (state.viewingOwner) {
+                    closeModal(els.viewOwnerModal);
+                    setTimeout(() => editOwner(state.viewingOwner), 200);
+                }
+            });
+            
+            els.viewOwnerModal.addEventListener('click', (e) => {
+                if (e.target === els.viewOwnerModal) closeModal(els.viewOwnerModal);
+            });
+            
+            // Reset PIN Modal
+            els.resetPinClose.addEventListener('click', () => closeModal(els.resetPinModal));
+            els.cancelResetPinBtn.addEventListener('click', () => closeModal(els.resetPinModal));
+            els.confirmResetPinBtn.addEventListener('click', confirmResetPin);
+            
+            els.resetPinModal.addEventListener('click', (e) => {
+                if (e.target === els.resetPinModal) closeModal(els.resetPinModal);
+            });
+            
+            // Confirm Modal
+            els.confirmCancel.addEventListener('click', hideConfirm);
+            els.confirmClose.addEventListener('click', hideConfirm);
+            
+            els.confirmOk.addEventListener('click', async () => {
+                const cb = state.confirmCallback;
+                hideConfirm();
+                if (cb) await cb();
+            });
+            
+            els.confirmModal.addEventListener('click', (e) => {
+                if (e.target === els.confirmModal) hideConfirm();
+            });
+        }
+        
+        // ============================================
+        // PAGINATION
+        // ============================================
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
+            
+            let h = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                    h += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                    h += `<button class="pagination-btn" disabled>...</button>`;
+                }
+            }
+            
+            h += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            els.pagination.innerHTML = h;
+            
+            els.pagination.querySelectorAll('.pagination-btn[data-page]').forEach(b => {
+                b.addEventListener('click', function() {
+                    const p = parseInt(this.getAttribute('data-page'));
+                    if (p >= 1 && p <= totalPages) {
+                        state.currentPage = p;
+                        renderOwners();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+        
+        // ============================================
+        // NOTIFICATION BADGE
+        // ============================================
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // ============================================
+        // HELPERS
+        // ============================================
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3500);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_OWNERS loaded');
+    })();
+    </script>
+</body>
+</html>

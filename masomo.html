@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Masomo ya Dominica — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --cyan: #06b6d4;
+            --purple: #a855f7;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: var(--sidebar-width);
+            max-width: 85vw;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .owner-sidebar.open {
+            left: 0;
+            box-shadow: 8px 0 40px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-close {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .sidebar-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-category {
+            margin-bottom: 4px;
+        }
+
+        .nav-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-category-header:hover {
+            background: var(--primary-soft);
+        }
+
+        .nav-category-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .nav-category.collapsed .nav-category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .nav-category.collapsed .nav-category-items {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .nav-category-items {
+            max-height: 800px;
+            transition: max-height 0.35s ease-out, opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-light);
+            transform: translateX(4px);
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary-light);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer {
+            padding: 12px 8px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .nav-item.logout {
+            color: var(--error);
+        }
+
+        .nav-item.logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 12px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* HEADER */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 70px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .page-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header-title i {
+            color: var(--primary);
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+
+        .header-btn .badge.show {
+            display: flex;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 950;
+            backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            position: relative;
+            border-radius: var(--radius-md);
+            min-width: 64px;
+            text-decoration: none;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--text-light);
+            background: var(--bg-hover);
+        }
+
+        .bottom-nav-item i {
+            font-size: 20px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .mini-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 8px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .mini-stat:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .mini-stat-value {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .mini-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px 12px 42px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .toolbar-btn {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .toolbar-btn.primary:hover {
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Filters */
+        .filters-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .filters-panel.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Masomo List */
+        .masomo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .somo-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeSlideIn 0.4s ease-out backwards;
+            position: relative;
+        }
+
+        .somo-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .somo-item.today {
+            border-left: 4px solid var(--warning);
+        }
+
+        .somo-item.upcoming {
+            border-left: 4px solid var(--success);
+        }
+
+        .somo-item.past {
+            opacity: 0.75;
+            border-left: 4px solid var(--border-strong);
+        }
+
+        .somo-header {
+            padding: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .somo-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 900;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(6, 182, 212, 0.3);
+            letter-spacing: -1px;
+        }
+
+        .somo-icon.text-icon {
+            font-size: 22px;
+            font-weight: 400;
+        }
+
+        .somo-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .somo-header-info h3 {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .somo-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .somo-date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--cyan);
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .somo-countdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .somo-countdown.today {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .somo-countdown.soon {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .somo-countdown.past {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-muted);
+        }
+
+        .somo-sections-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Sections Preview */
+        .somo-sections-preview {
+            padding: 0 14px 14px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .section-preview-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .section-preview-chip i {
+            color: var(--primary);
+            font-size: 12px;
+        }
+
+        .section-preview-chip.has-content {
+            color: var(--text-light);
+        }
+
+        /* Actions */
+        .somo-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .somo-action-btn {
+            flex: 1;
+            padding: 10px 6px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .somo-action-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-light);
+        }
+
+        .somo-action-btn i {
+            font-size: 14px;
+        }
+
+        .somo-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .somo-action-btn.primary:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: var(--border-strong);
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .empty-state button {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 540px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+
+        .modal-content.wide {
+            max-width: 640px;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 i {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--border);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+        }
+
+        .modal-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .modal-btn.primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--error);
+            margin-left: 3px;
+        }
+
+        .form-label .optional {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Section blocks (color-coded) */
+        .section-block {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+            animation: fadeSlideIn 0.3s ease-out;
+        }
+
+        .section-block.somo1 {
+            border-left-color: var(--cyan);
+        }
+
+        .section-block.wimbo {
+            border-left-color: var(--purple);
+        }
+
+        .section-block.somo2 {
+            border-left-color: var(--cyan);
+        }
+
+        .section-block.shangilio {
+            border-left-color: var(--info);
+        }
+
+        .section-block.injili {
+            border-left-color: var(--primary);
+        }
+
+        .section-block-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .section-block-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .section-block.somo1 .section-block-icon {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--cyan);
+        }
+
+        .section-block.wimbo .section-block-icon {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--purple);
+        }
+
+        .section-block.somo2 .section-block-icon {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--cyan);
+        }
+
+        .section-block.shangilio .section-block-icon {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+        }
+
+        .section-block.injili .section-block-icon {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .section-block-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-block.somo1 .section-block-title { color: var(--cyan); }
+        .section-block.wimbo .section-block-title { color: var(--purple); }
+        .section-block.somo2 .section-block-title { color: var(--cyan); }
+        .section-block.shangilio .section-block-title { color: var(--info); }
+        .section-block.injili .section-block-title { color: var(--primary); }
+
+        .section-block .form-textarea {
+            background: var(--bg-dark);
+            min-height: 80px;
+            font-size: 13px;
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-box i {
+            color: var(--info);
+            font-size: 14px;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        /* View Details */
+        .view-section {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .view-section:last-child {
+            border-bottom: none;
+        }
+
+        .view-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .view-section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .view-section-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .view-section-content {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .somo-action-btn { font-size: 11px; padding: 8px 4px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .somo-icon { width: 48px; height: 48px; font-size: 18px; }
+            .somo-sections-preview { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item active"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-book-open"></i>
+            <span>Masomo ya Dominica</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Mini Stats -->
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statTotal">—</div>
+                <div class="mini-stat-label">Jumla</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statToday">—</div>
+                <div class="mini-stat-label">Leo</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statWeek">—</div>
+                <div class="mini-stat-label">Wiki Hii</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statMonth">—</div>
+                <div class="mini-stat-label">Mwezi Huu</div>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tafuta masomo...">
+            </div>
+            <button class="toolbar-btn" id="filterToggle">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            <button class="toolbar-btn primary" id="addSomoBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add</span>
+            </button>
+        </div>
+        
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-group">
+                <span class="filter-group-label">Wakati</span>
+                <div class="filter-chips" data-filter="when">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="today">🔥 Leo</button>
+                    <button class="filter-chip" data-value="this_week">📅 Wiki Hii</button>
+                    <button class="filter-chip" data-value="this_month">📆 Mwezi Huu</button>
+                    <button class="filter-chip" data-value="upcoming">⏰ Zinakuja</button>
+                    <button class="filter-chip" data-value="past">⚫ Zilizopita</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Mwezi</span>
+                <div class="filter-chips" data-filter="month">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="01">Jan</button>
+                    <button class="filter-chip" data-value="02">Feb</button>
+                    <button class="filter-chip" data-value="03">Mac</button>
+                    <button class="filter-chip" data-value="04">Apr</button>
+                    <button class="filter-chip" data-value="05">Mei</button>
+                    <button class="filter-chip" data-value="06">Jun</button>
+                    <button class="filter-chip" data-value="07">Jul</button>
+                    <button class="filter-chip" data-value="08">Ago</button>
+                    <button class="filter-chip" data-value="09">Sep</button>
+                    <button class="filter-chip" data-value="10">Okt</button>
+                    <button class="filter-chip" data-value="11">Nov</button>
+                    <button class="filter-chip" data-value="12">Des</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Panga kwa</span>
+                <div class="filter-chips" data-filter="sort">
+                    <button class="filter-chip active" data-value="date">📅 Tarehe</button>
+                    <button class="filter-chip" data-value="newest">🕐 Mpya Kwanza</button>
+                    <button class="filter-chip" data-value="oldest">🕰️ Zamani Kwanza</button>
+                    <button class="filter-chip" data-value="alphabetical">🔤 A-Z</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="masomo-list" id="masomoList">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Inapakia masomo...</p>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="masomo.html" class="bottom-nav-item active"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- ADD/EDIT SOMO MODAL -->
+    <div class="modal" id="somoModal">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h3><i class="fas fa-book-open"></i> <span id="modalTitle">Add Somo Mpya</span></h3>
+                <button class="modal-close" id="somoModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="somoForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Jina la Dominika <span class="required">*</span></span></label>
+                        <input type="text" id="somoJina" class="form-input" placeholder="mfano: Dominika ya 21 ya Mwaka A" maxlength="200">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Tarehe ya Jumapili <span class="required">*</span></span></label>
+                        <input type="date" id="somoTarehe" class="form-input">
+                    </div>
+                    
+                    <!-- Somo la 1 -->
+                    <div class="section-block somo1">
+                        <div class="section-block-header">
+                            <div class="section-block-icon"><i class="fas fa-book-reader"></i></div>
+                            <div class="section-block-title">📖 Somo la 1 <span class="required">*</span></div>
+                        </div>
+                        <textarea id="somo1" class="form-textarea" placeholder="Andika somo la kwanza..." maxlength="5000"></textarea>
+                    </div>
+                    
+                    <!-- Wimbo wa Katikati -->
+                    <div class="section-block wimbo">
+                        <div class="section-block-header">
+                            <div class="section-block-icon"><i class="fas fa-music"></i></div>
+                            <div class="section-block-title">🎵 Wimbo wa Katikati <span class="optional">Optional</span></div>
+                        </div>
+                        <textarea id="somoWimbo" class="form-textarea" placeholder="Wimbo wa katikati..." maxlength="2000"></textarea>
+                    </div>
+                    
+                    <!-- Somo la 2 -->
+                    <div class="section-block somo2">
+                        <div class="section-block-header">
+                            <div class="section-block-icon"><i class="fas fa-book-reader"></i></div>
+                            <div class="section-block-title">📖 Somo la 2 <span class="required">*</span></div>
+                        </div>
+                        <textarea id="somo2" class="form-textarea" placeholder="Andika somo la pili..." maxlength="5000"></textarea>
+                    </div>
+                    
+                    <!-- Shangilio -->
+                    <div class="section-block shangilio">
+                        <div class="section-block-header">
+                            <div class="section-block-icon"><i class="fas fa-hands-praying"></i></div>
+                            <div class="section-block-title">🙌 Shangilio <span class="optional">Optional</span></div>
+                        </div>
+                        <textarea id="somoShangilio" class="form-textarea" placeholder="Shangilio..." maxlength="2000"></textarea>
+                    </div>
+                    
+                    <!-- Injili -->
+                    <div class="section-block injili">
+                        <div class="section-block-header">
+                            <div class="section-block-icon"><i class="fas fa-cross"></i></div>
+                            <div class="section-block-title">✝️ Injili <span class="required">*</span></div>
+                        </div>
+                        <textarea id="somoInjili" class="form-textarea" placeholder="Andika injili..." maxlength="5000"></textarea>
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            Somo litaonekana kwa users kwenye <strong>tarehe ya Jumapili</strong> uliyoweka.
+                            Somo la 1, Somo la 2, na Injili ni <strong>lazima</strong>.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelSomoBtn">Ghairi</button>
+                <button class="modal-btn primary" id="saveSomoBtn">
+                    <i class="fas fa-save"></i>
+                    <span>Hifadhi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- VIEW SOMO MODAL -->
+    <div class="modal" id="viewSomoModal">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h3><i class="fas fa-book-open"></i> Angalia Somo</h3>
+                <button class="modal-close" id="viewSomoClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="viewSomoBody"></div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="viewSomoCopyBtn">
+                    <i class="fas fa-copy"></i>
+                    <span>Copy Yote</span>
+                </button>
+                <button class="modal-btn primary" id="viewSomoShareBtn">
+                    <i class="fas fa-share"></i>
+                    <span>Share</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            masomo: [],
+            filteredMasomo: [],
+            currentPage: 1,
+            perPage: 10,
+            filters: { when: 'all', month: 'all', sort: 'date', search: '' },
+            editingId: null,
+            viewingSomo: null
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            statTotal: document.getElementById('statTotal'),
+            statToday: document.getElementById('statToday'),
+            statWeek: document.getElementById('statWeek'),
+            statMonth: document.getElementById('statMonth'),
+            searchInput: document.getElementById('searchInput'),
+            filterToggle: document.getElementById('filterToggle'),
+            addSomoBtn: document.getElementById('addSomoBtn'),
+            filtersPanel: document.getElementById('filtersPanel'),
+            masomoList: document.getElementById('masomoList'),
+            pagination: document.getElementById('pagination'),
+            somoModal: document.getElementById('somoModal'),
+            somoModalClose: document.getElementById('somoModalClose'),
+            modalTitle: document.getElementById('modalTitle'),
+            somoJina: document.getElementById('somoJina'),
+            somoTarehe: document.getElementById('somoTarehe'),
+            somo1: document.getElementById('somo1'),
+            somoWimbo: document.getElementById('somoWimbo'),
+            somo2: document.getElementById('somo2'),
+            somoShangilio: document.getElementById('somoShangilio'),
+            somoInjili: document.getElementById('somoInjili'),
+            cancelSomoBtn: document.getElementById('cancelSomoBtn'),
+            saveSomoBtn: document.getElementById('saveSomoBtn'),
+            viewSomoModal: document.getElementById('viewSomoModal'),
+            viewSomoClose: document.getElementById('viewSomoClose'),
+            viewSomoBody: document.getElementById('viewSomoBody'),
+            viewSomoCopyBtn: document.getElementById('viewSomoCopyBtn'),
+            viewSomoShareBtn: document.getElementById('viewSomoShareBtn'),
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        async function init() {
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            await loadMasomo();
+        }
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        async function loadMasomo() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('masomo_dominica')
+                    .select('*')
+                    .order('tarehe_jumapili', { ascending: false });
+                
+                if (error) throw error;
+                state.masomo = data || [];
+                updateStats();
+                applyFilters();
+            } catch (e) {
+                console.error('Load masomo error:', e);
+                els.masomoList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Imeshindikana</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function updateStats() {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const weekEnd = new Date(today);
+            weekEnd.setDate(today.getDate() + 7);
+            const month = today.getMonth();
+            const year = today.getFullYear();
+            
+            let total = state.masomo.length;
+            let todayCount = 0;
+            let weekCount = 0;
+            let monthCount = 0;
+            
+            state.masomo.forEach(m => {
+                if (!m.tarehe_jumapili) return;
+                if (m.tarehe_jumapili === todayStr) todayCount++;
+                
+                const d = new Date(m.tarehe_jumapili);
+                if (d >= today && d <= weekEnd) weekCount++;
+                if (d.getMonth() === month && d.getFullYear() === year) monthCount++;
+            });
+            
+            els.statTotal.textContent = total;
+            els.statToday.textContent = todayCount;
+            els.statWeek.textContent = weekCount;
+            els.statMonth.textContent = monthCount;
+        }
+        
+        function getSomoStatus(somo) {
+            if (!somo.tarehe_jumapili) return 'past';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const d = new Date(somo.tarehe_jumapili + 'T00:00:00');
+            
+            if (d.getTime() === today.getTime()) return 'today';
+            if (d > today) return 'upcoming';
+            return 'past';
+        }
+        
+        function getSomoCountdown(somo) {
+            if (!somo.tarehe_jumapili) return { text: '—', class: 'past' };
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const d = new Date(somo.tarehe_jumapili + 'T00:00:00');
+            
+            const diff = Math.round((d - today) / (1000 * 60 * 60 * 24));
+            
+            if (diff === 0) return { text: '🔥 LEO!', class: 'today' };
+            if (diff === 1) return { text: '⏰ Kesho', class: 'soon' };
+            if (diff > 1 && diff <= 7) return { text: `📅 Siku ${diff}`, class: 'soon' };
+            if (diff > 7) return { text: `📅 Siku ${diff}`, class: '' };
+            if (diff === -1) return { text: '📌 Jana', class: 'past' };
+            return { text: `📌 Siku ${Math.abs(diff)} zilizopita`, class: 'past' };
+        }
+        
+        function applyFilters() {
+            let r = [...state.masomo];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayStr = today.toISOString().split('T')[0];
+            
+            // When filter
+            if (state.filters.when === 'today') {
+                r = r.filter(m => m.tarehe_jumapili === todayStr);
+            } else if (state.filters.when === 'this_week') {
+                const weekEnd = new Date(today);
+                weekEnd.setDate(today.getDate() + 7);
+                r = r.filter(m => {
+                    const d = new Date(m.tarehe_jumapili + 'T00:00:00');
+                    return d >= today && d <= weekEnd;
+                });
+            } else if (state.filters.when === 'this_month') {
+                const month = today.getMonth();
+                const year = today.getFullYear();
+                r = r.filter(m => {
+                    const d = new Date(m.tarehe_jumapili + 'T00:00:00');
+                    return d.getMonth() === month && d.getFullYear() === year;
+                });
+            } else if (state.filters.when === 'upcoming') {
+                r = r.filter(m => getSomoStatus(m) === 'upcoming');
+            } else if (state.filters.when === 'past') {
+                r = r.filter(m => getSomoStatus(m) === 'past');
+            }
+            
+            // Month filter
+            if (state.filters.month !== 'all') {
+                r = r.filter(m => {
+                    if (!m.tarehe_jumapili) return false;
+                    return String(new Date(m.tarehe_jumapili).getMonth() + 1).padStart(2, '0') === state.filters.month;
+                });
+            }
+            
+            // Search
+            if (state.filters.search) {
+                const t = state.filters.search.toLowerCase();
+                r = r.filter(m => 
+                    (m.jina_dominika || '').toLowerCase().includes(t) ||
+                    (m.somo_1 || '').toLowerCase().includes(t) ||
+                    (m.somo_2 || '').toLowerCase().includes(t) ||
+                    (m.injili || '').toLowerCase().includes(t)
+                );
+            }
+            
+            // Sort
+            if (state.filters.sort === 'date') {
+                r.sort((a, b) => new Date(b.tarehe_jumapili) - new Date(a.tarehe_jumapili));
+            } else if (state.filters.sort === 'newest') {
+                r.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (state.filters.sort === 'oldest') {
+                r.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            } else if (state.filters.sort === 'alphabetical') {
+                r.sort((a, b) => (a.jina_dominika || '').localeCompare(b.jina_dominika || ''));
+            }
+            
+            state.filteredMasomo = r;
+            renderMasomo();
+        }
+        
+        function renderMasomo() {
+            const list = els.masomoList;
+            
+            if (state.filteredMasomo.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Hakuna masomo</h3>
+                        <p>Anza ku-add somo jipya</p>
+                        <button id="emptyAddBtn"><i class="fas fa-plus"></i> Add Somo</button>
+                    </div>
+                `;
+                document.getElementById('emptyAddBtn')?.addEventListener('click', openAddModal);
+                els.pagination.innerHTML = '';
+                return;
+            }
+            
+            const total = state.filteredMasomo.length;
+            const totalPages = Math.ceil(total / state.perPage);
+            if (state.currentPage > totalPages) state.currentPage = 1;
+            
+            const start = (state.currentPage - 1) * state.perPage;
+            const items = state.filteredMasomo.slice(start, start + state.perPage);
+            
+            list.innerHTML = items.map((m, i) => renderSomoItem(m, i)).join('');
+            items.forEach(m => setupSomoItemEvents(m));
+            renderPagination(totalPages);
+        }
+        
+        function renderSomoItem(somo, idx) {
+            const status = getSomoStatus(somo);
+            const countdown = getSomoCountdown(somo);
+            
+            // Extract number from jina_dominika
+            const jina = somo.jina_dominika || '';
+            const numberMatch = jina.match(/\d+/);
+            const number = numberMatch ? numberMatch[0] : null;
+            
+            const iconHtml = number 
+                ? number 
+                : '<i class="fas fa-book-open"></i>';
+            
+            const dateFormatted = somo.tarehe_jumapili
+                ? new Date(somo.tarehe_jumapili).toLocaleDateString('sw-TZ', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                })
+                : '—';
+            
+            // Sections count
+            let sectionsCount = 0;
+            if (somo.somo_1) sectionsCount++;
+            if (somo.wimbo_katikati) sectionsCount++;
+            if (somo.somo_2) sectionsCount++;
+            if (somo.shangilio) sectionsCount++;
+            if (somo.injili) sectionsCount++;
+            
+            return `
+                <div class="somo-item ${status}" data-somo-id="${somo.id}" style="animation-delay: ${idx * 0.05}s">
+                    <div class="somo-header">
+                        <div class="somo-icon ${number ? '' : 'text-icon'}">${iconHtml}</div>
+                        <div class="somo-header-info">
+                            <h3>${escapeHtml(jina || 'Bila Jina')}</h3>
+                            <div class="somo-meta">
+                                <span class="somo-date-badge">
+                                    <i class="fas fa-calendar"></i>
+                                    ${dateFormatted}
+                                </span>
+                                <span class="somo-countdown ${countdown.class}">
+                                    ${countdown.text}
+                                </span>
+                                <span class="somo-sections-count">
+                                    <i class="fas fa-list"></i>
+                                    ${sectionsCount} sehemu
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="somo-sections-preview">
+                        <div class="section-preview-chip ${somo.somo_1 ? 'has-content' : ''}">
+                            <i class="fas fa-book-reader"></i>
+                            <span>Somo 1</span>
+                        </div>
+                        <div class="section-preview-chip ${somo.wimbo_katikati ? 'has-content' : ''}">
+                            <i class="fas fa-music"></i>
+                            <span>Wimbo</span>
+                        </div>
+                        <div class="section-preview-chip ${somo.somo_2 ? 'has-content' : ''}">
+                            <i class="fas fa-book-reader"></i>
+                            <span>Somo 2</span>
+                        </div>
+                        <div class="section-preview-chip ${somo.shangilio ? 'has-content' : ''}">
+                            <i class="fas fa-hands-praying"></i>
+                            <span>Shangilio</span>
+                        </div>
+                        <div class="section-preview-chip ${somo.injili ? 'has-content' : ''}">
+                            <i class="fas fa-cross"></i>
+                            <span>Injili</span>
+                        </div>
+                    </div>
+                    
+                    <div class="somo-actions">
+                        <button class="somo-action-btn primary" data-action="view" title="Angalia">
+                            <i class="fas fa-eye"></i>
+                            <span>Ona</span>
+                        </button>
+                        <button class="somo-action-btn" data-action="copy" title="Copy">
+                            <i class="fas fa-copy"></i>
+                            <span>Copy</span>
+                        </button>
+                        <button class="somo-action-btn" data-action="edit" title="Hariri">
+                            <i class="fas fa-edit"></i>
+                            <span>Hariri</span>
+                        </button>
+                        <button class="somo-action-btn" data-action="duplicate" title="Duplicate">
+                            <i class="fas fa-clone"></i>
+                            <span>Dupl.</span>
+                        </button>
+                        <button class="somo-action-btn" data-action="export" title="Export JSON">
+                            <i class="fas fa-download"></i>
+                            <span>JSON</span>
+                        </button>
+                        <button class="somo-action-btn danger" data-action="delete" title="Futa">
+                            <i class="fas fa-trash"></i>
+                            <span>Futa</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function setupSomoItemEvents(somo) {
+            const item = document.querySelector(`.somo-item[data-somo-id="${somo.id}"]`);
+            if (!item) return;
+            
+            item.querySelectorAll('.somo-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    
+                    if (action === 'view') viewSomo(somo);
+                    else if (action === 'copy') copySomoText(somo);
+                    else if (action === 'edit') editSomo(somo);
+                    else if (action === 'duplicate') await duplicateSomo(somo);
+                    else if (action === 'export') exportSomo(somo);
+                    else if (action === 'delete') await deleteSomo(somo);
+                });
+            });
+        }
+        
+        function viewSomo(somo) {
+            state.viewingSomo = somo;
+            
+            const countdown = getSomoCountdown(somo);
+            
+            const dateFormatted = somo.tarehe_jumapili
+                ? new Date(somo.tarehe_jumapili).toLocaleDateString('sw-TZ', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                })
+                : '—';
+            
+            let sectionsHtml = '';
+            
+            if (somo.somo_1) {
+                sectionsHtml += `
+                    <div class="view-section">
+                        <div class="view-section-header">
+                            <div class="view-section-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">
+                                <i class="fas fa-book-reader"></i>
+                            </div>
+                            <div class="view-section-title" style="color: var(--cyan);">📖 Somo la 1</div>
+                        </div>
+                        <div class="view-section-content" style="border-left-color: var(--cyan);">${escapeHtml(somo.somo_1)}</div>
+                    </div>
+                `;
+            }
+            
+            if (somo.wimbo_katikati) {
+                sectionsHtml += `
+                    <div class="view-section">
+                        <div class="view-section-header">
+                            <div class="view-section-icon" style="background: rgba(168, 85, 247, 0.15); color: var(--purple);">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <div class="view-section-title" style="color: var(--purple);">🎵 Wimbo wa Katikati</div>
+                        </div>
+                        <div class="view-section-content" style="border-left-color: var(--purple);">${escapeHtml(somo.wimbo_katikati)}</div>
+                    </div>
+                `;
+            }
+            
+            if (somo.somo_2) {
+                sectionsHtml += `
+                    <div class="view-section">
+                        <div class="view-section-header">
+                            <div class="view-section-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">
+                                <i class="fas fa-book-reader"></i>
+                            </div>
+                            <div class="view-section-title" style="color: var(--cyan);">📖 Somo la 2</div>
+                        </div>
+                        <div class="view-section-content" style="border-left-color: var(--cyan);">${escapeHtml(somo.somo_2)}</div>
+                    </div>
+                `;
+            }
+            
+            if (somo.shangilio) {
+                sectionsHtml += `
+                    <div class="view-section">
+                        <div class="view-section-header">
+                            <div class="view-section-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--info);">
+                                <i class="fas fa-hands-praying"></i>
+                            </div>
+                            <div class="view-section-title" style="color: var(--info);">🙌 Shangilio</div>
+                        </div>
+                        <div class="view-section-content" style="border-left-color: var(--info);">${escapeHtml(somo.shangilio)}</div>
+                    </div>
+                `;
+            }
+            
+            if (somo.injili) {
+                sectionsHtml += `
+                    <div class="view-section">
+                        <div class="view-section-header">
+                            <div class="view-section-icon" style="background: var(--primary-soft); color: var(--primary);">
+                                <i class="fas fa-cross"></i>
+                            </div>
+                            <div class="view-section-title" style="color: var(--primary);">✝️ Injili</div>
+                        </div>
+                        <div class="view-section-content" style="border-left-color: var(--primary);">${escapeHtml(somo.injili)}</div>
+                    </div>
+                `;
+            }
+            
+            els.viewSomoBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 60px; margin-bottom: 12px;">📚</div>
+                    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; background: var(--bg-input); color: var(--primary);">
+                        ${countdown.text}
+                    </span>
+                </div>
+                
+                <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 8px; text-align: center;">${escapeHtml(somo.jina_dominika)}</h2>
+                
+                <p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+                    <i class="fas fa-calendar"></i> ${dateFormatted}
+                </p>
+                
+                ${sectionsHtml}
+            `;
+            
+            openModal(els.viewSomoModal);
+        }
+        
+        async function copySomoText(somo) {
+            let text = `📚 ${somo.jina_dominika}\n`;
+            
+            if (somo.tarehe_jumapili) {
+                const dateFormatted = new Date(somo.tarehe_jumapili).toLocaleDateString('sw-TZ', { 
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+                });
+                text += `📅 ${dateFormatted}\n`;
+            }
+            
+            text += `\n═══════════════════════════════════\n\n`;
+            
+            if (somo.somo_1) {
+                text += `📖 SOMO LA 1\n${'─'.repeat(35)}\n${somo.somo_1}\n\n`;
+            }
+            
+            if (somo.wimbo_katikati) {
+                text += `🎵 WIMBO WA KATIKATI\n${'─'.repeat(35)}\n${somo.wimbo_katikati}\n\n`;
+            }
+            
+            if (somo.somo_2) {
+                text += `📖 SOMO LA 2\n${'─'.repeat(35)}\n${somo.somo_2}\n\n`;
+            }
+            
+            if (somo.shangilio) {
+                text += `🙌 SHANGILIO\n${'─'.repeat(35)}\n${somo.shangilio}\n\n`;
+            }
+            
+            if (somo.injili) {
+                text += `✝️ INJILI\n${'─'.repeat(35)}\n${somo.injili}\n\n`;
+            }
+            
+            text += `═══════════════════════════════════\n📿 KMCA - Kwaya ya Mtakatifu Carlo Acutis`;
+            
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Somo limecopywa!', 'success');
+            } catch (e) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Somo limecopywa!', 'success');
+            }
+        }
+        
+        async function duplicateSomo(somo) {
+            try {
+                const { id, created_at, ...rest } = somo;
+                const newSomo = {
+                    ...rest,
+                    jina_dominika: (somo.jina_dominika || 'Somo') + ' (Copy)'
+                };
+                
+                const { error } = await supabaseClient
+                    .from('masomo_dominica')
+                    .insert([newSomo]);
+                
+                if (error) throw error;
+                
+                showToast('Imeduplicatewa!', 'success');
+                await loadMasomo();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        function exportSomo(somo) {
+            const data = {
+                somo: {
+                    id: somo.id,
+                    jina_dominika: somo.jina_dominika,
+                    tarehe_jumapili: somo.tarehe_jumapili,
+                    somo_1: somo.somo_1,
+                    wimbo_katikati: somo.wimbo_katikati,
+                    somo_2: somo.somo_2,
+                    shangilio: somo.shangilio,
+                    injili: somo.injili,
+                    created_at: somo.created_at
+                },
+                exported_at: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `somo-${somo.id.substring(0, 8)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast('Ime-export!', 'success');
+        }
+        
+        async function deleteSomo(somo) {
+            if (!confirm(`Futa somo hili?\n\n"${somo.jina_dominika}"`)) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('masomo_dominica')
+                    .delete()
+                    .eq('id', somo.id);
+                
+                if (error) throw error;
+                
+                showToast('Imefutwa!', 'success');
+                await loadMasomo();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        function editSomo(somo) {
+            state.editingId = somo.id;
+            
+            els.modalTitle.textContent = 'Edit Somo';
+            els.somoJina.value = somo.jina_dominika || '';
+            els.somoTarehe.value = somo.tarehe_jumapili || '';
+            els.somo1.value = somo.somo_1 || '';
+            els.somoWimbo.value = somo.wimbo_katikati || '';
+            els.somo2.value = somo.somo_2 || '';
+            els.somoShangilio.value = somo.shangilio || '';
+            els.somoInjili.value = somo.injili || '';
+            
+            openModal(els.somoModal);
+        }
+        
+        function openAddModal() {
+            state.editingId = null;
+            
+            els.modalTitle.textContent = 'Add Somo Mpya';
+            els.somoJina.value = '';
+            els.somo1.value = '';
+            els.somoWimbo.value = '';
+            els.somo2.value = '';
+            els.somoShangilio.value = '';
+            els.somoInjili.value = '';
+            
+            // Default tarehe: next Sunday
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const daysToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+            const nextSunday = new Date(today);
+            nextSunday.setDate(today.getDate() + daysToSunday);
+            els.somoTarehe.value = nextSunday.toISOString().split('T')[0];
+            
+            openModal(els.somoModal);
+        }
+        
+        async function handleSaveSomo() {
+            const jina = els.somoJina.value.trim();
+            const tarehe = els.somoTarehe.value;
+            const somo1 = els.somo1.value.trim();
+            const wimbo = els.somoWimbo.value.trim();
+            const somo2 = els.somo2.value.trim();
+            const shangilio = els.somoShangilio.value.trim();
+            const injili = els.somoInjili.value.trim();
+            
+            if (!jina) {
+                showToast('Weka jina la dominika', 'warning');
+                els.somoJina.focus();
+                return;
+            }
+            
+            if (!tarehe) {
+                showToast('Weka tarehe ya Jumapili', 'warning');
+                els.somoTarehe.focus();
+                return;
+            }
+            
+            if (!somo1) {
+                showToast('Weka Somo la 1', 'warning');
+                els.somo1.focus();
+                return;
+            }
+            
+            if (!somo2) {
+                showToast('Weka Somo la 2', 'warning');
+                els.somo2.focus();
+                return;
+            }
+            
+            if (!injili) {
+                showToast('Weka Injili', 'warning');
+                els.somoInjili.focus();
+                return;
+            }
+            
+            els.saveSomoBtn.disabled = true;
+            els.saveSomoBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const somoData = {
+                    jina_dominika: jina,
+                    tarehe_jumapili: tarehe,
+                    somo_1: somo1,
+                    wimbo_katikati: wimbo || null,
+                    somo_2: somo2,
+                    shangilio: shangilio || null,
+                    injili: injili
+                };
+                
+                let error;
+                
+                if (state.editingId) {
+                    const r = await supabaseClient
+                        .from('masomo_dominica')
+                        .update(somoData)
+                        .eq('id', state.editingId);
+                    error = r.error;
+                } else {
+                    const r = await supabaseClient
+                        .from('masomo_dominica')
+                        .insert([somoData]);
+                    error = r.error;
+                }
+                
+                if (error) throw error;
+                
+                showToast(state.editingId ? 'Imehaririwa!' : 'Imeongezwa!', 'success');
+                closeModal(els.somoModal);
+                await loadMasomo();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                els.saveSomoBtn.disabled = false;
+                els.saveSomoBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi</span>';
+            }
+        }
+        
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function setupEvents() {
+            els.refreshBtn.addEventListener('click', async function() {
+                this.querySelector('i').style.animation = 'spin 1s linear';
+                await loadMasomo();
+                setTimeout(() => this.querySelector('i').style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            let searchTimer;
+            els.searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.filters.search = this.value.trim();
+                    state.currentPage = 1;
+                    applyFilters();
+                }, 300);
+            });
+            
+            els.filterToggle.addEventListener('click', function() {
+                els.filtersPanel.classList.toggle('show');
+                this.classList.toggle('active', els.filtersPanel.classList.contains('show'));
+            });
+            
+            document.querySelectorAll('.filter-chips').forEach(g => {
+                const k = g.getAttribute('data-filter');
+                g.querySelectorAll('.filter-chip').forEach(c => {
+                    c.addEventListener('click', function() {
+                        g.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        state.filters[k] = this.getAttribute('data-value');
+                        state.currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            });
+            
+            els.addSomoBtn.addEventListener('click', openAddModal);
+            
+            els.somoModalClose.addEventListener('click', () => closeModal(els.somoModal));
+            els.viewSomoClose.addEventListener('click', () => closeModal(els.viewSomoModal));
+            els.cancelSomoBtn.addEventListener('click', () => closeModal(els.somoModal));
+            els.saveSomoBtn.addEventListener('click', handleSaveSomo);
+            
+            // View modal actions
+            els.viewSomoCopyBtn.addEventListener('click', () => {
+                if (state.viewingSomo) {
+                    copySomoText(state.viewingSomo);
+                }
+            });
+            
+            els.viewSomoShareBtn.addEventListener('click', async () => {
+                if (!state.viewingSomo) return;
+                
+                const url = `${window.location.origin}/masomo.html?id=${state.viewingSomo.id}`;
+                
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: state.viewingSomo.jina_dominika,
+                            text: 'Masomo ya Dominica',
+                            url: url
+                        });
+                        return;
+                    } catch (e) {}
+                }
+                
+                try {
+                    await navigator.clipboard.writeText(url);
+                    showToast('Link imecopywa!', 'success');
+                } catch (e) {
+                    showToast('Imeshindikana', 'error');
+                }
+            });
+            
+            [els.somoModal, els.viewSomoModal].forEach(m => {
+                m.addEventListener('click', (e) => {
+                    if (e.target === m) closeModal(m);
+                });
+            });
+        }
+        
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
+            
+            let h = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                    h += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                    h += `<button class="pagination-btn" disabled>...</button>`;
+                }
+            }
+            
+            h += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            els.pagination.innerHTML = h;
+            
+            els.pagination.querySelectorAll('.pagination-btn[data-page]').forEach(b => {
+                b.addEventListener('click', function() {
+                    const p = parseInt(this.getAttribute('data-page'));
+                    if (p >= 1 && p <= totalPages) {
+                        state.currentPage = p;
+                        renderMasomo();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // Helpers
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_MASOMO loaded');
+    })();
+    </script>
+</body>
+</html>

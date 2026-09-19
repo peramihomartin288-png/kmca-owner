@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Owner Login — KMCA</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        /* ============================================================
+           CSS VARIABLES
+           ============================================================ */
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --bg-overlay: rgba(2, 6, 23, 0.85);
+            
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --border: #334155;
+            --border-strong: #475569;
+            
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --shadow-glow: 0 0 40px rgba(212, 175, 55, 0.3);
+            
+            --transition-fast: all 0.15s ease;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================================
+           RESET
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            min-height: 100dvh;
+            position: relative;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ============================================================
+           BACKGROUND LAYER (Full Immersive)
+           ============================================================ */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #020617 100%);
+        }
+
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px) brightness(0.5);
+            transform: scale(1.1);
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .bg-image.loaded {
+            opacity: 0.6;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, 
+                    rgba(2, 6, 23, 0.75) 0%, 
+                    rgba(2, 6, 23, 0.85) 50%,
+                    rgba(2, 6, 23, 0.95) 100%
+                );
+            animation: bgBreathing 8s ease-in-out infinite;
+        }
+
+        @keyframes bgBreathing {
+            0%, 100% { 
+                opacity: 0.85;
+            }
+            50% { 
+                opacity: 1;
+            }
+        }
+
+        /* Floating particles */
+        .bg-particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particleFloat 15s linear infinite;
+        }
+
+        .bg-particle:nth-child(1) {
+            left: 15%;
+            animation-delay: 0s;
+            animation-duration: 20s;
+        }
+
+        .bg-particle:nth-child(2) {
+            left: 35%;
+            animation-delay: 3s;
+            animation-duration: 25s;
+        }
+
+        .bg-particle:nth-child(3) {
+            left: 55%;
+            animation-delay: 6s;
+            animation-duration: 18s;
+        }
+
+        .bg-particle:nth-child(4) {
+            left: 75%;
+            animation-delay: 2s;
+            animation-duration: 22s;
+        }
+
+        .bg-particle:nth-child(5) {
+            left: 90%;
+            animation-delay: 8s;
+            animation-duration: 16s;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+                transform: translateY(90vh) scale(1);
+            }
+            90% {
+                opacity: 0.5;
+                transform: translateY(10vh) scale(1);
+            }
+            100% {
+                transform: translateY(-10vh) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================================
+           LOGIN CONTAINER
+           ============================================================ */
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            max-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            animation: containerEnter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .login-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes containerEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============================================================
+           LOGIN CARD (Glassmorphism)
+           ============================================================ */
+        .login-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-xl);
+            padding: 36px 28px;
+            box-shadow: 
+                var(--shadow-lg),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top gradient bar */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%,
+                var(--primary) 50%,
+                transparent 100%
+            );
+            animation: topBarGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes topBarGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ============================================================
+           LOGO
+           ============================================================ */
+        .login-logo {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 22px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            color: var(--bg-dark);
+            position: relative;
+            box-shadow: 
+                0 12px 40px rgba(212, 175, 55, 0.4),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 
+                    0 12px 40px rgba(212, 175, 55, 0.4),
+                    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 
+                    0 16px 55px rgba(212, 175, 55, 0.6),
+                    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Pulsing rings */
+        .login-logo::before,
+        .login-logo::after {
+            content: '';
+            position: absolute;
+            inset: -14px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulseRing 3s ease-out infinite;
+        }
+
+        .login-logo::after {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes pulseRing {
+            0% {
+                transform: scale(0.85);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================================
+           TITLES
+           ============================================================ */
+        .login-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-light) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeSlideDown 0.6s ease-out 0.1s both;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-weight: 500;
+            animation: fadeSlideDown 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fadeSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           STATS ROW
+           ============================================================ */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+            animation: fadeSlideDown 0.6s ease-out 0.3s both;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 8px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.4s;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card-icon {
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .stat-card-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-light);
+            line-height: 1.2;
+            margin-bottom: 2px;
+            transition: color 0.3s;
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+        }
+
+        /* Skeleton loading */
+        .stat-skeleton {
+            display: inline-block;
+            width: 40px;
+            height: 14px;
+            background: linear-gradient(90deg, 
+                var(--bg-input) 25%, 
+                var(--border) 50%, 
+                var(--bg-input) 75%
+            );
+            background-size: 200% 100%;
+            border-radius: 4px;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ============================================================
+           PIN DOTS
+           ============================================================ */
+        .pin-section {
+            margin-bottom: 20px;
+            animation: fadeSlideDown 0.6s ease-out 0.4s both;
+        }
+
+        .pin-label {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .pin-dots {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .pin-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid var(--border-strong);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .pin-dot.filled {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+            animation: dotPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes dotPop {
+            0% {
+                transform: scale(0.8);
+                box-shadow: 0 0 0 rgba(212, 175, 55, 0);
+            }
+            50% {
+                transform: scale(1.3);
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.9);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+            }
+        }
+
+        /* Error shake */
+        .pin-dots.error {
+            animation: pinShake 0.5s;
+        }
+
+        .pin-dots.error .pin-dot {
+            border-color: var(--error);
+            background: var(--error);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes pinShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        /* Success flash */
+        .pin-dots.success .pin-dot {
+            border-color: var(--success);
+            background: var(--success);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+        }
+
+        /* ============================================================
+           KEYPAD
+           ============================================================ */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+            animation: fadeSlideDown 0.6s ease-out 0.5s both;
+        }
+
+        .keypad-btn {
+            height: 60px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            font-size: 22px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .keypad-btn:hover:not(:disabled) {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .keypad-btn:active:not(:disabled) {
+            transform: scale(0.94);
+            transition: transform 0.1s;
+        }
+
+        .keypad-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Ripple effect */
+        .keypad-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, 
+                rgba(212, 175, 55, 0.4) 0%, 
+                transparent 70%
+            );
+            opacity: 0;
+            transform: scale(0);
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        .keypad-btn.pressed::after {
+            transform: scale(2.5);
+            opacity: 1;
+            transition: 0s;
+        }
+
+        /* Special buttons */
+        .keypad-btn.backspace {
+            color: var(--warning);
+            font-size: 20px;
+        }
+
+        .keypad-btn.backspace:hover:not(:disabled) {
+            border-color: var(--warning);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+        }
+
+        .keypad-btn.confirm {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border-color: var(--primary);
+            font-size: 22px;
+        }
+
+        .keypad-btn.confirm:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
+            animation: confirmPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes confirmPulse {
+            0%, 100% { 
+                box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
+            }
+            50% { 
+                box-shadow: 0 12px 40px rgba(212, 175, 55, 0.8);
+            }
+        }
+
+        .keypad-btn.confirm:disabled {
+            animation: none;
+        }
+
+        /* ============================================================
+           ACTIONS ROW
+           ============================================================ */
+        .actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+            animation: fadeSlideDown 0.6s ease-out 0.6s both;
+        }
+
+        .btn-biometric {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-biometric:hover {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-biometric.hidden {
+            display: none;
+        }
+
+        .btn-biometric i {
+            font-size: 16px;
+            animation: fingerprintPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes fingerprintPulse {
+            0%, 100% { 
+                opacity: 0.7;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        .btn-forgot {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .btn-forgot:hover {
+            color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .btn-forgot::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 12px;
+            right: 12px;
+            height: 1px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s;
+        }
+
+        .btn-forgot:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* ============================================================
+           REMEMBER ME
+           ============================================================ */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            animation: fadeSlideDown 0.6s ease-out 0.7s both;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .remember-me:hover {
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-strong);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+            background: transparent;
+        }
+
+        .remember-me input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+            animation: checkboxPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .remember-me input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-dark);
+            font-size: 13px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        @keyframes checkboxPop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .remember-me span {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           ERROR MESSAGE
+           ============================================================ */
+        .error-message {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            color: #fca5a5;
+            animation: errorSlide 0.3s ease-out;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .error-message i {
+            font-size: 16px;
+            flex-shrink: 0;
+            color: var(--error);
+        }
+
+        @keyframes errorSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           VERSION
+           ============================================================ */
+        .version-badge {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+            animation: fadeSlideDown 0.6s ease-out 0.8s both;
+        }
+
+        /* ============================================================
+           FORGOT PIN MODAL
+           ============================================================ */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 32px 24px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: var(--primary-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--primary);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .modal-description {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .modal-form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-form-label i {
+            color: var(--primary);
+        }
+
+        .modal-form-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .modal-form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+        .modal-form-input::placeholder {
+            color: var(--border-strong);
+            letter-spacing: 0.5px;
+            font-weight: 400;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* PIN Result */
+        .pin-result {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, 
+                rgba(212, 175, 55, 0.15), 
+                rgba(212, 175, 55, 0.05)
+            );
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-md);
+            text-align: center;
+            animation: resultReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .pin-result.show {
+            display: block;
+        }
+
+        @keyframes resultReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .pin-result-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pin-result-name {
+            color: var(--primary-light);
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .pin-result-value {
+            color: var(--text-light);
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: var(--radius-sm);
+            -webkit-user-select: all;
+            user-select: all;
+        }
+
+        /* ============================================================
+           LOADING OVERLAY
+           ============================================================ */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 99998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spinnerSpin 1s linear infinite;
+        }
+
+        @keyframes spinnerSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            font-family: inherit;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            .login-card {
+                padding: 28px 20px;
+            }
+            
+            .login-title {
+                font-size: 20px;
+            }
+            
+            .login-logo {
+                width: 72px;
+                height: 72px;
+                font-size: 32px;
+                margin-bottom: 18px;
+            }
+            
+            .keypad-btn {
+                height: 54px;
+                font-size: 20px;
+            }
+            
+            .pin-dot {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .pin-dots {
+                gap: 14px;
+            }
+            
+            .stat-card-value {
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                padding: 24px 20px;
+            }
+            
+            .pin-result-value {
+                font-size: 28px;
+                letter-spacing: 6px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .login-container {
+                padding: 12px 0;
+            }
+            
+            .login-card {
+                padding: 24px 20px;
+            }
+            
+            .login-logo {
+                width: 64px;
+                height: 64px;
+                font-size: 28px;
+                margin-bottom: 14px;
+            }
+            
+            .login-title {
+                font-size: 20px;
+            }
+            
+            .keypad-btn {
+                height: 50px;
+                font-size: 18px;
+            }
+            
+            .stats-row {
+                margin-bottom: 16px;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Hidden utility */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- ============================================================
+         BACKGROUND LAYER
+         ============================================================ -->
+    <div class="bg-layer">
+        <div class="bg-image" id="bgImage"></div>
+        <div class="bg-overlay"></div>
+        <div class="bg-particles">
+            <div class="bg-particle"></div>
+            <div class="bg-particle"></div>
+            <div class="bg-particle"></div>
+            <div class="bg-particle"></div>
+            <div class="bg-particle"></div>
+        </div>
+    </div>
+    
+    <!-- ============================================================
+         LOGIN CONTAINER
+         ============================================================ -->
+    <div class="login-container">
+        <div class="login-card">
+            
+            <!-- Logo -->
+            <div class="login-logo">
+                <i class="fas fa-church"></i>
+            </div>
+            
+            <!-- Title -->
+            <h1 class="login-title">KMCA Owner Panel</h1>
+            <p class="login-subtitle">Jukwaa la Usimamizi wa Kwaya</p>
+            
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <i class="fas fa-users stat-card-icon"></i>
+                    <div class="stat-card-value" id="statUsers">
+                        <span class="stat-skeleton"></span>
+                    </div>
+                    <div class="stat-card-label">Users</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-newspaper stat-card-icon"></i>
+                    <div class="stat-card-value" id="statPosts">
+                        <span class="stat-skeleton"></span>
+                    </div>
+                    <div class="stat-card-label">Posts</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-fire stat-card-icon"></i>
+                    <div class="stat-card-value" id="statActive">
+                        <span class="stat-skeleton"></span>
+                    </div>
+                    <div class="stat-card-label">Active</div>
+                </div>
+            </div>
+            
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText">PIN si sahihi</span>
+            </div>
+            
+            <!-- PIN Section -->
+            <div class="pin-section">
+                <div class="pin-label">Weka PIN Yako</div>
+                <div class="pin-dots" id="pinDots">
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                </div>
+            </div>
+            
+            <!-- Keypad -->
+            <div class="keypad" id="keypad">
+                <button class="keypad-btn" data-digit="1">1</button>
+                <button class="keypad-btn" data-digit="2">2</button>
+                <button class="keypad-btn" data-digit="3">3</button>
+                <button class="keypad-btn" data-digit="4">4</button>
+                <button class="keypad-btn" data-digit="5">5</button>
+                <button class="keypad-btn" data-digit="6">6</button>
+                <button class="keypad-btn" data-digit="7">7</button>
+                <button class="keypad-btn" data-digit="8">8</button>
+                <button class="keypad-btn" data-digit="9">9</button>
+                <button class="keypad-btn backspace" data-action="backspace">
+                    <i class="fas fa-backspace"></i>
+                </button>
+                <button class="keypad-btn" data-digit="0">0</button>
+                <button class="keypad-btn confirm" data-action="confirm">
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+            
+            <!-- Actions -->
+            <div class="actions-row">
+                <button class="btn-biometric hidden" id="biometricBtn">
+                    <i class="fas fa-fingerprint"></i>
+                    <span>Biometric</span>
+                </button>
+                <button class="btn-forgot" id="forgotPinBtn">
+                    <i class="fas fa-key"></i>
+                    <span>Umesahau PIN?</span>
+                </button>
+            </div>
+            
+            <!-- Remember Me -->
+            <label class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <span>Nikumbuke kwenye kifaa hiki</span>
+            </label>
+            
+            <!-- Version -->
+            <div class="version-badge" id="versionBadge">
+                KMCA Owner v2.0.0
+            </div>
+        </div>
+    </div>
+    
+    <!-- ============================================================
+         FORGOT PIN MODAL
+         ============================================================ -->
+    <div class="modal" id="forgotPinModal">
+        <div class="modal-content">
+            <button class="modal-close" id="forgotPinClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            
+            <h3 class="modal-title">Umesahau PIN?</h3>
+            <p class="modal-description">
+                Weka namba ya simu uliyojisajili nayo kupata PIN yako
+            </p>
+            
+            <div class="modal-form-group">
+                <label class="modal-form-label" for="forgotPhone">
+                    <i class="fas fa-phone"></i>
+                    Namba ya Simu
+                </label>
+                <input 
+                    type="tel" 
+                    id="forgotPhone" 
+                    class="modal-form-input"
+                    placeholder="0712345678" 
+                    inputmode="numeric"
+                    maxlength="10"
+                    autocomplete="tel"
+                >
+            </div>
+            
+            <button class="btn-primary" id="showPinBtn">
+                <i class="fas fa-search"></i>
+                <span>Onyesha PIN</span>
+            </button>
+            
+            <!-- PIN Result -->
+            <div class="pin-result" id="pinResult">
+                <div class="pin-result-label">Jina la Owner</div>
+                <div class="pin-result-name" id="ownerNameDisplay">—</div>
+                <div class="pin-result-label">PIN Yako</div>
+                <div class="pin-result-value" id="ownerPinDisplay">••••</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ============================================================
+         LOADING OVERLAY
+         ============================================================ -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Inaingia...</div>
+    </div>
+    
+    <!-- ============================================================
+         TOAST
+         ============================================================ -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle" id="toastIcon"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- ============================================================
+         SCRIPTS
+         ============================================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    // KMCA OWNER — LOGIN PAGE
+    // Version: 2.0
+    // ═══════════════════════════════════════════════════════════════
+    
+    (function() {
+        'use strict';
+        
+        // ============================================
+        // CONFIG
+        // ============================================
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        const TIMEOUT_MS = CONFIG.session?.timeoutMs || (5 * 60 * 1000);
+        const RATE_LIMIT = CONFIG.session?.rateLimit || { maxAttempts: 5, windowMs: 5 * 60 * 1000 };
+        
+        // ============================================
+        // INIT SUPABASE
+        // ============================================
+        let supabaseClient = null;
+        
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+            console.log('✅ Supabase initialized');
+        } else {
+            console.error('❌ Supabase config missing');
+        }
+        
+        // ============================================
+        // STATE
+        // ============================================
+        const state = {
+            pin: '',
+            isProcessing: false,
+            isLocked: false,
+            lockUntil: 0,
+            attempts: 0
+        };
+        
+        // ============================================
+        // DOM ELEMENTS
+        // ============================================
+        const els = {
+            bgImage: document.getElementById('bgImage'),
+            errorMessage: document.getElementById('errorMessage'),
+            errorText: document.getElementById('errorText'),
+            pinDots: document.getElementById('pinDots'),
+            dots: null,
+            keypad: document.getElementById('keypad'),
+            keypadBtns: null,
+            biometricBtn: document.getElementById('biometricBtn'),
+            forgotPinBtn: document.getElementById('forgotPinBtn'),
+            rememberMe: document.getElementById('rememberMe'),
+            statUsers: document.getElementById('statUsers'),
+            statPosts: document.getElementById('statPosts'),
+            statActive: document.getElementById('statActive'),
+            versionBadge: document.getElementById('versionBadge'),
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            loadingText: document.getElementById('loadingText'),
+            toast: document.getElementById('toast'),
+            toastIcon: document.getElementById('toastIcon'),
+            toastText: document.getElementById('toastText'),
+            // Modal
+            forgotPinModal: document.getElementById('forgotPinModal'),
+            forgotPinClose: document.getElementById('forgotPinClose'),
+            forgotPhone: document.getElementById('forgotPhone'),
+            showPinBtn: document.getElementById('showPinBtn'),
+            pinResult: document.getElementById('pinResult'),
+            ownerNameDisplay: document.getElementById('ownerNameDisplay'),
+            ownerPinDisplay: document.getElementById('ownerPinDisplay')
+        };
+        
+        els.dots = els.pinDots.querySelectorAll('.pin-dot');
+        els.keypadBtns = els.keypad.querySelectorAll('.keypad-btn');
+        
+        // ============================================
+        // INIT
+        // ============================================
+        function init() {
+            console.log('🎯 Initializing Owner Login...');
+            
+            // Check if already logged in
+            if (checkExistingSession()) {
+                console.log('✅ Existing session found');
+                redirectToWelcome();
+                return;
+            }
+            
+            // Load background
+            loadBackgroundImage();
+            
+            // Load stats
+            loadStatistics();
+            
+            // Load version
+            if (CONFIG.app?.version) {
+                els.versionBadge.textContent = `KMCA Owner v${CONFIG.app.version}`;
+            }
+            
+            // Setup events
+            setupKeypadEvents();
+            setupModalEvents();
+            setupBiometric();
+            setupRememberMe();
+            
+            // Setup keyboard (physical)
+            setupPhysicalKeyboard();
+            
+            // Check rate limit
+            checkRateLimit();
+            
+            console.log('✅ Login page ready');
+        }
+        
+        // ============================================
+        // CHECK EXISTING SESSION
+        // ============================================
+        function checkExistingSession() {
+            const rememberMe = localStorage.getItem('kmca_owner_remember') === '1';
+            if (!rememberMe) return false;
+            
+            const ownerData = localStorage.getItem('kmca_owner_backup');
+            const lastTime = localStorage.getItem('kmca_owner_backup_time');
+            
+            if (!ownerData || !lastTime) return false;
+            
+            const elapsed = Date.now() - new Date(lastTime).getTime();
+            return elapsed < TIMEOUT_MS;
+        }
+        
+        // ============================================
+        // REDIRECT
+        // ============================================
+        function redirectToWelcome() {
+            window.location.href = 'welcome.html';
+        }
+        
+        // ============================================
+        // LOAD BACKGROUND
+        // ============================================
+        async function loadBackgroundImage() {
+            if (!supabaseClient) return;
+            
+            try {
+                const { data } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_value')
+                    .eq('setting_key', 'intro_logo')
+                    .maybeSingle();
+                
+                if (data?.setting_value) {
+                    const img = new Image();
+                    img.onload = () => {
+                        els.bgImage.style.backgroundImage = `url(${data.setting_value})`;
+                        els.bgImage.classList.add('loaded');
+                    };
+                    img.onerror = () => {
+                        console.log('⚠️ Background image failed to load');
+                    };
+                    img.src = data.setting_value;
+                }
+            } catch (e) {
+                console.log('Background load error:', e);
+            }
+        }
+        
+        // ============================================
+        // LOAD STATISTICS
+        // ============================================
+        async function loadStatistics() {
+            if (!supabaseClient) return;
+            
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            
+            // Users count
+            Promise.allSettled([
+                supabaseClient.from('users').select('*', { count: 'exact', head: true }),
+                supabaseClient.from('posts').select('*', { count: 'exact', head: true }),
+                supabaseClient.from('user_activities')
+                    .select('user_id')
+                    .gte('created_at', sevenDaysAgo.toISOString())
+            ]).then(([usersRes, postsRes, activeRes]) => {
+                // Users
+                if (usersRes.status === 'fulfilled' && !usersRes.value.error) {
+                    const count = usersRes.value.count || 0;
+                    els.statUsers.innerHTML = formatNumber(count);
+                } else {
+                    els.statUsers.innerHTML = '—';
+                }
+                
+                // Posts
+                if (postsRes.status === 'fulfilled' && !postsRes.value.error) {
+                    const count = postsRes.value.count || 0;
+                    els.statPosts.innerHTML = formatNumber(count);
+                } else {
+                    els.statPosts.innerHTML = '—';
+                }
+                
+                // Active (unique users)
+                if (activeRes.status === 'fulfilled' && !activeRes.value.error) {
+                    const activities = activeRes.value.data || [];
+                    const uniqueUsers = new Set(activities.map(a => a.user_id).filter(Boolean));
+                    els.statActive.innerHTML = formatNumber(uniqueUsers.size);
+                } else {
+                    els.statActive.innerHTML = '—';
+                }
+            });
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return String(num);
+        }
+        
+        // ============================================
+        // KEYPAD EVENTS
+        // ============================================
+        function setupKeypadEvents() {
+            els.keypadBtns.forEach(btn => {
+                btn.addEventListener('click', handleKeypadClick);
+                
+                // Touch feedback
+                btn.addEventListener('touchstart', () => {
+                    btn.classList.add('pressed');
+                }, { passive: true });
+                
+                btn.addEventListener('touchend', () => {
+                    setTimeout(() => btn.classList.remove('pressed'), 400);
+                }, { passive: true });
+            });
+        }
+        
+        function handleKeypadClick(e) {
+            e.preventDefault();
+            
+            if (state.isProcessing || state.isLocked) return;
+            
+            const btn = e.currentTarget;
+            const digit = btn.getAttribute('data-digit');
+            const action = btn.getAttribute('data-action');
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(10);
+            
+            // Ripple effect
+            btn.classList.add('pressed');
+            setTimeout(() => btn.classList.remove('pressed'), 400);
+            
+            if (digit !== null) {
+                handleDigit(digit);
+            } else if (action === 'backspace') {
+                handleBackspace();
+            } else if (action === 'confirm') {
+                handleConfirm();
+            }
+        }
+        
+        function handleDigit(digit) {
+            if (state.pin.length >= 4) return;
+            
+            state.pin += digit;
+            updatePinDots();
+            
+            // Auto-submit on 4th digit
+            if (state.pin.length === 4) {
+                setTimeout(handleConfirm, 300);
+            }
+        }
+        
+        function handleBackspace() {
+            if (state.pin.length === 0) return;
+            
+            state.pin = state.pin.slice(0, -1);
+            updatePinDots();
+        }
+        
+        function handleConfirm() {
+            if (state.pin.length !== 4) {
+                showError('Weka PIN nne');
+                shakeDots();
+                return;
+            }
+            
+            if (state.isProcessing || state.isLocked) return;
+            
+            verifyPin(state.pin);
+        }
+        
+        // ============================================
+        // UPDATE PIN DOTS
+        // ============================================
+        function updatePinDots() {
+            els.dots.forEach((dot, i) => {
+                if (i < state.pin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            });
+            
+            // Success state
+            if (state.pin.length === 4) {
+                els.pinDots.classList.add('success');
+            } else {
+                els.pinDots.classList.remove('success');
+            }
+        }
+        
+        function shakeDots() {
+            els.pinDots.classList.add('error');
+            setTimeout(() => {
+                els.pinDots.classList.remove('error');
+            }, 500);
+        }
+        
+        // ============================================
+        // VERIFY PIN
+        // ============================================
+        async function verifyPin(pin) {
+            if (!supabaseClient) {
+                showError('Supabase haipo');
+                return;
+            }
+            
+            state.isProcessing = true;
+            disableKeypad();
+            showLoading('Inathibitisha...');
+            
+            try {
+                // Query owners table
+                const { data, error } = await supabaseClient
+                    .from('owners')
+                    .select('*')
+                    .eq('pin', pin)
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                hideLoading();
+                
+                if (!data || data.length === 0) {
+                    // Wrong PIN
+                    handleWrongPin();
+                    return;
+                }
+                
+                // Success!
+                const owner = data[0];
+                handleLoginSuccess(owner);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('❌ Login error:', error);
+                showError('Imeshindikana ku-check. Jaribu tena.');
+                resetPin();
+                enableKeypad();
+                state.isProcessing = false;
+            }
+        }
+        
+        // ============================================
+        // WRONG PIN
+        // ============================================
+        function handleWrongPin() {
+            console.log('❌ Wrong PIN');
+            
+            // Increment attempts
+            state.attempts++;
+            saveAttempts();
+            
+            // Shake
+            shakeDots();
+            
+            // Show error
+            const remaining = RATE_LIMIT.maxAttempts - state.attempts;
+            
+            if (remaining > 0) {
+                showError(`PIN si sahihi. Jaribio ${state.attempts}/${RATE_LIMIT.maxAttempts}`);
+            } else {
+                showError('Umezidi majaribio. Subiri dakika 5.');
+                lockLogin();
+            }
+            
+            // Haptic
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            
+            // Reset PIN
+            setTimeout(() => {
+                resetPin();
+                enableKeypad();
+                state.isProcessing = false;
+            }, 600);
+        }
+        
+        // ============================================
+        // LOGIN SUCCESS
+        // ============================================
+        function handleLoginSuccess(owner) {
+            console.log('✅ Login successful:', owner.jina);
+            
+            // Haptic
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            
+            // Clear rate limit
+            clearAttempts();
+            
+            // Save session
+            saveOwnerSession(owner);
+            
+            // Show success
+            showToast('Karibu ' + (owner.jina?.split(' ')[0] || 'Owner') + '!', 'success');
+            
+            // Redirect
+            setTimeout(() => {
+                redirectToWelcome();
+            }, 800);
+        }
+        
+        // ============================================
+        // SAVE SESSION
+        // ============================================
+        function saveOwnerSession(owner) {
+            // Always sessionStorage
+            sessionStorage.setItem('kmca_owner', JSON.stringify(owner));
+            
+            // Remember me = localStorage backup
+            if (els.rememberMe.checked) {
+                localStorage.setItem('kmca_owner_backup', JSON.stringify(owner));
+                localStorage.setItem('kmca_owner_backup_time', new Date().toISOString());
+                localStorage.setItem('kmca_owner_remember', '1');
+            } else {
+                localStorage.removeItem('kmca_owner_backup');
+                localStorage.removeItem('kmca_owner_backup_time');
+                localStorage.removeItem('kmca_owner_remember');
+            }
+        }
+        
+        // ============================================
+        // RESET PIN
+        // ============================================
+        function resetPin() {
+            state.pin = '';
+            updatePinDots();
+            els.pinDots.classList.remove('error', 'success');
+        }
+        
+        // ============================================
+        // ENABLE/DISABLE KEYPAD
+        // ============================================
+        function disableKeypad() {
+            els.keypadBtns.forEach(btn => btn.disabled = true);
+        }
+        
+        function enableKeypad() {
+            els.keypadBtns.forEach(btn => btn.disabled = false);
+        }
+        
+        // ============================================
+        // SHOW ERROR
+        // ============================================
+        function showError(message) {
+            els.errorText.textContent = message;
+            els.errorMessage.classList.add('show');
+            
+            clearTimeout(showError._timer);
+            showError._timer = setTimeout(() => {
+                els.errorMessage.classList.remove('show');
+            }, 4000);
+        }
+        
+        function hideError() {
+            els.errorMessage.classList.remove('show');
+        }
+        
+        // ============================================
+        // LOADING
+        // ============================================
+        function showLoading(text = 'Inaingia...') {
+            els.loadingText.textContent = text;
+            els.loadingOverlay.classList.add('active');
+        }
+        
+        function hideLoading() {
+            els.loadingOverlay.classList.remove('active');
+        }
+        
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            
+            els.toastIcon.className = 'fas ' + (icons[type] || icons.success);
+            els.toast.className = 'toast ' + type;
+            els.toastText.textContent = message;
+            
+            els.toast.classList.add('show');
+            
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => {
+                els.toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // ============================================
+        // PHYSICAL KEYBOARD
+        // ============================================
+        function setupPhysicalKeyboard() {
+            document.addEventListener('keydown', (e) => {
+                if (state.isProcessing || state.isLocked) return;
+                if (els.forgotPinModal.classList.contains('active')) return;
+                
+                // Numbers
+                if (/^[0-9]$/.test(e.key)) {
+                    handleDigit(e.key);
+                    flashKeypadButton(e.key);
+                    return;
+                }
+                
+                // Backspace
+                if (e.key === 'Backspace') {
+                    e.preventDefault();
+                    handleBackspace();
+                    return;
+                }
+                
+                // Enter
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleConfirm();
+                    return;
+                }
+                
+                // Escape
+                if (e.key === 'Escape') {
+                    hideError();
+                    resetPin();
+                }
+            });
+        }
+        
+        function flashKeypadButton(digit) {
+            const btn = els.keypad.querySelector(`[data-digit="${digit}"]`);
+            if (!btn) return;
+            
+            btn.classList.add('pressed');
+            setTimeout(() => btn.classList.remove('pressed'), 400);
+        }
+        
+        // ============================================
+        // RATE LIMITING
+        // ============================================
+        function checkRateLimit() {
+            const attempts = parseInt(localStorage.getItem('kmca_owner_attempts') || '0', 10);
+            const lockUntil = parseInt(localStorage.getItem('kmca_owner_lock_until') || '0', 10);
+            
+            if (lockUntil > Date.now()) {
+                lockLogin();
+                return;
+            }
+            
+            // Reset attempts if window passed
+            const attemptsTime = parseInt(localStorage.getItem('kmca_owner_attempts_time') || '0', 10);
+            if (Date.now() - attemptsTime > RATE_LIMIT.windowMs) {
+                clearAttempts();
+            } else {
+                state.attempts = attempts;
+            }
+        }
+        
+        function saveAttempts() {
+            localStorage.setItem('kmca_owner_attempts', String(state.attempts));
+            
+            if (!localStorage.getItem('kmca_owner_attempts_time')) {
+                localStorage.setItem('kmca_owner_attempts_time', String(Date.now()));
+            }
+            
+            if (state.attempts >= RATE_LIMIT.maxAttempts) {
+                lockLogin();
+            }
+        }
+        
+        function clearAttempts() {
+            state.attempts = 0;
+            localStorage.removeItem('kmca_owner_attempts');
+            localStorage.removeItem('kmca_owner_attempts_time');
+            localStorage.removeItem('kmca_owner_lock_until');
+            state.isLocked = false;
+        }
+        
+        function lockLogin() {
+            state.isLocked = true;
+            const lockUntil = Date.now() + RATE_LIMIT.windowMs;
+            localStorage.setItem('kmca_owner_lock_until', String(lockUntil));
+            
+            disableKeypad();
+            
+            const unlockIn = Math.ceil((lockUntil - Date.now()) / 1000 / 60);
+            showError(`Umezidi majaribio. Subiri dakika ${unlockIn}.`);
+            
+            // Auto-unlock
+            setTimeout(() => {
+                state.isLocked = false;
+                enableKeypad();
+                clearAttempts();
+                hideError();
+                showToast('Unaweza kujaribu tena', 'info');
+            }, RATE_LIMIT.windowMs);
+        }
+        
+        // ============================================
+        // FORGOT PIN MODAL
+        // ============================================
+        function setupModalEvents() {
+            // Open
+            els.forgotPinBtn.addEventListener('click', openForgotModal);
+            
+            // Close
+            els.forgotPinClose.addEventListener('click', closeForgotModal);
+            
+            // Close on backdrop
+            els.forgotPinModal.addEventListener('click', (e) => {
+                if (e.target === els.forgotPinModal) closeForgotModal();
+            });
+            
+            // Phone input — only numbers
+            els.forgotPhone.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+            });
+            
+            // Show PIN
+            els.showPinBtn.addEventListener('click', handleShowPin);
+            
+            // Enter key
+            els.forgotPhone.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleShowPin();
+                }
+            });
+        }
+        
+        function openForgotModal() {
+            els.forgotPinModal.classList.add('active');
+            els.forgotPhone.value = '';
+            els.pinResult.classList.remove('show');
+            setTimeout(() => els.forgotPhone.focus(), 300);
+        }
+        
+        function closeForgotModal() {
+            els.forgotPinModal.classList.remove('active');
+        }
+        
+        async function handleShowPin() {
+            if (!supabaseClient) return;
+            
+            const phone = els.forgotPhone.value.trim();
+            
+            if (!phone || phone.length !== 10) {
+                showToast('Weka namba ya simu (tarakimu 10)', 'warning');
+                return;
+            }
+            
+            els.showPinBtn.disabled = true;
+            els.showPinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Inatafuta...</span>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('owners')
+                    .select('jina, pin')
+                    .eq('phone', phone)
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    const owner = data[0];
+                    els.ownerNameDisplay.textContent = owner.jina || 'Owner';
+                    els.ownerPinDisplay.textContent = owner.pin || '••••';
+                    els.pinResult.classList.add('show');
+                    
+                    // Haptic
+                    if (navigator.vibrate) navigator.vibrate([30, 20, 30]);
+                } else {
+                    showToast('Namba haipo kwenye mfumo', 'error');
+                    els.pinResult.classList.remove('show');
+                }
+            } catch (error) {
+                console.error('Show PIN error:', error);
+                showToast('Imeshindikana kutafuta', 'error');
+            } finally {
+                els.showPinBtn.disabled = false;
+                els.showPinBtn.innerHTML = '<i class="fas fa-search"></i> <span>Onyesha PIN</span>';
+            }
+        }
+        
+        // ============================================
+        // BIOMETRIC (WebAuthn — kama inaruhusu)
+        // ============================================
+        async function setupBiometric() {
+            // Check kama WebAuthn inaruhusu
+            if (!window.PublicKeyCredential) {
+                els.biometricBtn.classList.add('hidden');
+                return;
+            }
+            
+            try {
+                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                
+                if (!available) {
+                    els.biometricBtn.classList.add('hidden');
+                    return;
+                }
+                
+                // Show biometric button
+                els.biometricBtn.classList.remove('hidden');
+                
+                // Click handler
+                els.biometricBtn.addEventListener('click', handleBiometricLogin);
+                
+            } catch (e) {
+                console.log('Biometric not available:', e);
+                els.biometricBtn.classList.add('hidden');
+            }
+        }
+        
+        async function handleBiometricLogin() {
+            // Simple stub — tuna-check kama owner amesave kwenye localStorage
+            const ownerData = localStorage.getItem('kmca_owner_backup');
+            
+            if (!ownerData) {
+                showToast('Kwanza ingia kwa PIN, kisha ukiweka Remember Me, utaweza kutumia biometric.', 'info');
+                return;
+            }
+            
+            // Kwa sasa, tumia PIN ya session iliyopita (demo)
+            // Kwa production, tungetumia WebAuthn API halisi
+            
+            showToast('Biometric inatakiwa WebAuthn setup. Tumia PIN kwa sasa.', 'info');
+        }
+        
+        // ============================================
+        // REMEMBER ME
+        // ============================================
+        function setupRememberMe() {
+            const saved = localStorage.getItem('kmca_owner_remember') === '1';
+            els.rememberMe.checked = saved;
+            
+            els.rememberMe.addEventListener('change', () => {
+                if (els.rememberMe.checked) {
+                    localStorage.setItem('kmca_owner_remember', '1');
+                } else {
+                    localStorage.removeItem('kmca_owner_remember');
+                }
+            });
+        }
+        
+        // ============================================
+        // AUTO-INIT
+        // ============================================
+        function ready(fn) {
+            if (document.readyState !== 'loading') {
+                fn();
+            } else {
+                document.addEventListener('DOMContentLoaded', fn);
+            }
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_LOGIN v2.0 loaded');
+        
+    })();
+    </script>
+</body>
+</html>

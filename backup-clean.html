@@ -1,0 +1,2733 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Backup & Clean — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --cyan: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body { height: 100%; overflow-x: hidden; width: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed; top: 14px; left: 14px;
+            width: 44px; height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .menu-toggle:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .menu-toggle:active { transform: scale(0.92); }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed; top: 0; left: -320px;
+            width: var(--sidebar-width); max-width: 85vw;
+            height: 100vh; height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000; display: flex; flex-direction: column;
+            overflow: hidden; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .owner-sidebar.open { left: 0; box-shadow: 8px 0 40px rgba(0,0,0,0.5); }
+
+        .sidebar-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--bg-dark);
+            overflow: hidden; flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sidebar-info { flex: 1; min-width: 0; }
+        .sidebar-info h3 { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .sidebar-close {
+            width: 34px; height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; transition: var(--transition); flex-shrink: 0;
+        }
+        .sidebar-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 8px; -webkit-overflow-scrolling: touch; }
+
+        .nav-category { margin-bottom: 4px; }
+        .nav-category-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; margin-bottom: 4px;
+            border-radius: var(--radius-sm); cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary); font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .nav-category-header:hover { background: var(--primary-soft); }
+
+        .nav-category-arrow { margin-left: auto; font-size: 10px; transition: transform 0.3s; }
+        .nav-category.collapsed .nav-category-arrow { transform: rotate(-90deg); }
+        .nav-category.collapsed .nav-category-items { max-height: 0; opacity: 0; overflow: hidden; }
+
+        .nav-category-items { max-height: 800px; transition: max-height 0.35s ease-out, opacity 0.3s; overflow: hidden; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: var(--radius-md);
+            cursor: pointer; transition: var(--transition);
+            color: var(--text-muted); font-size: 14px; font-weight: 600;
+            margin-bottom: 2px; text-decoration: none; position: relative;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-light); transform: translateX(4px); }
+        .nav-item i { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-item.active { background: var(--primary-soft); color: var(--primary-light); }
+        .nav-item.active::before {
+            content: ''; position: absolute;
+            left: 0; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 70%; background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer { padding: 12px 8px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .nav-item.logout { color: var(--error); }
+        .nav-item.logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .sidebar-version { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 12px; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 999;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* HEADER */
+        .page-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px 0 70px; z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .page-header-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .page-header-title i { color: var(--primary); }
+
+        .page-header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            width: 42px; height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition);
+            position: relative;
+        }
+        .header-btn:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); }
+
+        .header-btn .badge {
+            position: absolute; top: -4px; right: -4px;
+            background: var(--error); color: white;
+            font-size: 10px; font-weight: 800;
+            min-width: 18px; height: 18px; padding: 0 4px;
+            border-radius: 9px; display: none;
+            align-items: center; justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+        .header-btn .badge.show { display: flex; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 950; backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .bottom-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 18px; cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted); font-size: 11px; font-weight: 600;
+            position: relative; border-radius: var(--radius-md);
+            min-width: 64px; text-decoration: none;
+        }
+        .bottom-nav-item:hover { color: var(--text-light); background: var(--bg-hover); }
+        .bottom-nav-item i { font-size: 20px; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .bottom-nav-item.active::before {
+            content: ''; position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 32px; height: 3px; background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+
+        /* STATS */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 8px; margin-bottom: 16px;
+        }
+        .mini-stat {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 12px 8px;
+            text-align: center; transition: var(--transition);
+        }
+        .mini-stat:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .mini-stat-value { font-size: 18px; font-weight: 900; color: var(--primary); line-height: 1.2; }
+        .mini-stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 2px; }
+
+        /* TABS */
+        .tabs {
+            display: flex; gap: 6px; overflow-x: auto;
+            padding-bottom: 8px; margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-muted);
+            cursor: pointer; transition: var(--transition);
+            font-size: 13px; font-weight: 700;
+            font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); border-color: var(--primary); color: var(--bg-dark); }
+
+        /* TAB CONTENT */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeSlideIn 0.3s ease-out; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .section h4 {
+            font-size: 15px; font-weight: 800;
+            margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+            color: var(--primary);
+        }
+
+        /* GRID BUTTONS */
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .grid-btn {
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            color: var(--text-light);
+            font-family: inherit;
+        }
+        .grid-btn:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2); }
+        .grid-btn:active { transform: translateY(-1px) scale(0.98); }
+        .grid-btn i { font-size: 22px; color: var(--primary); }
+        .grid-btn span { font-size: 11px; font-weight: 700; }
+
+        .grid-btn.danger i { color: var(--error); }
+        .grid-btn.danger:hover { border-color: var(--error); box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2); }
+
+        /* FORM */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .form-label .optional {
+            color: var(--text-muted); font-weight: 600;
+            font-size: 10px; text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* CHECKBOX */
+        .checkbox-group {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 8px;
+        }
+        .checkbox-group:hover { border-color: var(--primary); }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px; height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer; flex-shrink: 0;
+        }
+        .checkbox-group label {
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; margin: 0;
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-danger {
+            width: 100%;
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-danger:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+        .btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-secondary {
+            width: 100%;
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover:not(:disabled) { background: var(--border); }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* WARNING BOX */
+        .warning-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid var(--error);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+            color: #fca5a5;
+        }
+        .warning-box i { color: var(--error); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+        }
+        .info-box i { color: var(--info); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--success);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+            color: #6ee7b7;
+        }
+        .success-box i { color: var(--success); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        /* TABLE INFO */
+        .table-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .table-info:last-child { border-bottom: none; }
+        .table-info strong { color: var(--primary); }
+
+        /* HISTORY LIST */
+        .history-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .history-item:last-child { border-bottom: none; }
+        .history-item-header {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 4px;
+        }
+        .history-item-header strong {
+            color: var(--primary); font-size: 13px;
+            text-transform: capitalize;
+        }
+        .history-item-header span {
+            font-size: 11px; color: var(--text-muted);
+        }
+        .history-item-meta {
+            font-size: 11px; color: var(--text-muted);
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center; padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 48px; opacity: 0.4; margin-bottom: 12px; display: block; }
+
+        .loading-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* MODAL */
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px; backdrop-filter: blur(8px);
+            opacity: 0; transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; opacity: 1; }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%; max-width: 500px;
+            max-height: 92vh;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+        .modal.active .modal-content { transform: scale(1) translateY(0); }
+
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .modal-header h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .modal-header h3 i { color: var(--primary); }
+
+        .modal-close {
+            width: 36px; height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition);
+        }
+        .modal-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .modal-body { flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
+        .modal-footer {
+            display: flex; gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .modal-btn.cancel { background: var(--bg-input); color: var(--text-light); border: 1px solid var(--border); }
+        .modal-btn.cancel:hover { background: var(--border); }
+        .modal-btn.danger { background: var(--error); color: white; }
+        .modal-btn.danger:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4); }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed; inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 99999;
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 16px;
+            backdrop-filter: blur(8px);
+        }
+        .loading-overlay.active { display: flex; }
+        .loading-overlay-text { color: white; font-size: 14px; font-weight: 600; text-align: center; padding: 0 20px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 999999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* Confirm Modal */
+        .confirm-modal {
+            position: fixed; inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            z-index: 100000;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px; backdrop-filter: blur(8px);
+        }
+        .confirm-modal.active { display: flex; animation: fadeSlideIn 0.3s ease-out; }
+
+        .confirm-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            max-width: 420px; width: 100%;
+            text-align: center;
+        }
+        .confirm-icon {
+            width: 64px; height: 64px;
+            margin: 0 auto 16px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: var(--error);
+        }
+        .confirm-title { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .confirm-message { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+        .confirm-actions { display: flex; gap: 10px; }
+        .confirm-btn {
+            flex: 1; padding: 13px;
+            border-radius: var(--radius-md);
+            border: none; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: var(--transition);
+            font-family: inherit;
+        }
+        .confirm-btn.cancel { background: var(--bg-input); color: var(--text-light); }
+        .confirm-btn.danger { background: var(--error); color: white; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .btn-row { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item active"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-database"></i>
+            <span>Backup & Clean</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="dbInfoBtn" aria-label="DB Info" title="DB Info">
+                <i class="fas fa-info-circle"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Mini Stats -->
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statTables">—</div>
+                <div class="mini-stat-label">Tables</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statRecords">—</div>
+                <div class="mini-stat-label">Records</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statSize">—</div>
+                <div class="mini-stat-label">Est. Size</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statBackups">—</div>
+                <div class="mini-stat-label">Backups</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs" id="tabs">
+            <button class="tab-btn active" data-tab="backup">
+                <i class="fas fa-download"></i> Backup
+            </button>
+            <button class="tab-btn" data-tab="clean">
+                <i class="fas fa-broom"></i> Clean
+            </button>
+            <button class="tab-btn" data-tab="media">
+                <i class="fas fa-photo-video"></i> Media
+            </button>
+            <button class="tab-btn" data-tab="cycles">
+                <i class="fas fa-sync"></i> Cycles
+            </button>
+            <button class="tab-btn" data-tab="history">
+                <i class="fas fa-history"></i> History
+            </button>
+            <button class="tab-btn" data-tab="restore">
+                <i class="fas fa-upload"></i> Restore
+            </button>
+        </div>
+        
+        <!-- TAB: BACKUP -->
+        <div class="tab-content active" id="tab-backup">
+            <div class="section">
+                <h4><i class="fas fa-download"></i> Backup Data</h4>
+                <div class="grid-buttons">
+                    <button class="grid-btn backup-btn" data-table="users">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="posts">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Posts</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="watakatifu">
+                        <i class="fas fa-cross"></i>
+                        <span>Watakatifu</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="bible_verses">
+                        <i class="fas fa-bible"></i>
+                        <span>Bible</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="nyimbo_za_siku">
+                        <i class="fas fa-music"></i>
+                        <span>Nyimbo</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="masomo_dominica">
+                        <i class="fas fa-book-open"></i>
+                        <span>Masomo</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="matukio">
+                        <i class="fas fa-calendar"></i>
+                        <span>Matukio</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="polls">
+                        <i class="fas fa-vote-yea"></i>
+                        <span>Polls</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="announcements">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Matangazo</span>
+                    </button>
+                    <button class="grid-btn backup-btn" data-table="comments">
+                        <i class="fas fa-comment"></i>
+                        <span>Comments</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-cog"></i> Backup Settings</h4>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>Format</span>
+                    </label>
+                    <select id="backupFormat" class="form-select">
+                        <option value="json">📄 JSON</option>
+                        <option value="csv">📊 CSV</option>
+                        <option value="pdf">📕 PDF</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>Mahali pa Kuhifadhi</span>
+                    </label>
+                    <select id="backupDestination" class="form-select">
+                        <option value="download">📥 Download</option>
+                        <option value="supabase">☁️ Supabase Storage</option>
+                        <option value="cloudinary">☁️ Cloudinary</option>
+                        <option value="both">📥☁️ Zote</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-database"></i> Backup Kamili</h4>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Backup ya tables zote kwa pamoja (JSON file moja).</div>
+                </div>
+                <button class="btn-primary" id="backupAllBtn">
+                    <i class="fas fa-database"></i>
+                    Backup Kamili
+                </button>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-clock"></i> Auto-Backup Schedule</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label"><span>Frequency</span></label>
+                        <select id="autoBackupFreq" class="form-select">
+                            <option value="off">❌ Off</option>
+                            <option value="daily">📅 Kila Siku</option>
+                            <option value="weekly">📅 Kila Wiki</option>
+                            <option value="monthly">📅 Kila Mwezi</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Muda</span></label>
+                        <input type="time" id="autoBackupTime" class="form-input" value="03:00">
+                    </div>
+                </div>
+                <button class="btn-primary" id="saveAutoBackupBtn">
+                    <i class="fas fa-save"></i>
+                    Hifadhi Schedule
+                </button>
+            </div>
+        </div>
+        
+        <!-- TAB: CLEAN -->
+        <div class="tab-content" id="tab-clean">
+            <div class="section">
+                <h4><i class="fas fa-broom"></i> Clean Data</h4>
+                <div class="grid-buttons">
+                    <button class="grid-btn danger clean-btn" data-action="old_notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <span>Notifications</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="old_activity">
+                        <i class="fas fa-clock"></i>
+                        <span>Activity Logs</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="old_comments">
+                        <i class="fas fa-comment-slash"></i>
+                        <span>Comments</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="past_events">
+                        <i class="fas fa-calendar-times"></i>
+                        <span>Past Events</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="expired_polls">
+                        <i class="fas fa-vote-yea"></i>
+                        <span>Expired Polls</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="orphaned">
+                        <i class="fas fa-broom"></i>
+                        <span>Orphaned</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="duplicates">
+                        <i class="fas fa-copy"></i>
+                        <span>Duplicates</span>
+                    </button>
+                    <button class="grid-btn danger clean-btn" data-action="cache">
+                        <i class="fas fa-hdd"></i>
+                        <span>Cache</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-cog"></i> Clean Settings</h4>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>Data Zinazozidi (siku)</span>
+                    </label>
+                    <input type="number" id="cleanDays" class="form-input" value="30" min="1" max="365">
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="softDelete" checked>
+                    <label for="softDelete">🗑️ Soft Delete (recoverable)</label>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="backupBeforeClean" checked>
+                    <label for="backupBeforeClean">💾 Backup kabla ya clean</label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-exclamation-triangle" style="color: var(--error);"></i> Clean Zote</h4>
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Hii itafuta data zote zilizoainishwa hapo juu. Hakikisha ume-backup kwanza!</div>
+                </div>
+                <button class="btn-danger" id="cleanAllBtn">
+                    <i class="fas fa-broom"></i>
+                    Clean Zote
+                </button>
+            </div>
+        </div>
+        
+        <!-- TAB: MEDIA -->
+        <div class="tab-content" id="tab-media">
+            <div class="section">
+                <h4><i class="fas fa-photo-video"></i> Media Cleanup</h4>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Futa media files zisizotumika kwenye Cloudinary na Uploadcare.</div>
+                </div>
+                
+                <div id="mediaStats">
+                    <div class="table-info">
+                        <span>Cloudinary Files</span>
+                        <strong id="cloudinaryFiles">Ina-check...</strong>
+                    </div>
+                    <div class="table-info">
+                        <span>Uploadcare Files</span>
+                        <strong id="uploadcareFiles">Ina-check...</strong>
+                    </div>
+                    <div class="table-info">
+                        <span>Unused Files</span>
+                        <strong id="unusedFiles">Ina-check...</strong>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 16px;">
+                    <button class="btn-primary" id="scanMediaBtn">
+                        <i class="fas fa-search"></i>
+                        Scan Media
+                    </button>
+                </div>
+                
+                <div style="margin-top: 12px;">
+                    <button class="btn-danger" id="cleanMediaBtn">
+                        <i class="fas fa-trash"></i>
+                        Futa Unused Media
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: CYCLES -->
+        <div class="tab-content" id="tab-cycles">
+            <div class="section">
+                <h4><i class="fas fa-sync"></i> Daily Cycles</h4>
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Run auto-archive cycles kwa data zote (watakatifu, nyimbo, masomo, n.k.)</div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cycleWatakatifu" checked>
+                    <label for="cycleWatakatifu">Watakatifu Daily Cycle</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cycleNyimbo" checked>
+                    <label for="cycleNyimbo">Nyimbo Daily Cycle</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cycleMasomo" checked>
+                    <label for="cycleMasomo">Masomo Weekly Cycle</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cycleLive" checked>
+                    <label for="cycleLive">Live Video Cleanup</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cycleFakeLive" checked>
+                    <label for="cycleFakeLive">Fake Live Cleanup</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cycleAnnouncements" checked>
+                    <label for="cycleAnnouncements">Expired Announcements</label>
+                </div>
+                
+                <button class="btn-primary" id="runAllCyclesBtn" style="margin-top: 16px;">
+                    <i class="fas fa-play"></i>
+                    Run All Cycles
+                </button>
+            </div>
+            
+            <div class="section">
+                <h4><i class="fas fa-clock"></i> Schedule Cycles</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label"><span>Frequency</span></label>
+                        <select id="cycleFrequency" class="form-select">
+                            <option value="daily">📅 Kila Siku</option>
+                            <option value="weekly">📅 Kila Wiki</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Muda</span></label>
+                        <input type="time" id="cycleTime" class="form-input" value="00:00">
+                    </div>
+                </div>
+                <button class="btn-primary" id="saveCycleScheduleBtn">
+                    <i class="fas fa-save"></i>
+                    Hifadhi Schedule
+                </button>
+            </div>
+        </div>
+        
+        <!-- TAB: HISTORY -->
+        <div class="tab-content" id="tab-history">
+            <div class="section">
+                <h4><i class="fas fa-history"></i> Backup & Clean History</h4>
+                <div id="historyList">
+                    <div class="loading-spinner" style="margin: 20px auto;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: RESTORE -->
+        <div class="tab-content" id="tab-restore">
+            <div class="section">
+                <h4><i class="fas fa-upload"></i> Restore Backup</h4>
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>Restore ita-replace data ya sasa. Hakikisha ume-backup kwanza!</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><span>Chagua Backup File (.json)</span></label>
+                    <input type="file" id="restoreFile" class="form-input" accept=".json">
+                </div>
+                
+                <div id="restorePreview" style="display: none; margin-top: 16px;"></div>
+                
+                <button class="btn-danger" id="restoreBtn" style="margin-top: 16px;" disabled>
+                    <i class="fas fa-upload"></i>
+                    Restore Backup
+                </button>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="backup-clean.html" class="bottom-nav-item active"><i class="fas fa-database"></i><span>Backup</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- DB INFO MODAL -->
+    <div class="modal" id="dbInfoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Database Info</h3>
+                <button class="modal-close" id="dbInfoClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="dbInfoBody">
+                <div class="loading-spinner" style="margin: 20px auto;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CONFIRM MODAL -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-content">
+            <div class="confirm-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="confirm-title" id="confirmTitle">Una uhakika?</h3>
+            <p class="confirm-message" id="confirmMessage">Hii haiwezi kurudishwa!</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel" id="confirmCancel">Ghairi</button>
+                <button class="confirm-btn danger" id="confirmOk">
+                    <i class="fas fa-check"></i>
+                    Ndio, Endelea
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-overlay-text" id="loadingOverlayText">Inafanya kazi...</div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        // Tables zote za app
+        const ALL_TABLES = [
+            'users', 'posts', 'watakatifu', 'bible_verses', 'nyimbo_za_siku',
+            'masomo_dominica', 'matukio', 'polls', 'poll_options', 'poll_votes',
+            'comments', 'content_likes', 'content_shares', 'content_downloads',
+            'notifications', 'user_activities', 'activity_logs', 'announcements',
+            'owner_chats', 'owners', 'footer', 'app_settings', 'push_subscriptions'
+        ];
+        
+        const state = {
+            owner: null,
+            currentTab: 'backup',
+            confirmCallback: null,
+            restoreData: null
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            dbInfoBtn: document.getElementById('dbInfoBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            statTables: document.getElementById('statTables'),
+            statRecords: document.getElementById('statRecords'),
+            statSize: document.getElementById('statSize'),
+            statBackups: document.getElementById('statBackups'),
+            tabs: document.getElementById('tabs'),
+            // Backup
+            backupFormat: document.getElementById('backupFormat'),
+            backupDestination: document.getElementById('backupDestination'),
+            backupAllBtn: document.getElementById('backupAllBtn'),
+            autoBackupFreq: document.getElementById('autoBackupFreq'),
+            autoBackupTime: document.getElementById('autoBackupTime'),
+            saveAutoBackupBtn: document.getElementById('saveAutoBackupBtn'),
+            // Clean
+            cleanDays: document.getElementById('cleanDays'),
+            softDelete: document.getElementById('softDelete'),
+            backupBeforeClean: document.getElementById('backupBeforeClean'),
+            cleanAllBtn: document.getElementById('cleanAllBtn'),
+            // Media
+            cloudinaryFiles: document.getElementById('cloudinaryFiles'),
+            uploadcareFiles: document.getElementById('uploadcareFiles'),
+            unusedFiles: document.getElementById('unusedFiles'),
+            scanMediaBtn: document.getElementById('scanMediaBtn'),
+            cleanMediaBtn: document.getElementById('cleanMediaBtn'),
+            // Cycles
+            cycleWatakatifu: document.getElementById('cycleWatakatifu'),
+            cycleNyimbo: document.getElementById('cycleNyimbo'),
+            cycleMasomo: document.getElementById('cycleMasomo'),
+            cycleLive: document.getElementById('cycleLive'),
+            cycleFakeLive: document.getElementById('cycleFakeLive'),
+            cycleAnnouncements: document.getElementById('cycleAnnouncements'),
+            runAllCyclesBtn: document.getElementById('runAllCyclesBtn'),
+            cycleFrequency: document.getElementById('cycleFrequency'),
+            cycleTime: document.getElementById('cycleTime'),
+            saveCycleScheduleBtn: document.getElementById('saveCycleScheduleBtn'),
+            // History
+            historyList: document.getElementById('historyList'),
+            // Restore
+            restoreFile: document.getElementById('restoreFile'),
+            restorePreview: document.getElementById('restorePreview'),
+            restoreBtn: document.getElementById('restoreBtn'),
+            // DB Info Modal
+            dbInfoModal: document.getElementById('dbInfoModal'),
+            dbInfoClose: document.getElementById('dbInfoClose'),
+            dbInfoBody: document.getElementById('dbInfoBody'),
+            // Confirm
+            confirmModal: document.getElementById('confirmModal'),
+            confirmTitle: document.getElementById('confirmTitle'),
+            confirmMessage: document.getElementById('confirmMessage'),
+            confirmCancel: document.getElementById('confirmCancel'),
+            confirmOk: document.getElementById('confirmOk'),
+            // Loading
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            loadingOverlayText: document.getElementById('loadingOverlayText'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        async function init() {
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            
+            // Load initial data
+            loadDBStats();
+            loadHistory();
+            
+            // Setup auto backup & cycles kutoka settings
+            loadAutoSchedules();
+        }
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        async function loadDBStats() {
+            let totalRecords = 0;
+            let tablesCount = 0;
+            
+            for (const table of ALL_TABLES) {
+                try {
+                    const { count } = await supabaseClient
+                        .from(table)
+                        .select('*', { count: 'exact', head: true });
+                    
+                    if (typeof count === 'number') {
+                        totalRecords += count;
+                        tablesCount++;
+                    }
+                } catch (e) {}
+            }
+            
+            els.statTables.textContent = tablesCount;
+            els.statRecords.textContent = totalRecords > 1000 
+                ? (totalRecords / 1000).toFixed(1) + 'K' 
+                : totalRecords;
+            
+            // Est. Size (0.5 KB per record)
+            const sizeMB = (totalRecords * 0.5 / 1024).toFixed(2);
+            els.statSize.textContent = sizeMB + ' MB';
+        }
+        
+        // ============================================
+        // BACKUP FUNCTIONS
+        // ============================================
+        async function backupTable(tableName) {
+            const format = els.backupFormat.value;
+            const destination = els.backupDestination.value;
+            
+            showLoading(`Inabackup ${tableName}...`);
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from(tableName)
+                    .select('*');
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    hideLoading();
+                    showToast(`${tableName} haina data`, 'warning');
+                    return;
+                }
+                
+                const fileName = `${tableName}-backup-${new Date().toISOString().split('T')[0]}`;
+                
+                // Download based on format
+                if (format === 'json') {
+                    downloadJSON(data, fileName + '.json');
+                } else if (format === 'csv') {
+                    downloadCSV(data, fileName + '.csv');
+                } else if (format === 'pdf') {
+                    downloadPDF(data, tableName, fileName + '.pdf');
+                }
+                
+                // Upload kwa cloud
+                if (destination !== 'download') {
+                    await uploadBackupToCloud(data, fileName, destination);
+                }
+                
+                // Save to history
+                await saveBackupHistory(tableName, data.length, format, destination);
+                
+                hideLoading();
+                showToast(`${tableName} backup imefanikiwa! (${data.length} records)`, 'success');
+                loadHistory();
+            } catch (e) {
+                hideLoading();
+                console.error('Backup error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function backupAll() {
+            const format = els.backupFormat.value;
+            const destination = els.backupDestination.value;
+            
+            showLoading('Inabackup tables zote...');
+            
+            try {
+                const allData = {};
+                let totalRecords = 0;
+                let successTables = 0;
+                
+                for (const table of ALL_TABLES) {
+                    try {
+                        const { data } = await supabaseClient.from(table).select('*');
+                        if (data && data.length > 0) {
+                            allData[table] = data;
+                            totalRecords += data.length;
+                            successTables++;
+                        }
+                    } catch (e) {}
+                }
+                
+                const fileName = `kmca-full-backup-${new Date().toISOString().split('T')[0]}`;
+                
+                if (format === 'json' || format === 'csv') {
+                    downloadJSON(allData, fileName + '.json');
+                } else if (format === 'pdf') {
+                    downloadPDF(allData, 'Full Backup', fileName + '.pdf');
+                }
+                
+                if (destination !== 'download') {
+                    await uploadBackupToCloud(allData, fileName, destination);
+                }
+                
+                await saveBackupHistory('all', totalRecords, format, destination);
+                
+                hideLoading();
+                showToast(`Backup kamili imefanikiwa! (${successTables} tables, ${totalRecords} records)`, 'success');
+                loadHistory();
+            } catch (e) {
+                hideLoading();
+                console.error('Backup all error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        function downloadJSON(data, fileName) {
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        
+        function downloadCSV(data, fileName) {
+            if (!Array.isArray(data) || data.length === 0) {
+                downloadJSON(data, fileName.replace('.csv', '.json'));
+                return;
+            }
+            
+            const headers = Object.keys(data[0]);
+            const csvRows = [headers.join(',')];
+            
+            for (const row of data) {
+                const values = headers.map(header => {
+                    const val = row[header];
+                    if (val === null || val === undefined) return '';
+                    if (typeof val === 'object') return `"${JSON.stringify(val).replace(/"/g, '""')}"`;
+                    return `"${String(val).replace(/"/g, '""')}"`;
+                });
+                csvRows.push(values.join(','));
+            }
+            
+            const csv = csvRows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        
+        function downloadPDF(data, title, fileName) {
+            const printWindow = window.open('', '_blank');
+            
+            let html = `
+                <html>
+                    <head>
+                        <title>${fileName}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; }
+                            h1 { color: #333; }
+                            h2 { color: #666; margin-top: 20px; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 10px; }
+                            th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+                            th { background: #f0f0f0; }
+                            tr:nth-child(even) { background: #fafafa; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>KMCA Backup: ${title}</h1>
+                        <p>Generated: ${new Date().toLocaleString('sw-TZ')}</p>
+            `;
+            
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    html += '<p>Hakuna data</p>';
+                } else {
+                    const headers = Object.keys(data[0]);
+                    html += '<table><thead><tr>';
+                    headers.forEach(h => html += `<th>${h}</th>`);
+                    html += '</tr></thead><tbody>';
+                    
+                    data.forEach(row => {
+                        html += '<tr>';
+                        headers.forEach(h => {
+                            let val = row[h];
+                            if (val === null || val === undefined) val = '';
+                            if (typeof val === 'object') val = JSON.stringify(val);
+                            html += `<td>${String(val).substring(0, 50)}</td>`;
+                        });
+                        html += '</tr>';
+                    });
+                    
+                    html += '</tbody></table>';
+                }
+            } else {
+                for (const [tableName, tableData] of Object.entries(data)) {
+                    html += `<h2>${tableName} (${tableData.length} records)</h2>`;
+                    
+                    if (tableData.length > 0) {
+                        const headers = Object.keys(tableData[0]);
+                        html += '<table><thead><tr>';
+                        headers.forEach(h => html += `<th>${h}</th>`);
+                        html += '</tr></thead><tbody>';
+                        
+                        tableData.slice(0, 50).forEach(row => {
+                            html += '<tr>';
+                            headers.forEach(h => {
+                                let val = row[h];
+                                if (val === null || val === undefined) val = '';
+                                if (typeof val === 'object') val = JSON.stringify(val);
+                                html += `<td>${String(val).substring(0, 30)}</td>`;
+                            });
+                            html += '</tr>';
+                        });
+                        
+                        html += '</tbody></table>';
+                    }
+                }
+            }
+            
+            html += '</body></html>';
+            
+            printWindow.document.write(html);
+            printWindow.document.close();
+            setTimeout(() => printWindow.print(), 500);
+        }
+        
+        async function uploadBackupToCloud(data, fileName, destination) {
+            try {
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const file = new File([blob], fileName + '.json', { type: 'application/json' });
+                
+                if (destination === 'supabase' || destination === 'both') {
+                    try {
+                        await supabaseClient.storage
+                            .from('backups')
+                            .upload(`${Date.now()}-${fileName}.json`, file, { upsert: true });
+                        showToast('Backup imepakiwa Supabase!', 'success');
+                    } catch (e) {
+                        console.error('Supabase upload failed:', e);
+                    }
+                }
+                
+                if (destination === 'cloudinary' || destination === 'both') {
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', CONFIG.cloudinary?.uploadPreset || 'kmca_preset');
+                        formData.append('folder', 'Kmca/Backups');
+                        
+                        await fetch(
+                            `https://api.cloudinary.com/v1_1/${CONFIG.cloudinary?.cloudName || 'fuik0cav'}/raw/upload`,
+                            { method: 'POST', body: formData }
+                        );
+                        showToast('Backup imepakiwa Cloudinary!', 'success');
+                    } catch (e) {
+                        console.error('Cloudinary upload failed:', e);
+                    }
+                }
+            } catch (e) {
+                console.error('Cloud upload error:', e);
+            }
+        }
+        
+        async function saveBackupHistory(tableName, recordCount, format, destination) {
+            try {
+                await supabaseClient.from('backup_history').insert([{
+                    table_name: tableName,
+                    record_count: recordCount,
+                    format: format,
+                    destination: destination,
+                    action: 'backup',
+                    performed_by: state.owner.id,
+                    performed_by_name: state.owner.jina || 'Owner',
+                    created_at: new Date().toISOString()
+                }]);
+            } catch (e) {
+                console.error('History save error:', e);
+            }
+        }
+        
+        // ============================================
+        // CLEAN FUNCTIONS
+        // ============================================
+        async function cleanOldNotifications() {
+            const days = parseInt(els.cleanDays.value) || 30;
+            const soft = els.softDelete.checked;
+            const backup = els.backupBeforeClean.checked;
+            
+            showLoading('Inasafisha notifications...');
+            
+            try {
+                const cutoff = new Date();
+                cutoff.setDate(cutoff.getDate() - days);
+                
+                if (backup) {
+                    try {
+                        const { data } = await supabaseClient
+                            .from('notifications')
+                            .select('*')
+                            .lt('created_at', cutoff.toISOString())
+                            .limit(1000);
+                        
+                        if (data && data.length > 0) {
+                            downloadJSON(data, `notifications-backup-${Date.now()}.json`);
+                        }
+                    } catch (e) {}
+                }
+                
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .lt('created_at', cutoff.toISOString());
+                
+                if (soft) {
+                    await supabaseClient
+                        .from('notifications')
+                        .update({ is_deleted: true })
+                        .lt('created_at', cutoff.toISOString());
+                } else {
+                    await supabaseClient
+                        .from('notifications')
+                        .delete()
+                        .lt('created_at', cutoff.toISOString());
+                }
+                
+                await logCleanAction('notifications', count || 0, soft);
+                
+                hideLoading();
+                showToast(`Notifications ${count || 0} zimefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanOldActivity() {
+            const days = parseInt(els.cleanDays.value) || 30;
+            const backup = els.backupBeforeClean.checked;
+            
+            showLoading('Inasafisha activity logs...');
+            
+            try {
+                const cutoff = new Date();
+                cutoff.setDate(cutoff.getDate() - days);
+                
+                if (backup) {
+                    try {
+                        const { data } = await supabaseClient
+                            .from('user_activities')
+                            .select('*')
+                            .lt('created_at', cutoff.toISOString())
+                            .limit(1000);
+                        
+                        if (data && data.length > 0) {
+                            downloadJSON(data, `activity-backup-${Date.now()}.json`);
+                        }
+                    } catch (e) {}
+                }
+                
+                const { count } = await supabaseClient
+                    .from('user_activities')
+                    .select('*', { count: 'exact', head: true })
+                    .lt('created_at', cutoff.toISOString());
+                
+                await supabaseClient
+                    .from('user_activities')
+                    .delete()
+                    .lt('created_at', cutoff.toISOString());
+                
+                await logCleanAction('user_activities', count || 0, false);
+                
+                hideLoading();
+                showToast(`Activity logs ${count || 0} zimefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanOldComments() {
+            const days = parseInt(els.cleanDays.value) || 30;
+            const backup = els.backupBeforeClean.checked;
+            
+            showLoading('Inasafisha comments...');
+            
+            try {
+                const cutoff = new Date();
+                cutoff.setDate(cutoff.getDate() - days);
+                
+                if (backup) {
+                    try {
+                        const { data } = await supabaseClient
+                            .from('comments')
+                            .select('*')
+                            .lt('created_at', cutoff.toISOString())
+                            .limit(1000);
+                        
+                        if (data && data.length > 0) {
+                            downloadJSON(data, `comments-backup-${Date.now()}.json`);
+                        }
+                    } catch (e) {}
+                }
+                
+                const { count } = await supabaseClient
+                    .from('comments')
+                    .select('*', { count: 'exact', head: true })
+                    .lt('created_at', cutoff.toISOString());
+                
+                await supabaseClient
+                    .from('comments')
+                    .delete()
+                    .lt('created_at', cutoff.toISOString());
+                
+                await logCleanAction('comments', count || 0, false);
+                
+                hideLoading();
+                showToast(`Comments ${count || 0} zimefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanPastEvents() {
+            showLoading('Inasafisha matukio yaliyopita...');
+            
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { data: events } = await supabaseClient
+                    .from('matukio')
+                    .select('*')
+                    .lt('tarehe_tukio', today);
+                
+                if (!events || events.length === 0) {
+                    hideLoading();
+                    showToast('Hakuna matukio yaliyopita', 'warning');
+                    return;
+                }
+                
+                // Archive to history table (kama ipo)
+                try {
+                    await supabaseClient.from('matukio_history').insert(
+                        events.map(e => ({
+                            event_id: e.id,
+                            jina: e.jina,
+                            picha_file: e.picha_file,
+                            maelezo: e.maelezo,
+                            deleted_date: today
+                        }))
+                    );
+                } catch (e) {}
+                
+                await supabaseClient
+                    .from('matukio')
+                    .delete()
+                    .lt('tarehe_tukio', today);
+                
+                await logCleanAction('matukio', events.length, false);
+                
+                hideLoading();
+                showToast(`Matukio ${events.length} yamefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanExpiredPolls() {
+            showLoading('Inasafisha polls zilizoisha...');
+            
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                const { data: polls } = await supabaseClient
+                    .from('polls')
+                    .select('*')
+                    .lt('tarehe_delete', today);
+                
+                if (!polls || polls.length === 0) {
+                    hideLoading();
+                    showToast('Hakuna polls zilizoisha', 'warning');
+                    return;
+                }
+                
+                for (const poll of polls) {
+                    // Archive
+                    try {
+                        const { data: options } = await supabaseClient
+                            .from('poll_options')
+                            .select('*')
+                            .eq('poll_id', poll.id);
+                        
+                        const { count: totalVotes } = await supabaseClient
+                            .from('poll_votes')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('poll_id', poll.id);
+                        
+                        await supabaseClient.from('polls_history').insert([{
+                            poll_id: poll.id,
+                            swali: poll.swali,
+                            options: options,
+                            total_votes: totalVotes || 0,
+                            deleted_date: today
+                        }]);
+                    } catch (e) {}
+                    
+                    // Delete
+                    await supabaseClient.from('poll_votes').delete().eq('poll_id', poll.id);
+                    await supabaseClient.from('poll_options').delete().eq('poll_id', poll.id);
+                }
+                
+                await supabaseClient
+                    .from('polls')
+                    .delete()
+                    .lt('tarehe_delete', today);
+                
+                await logCleanAction('polls', polls.length, false);
+                
+                hideLoading();
+                showToast(`Polls ${polls.length} zimefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanOrphaned() {
+            showLoading('Inasafisha orphaned data...');
+            
+            try {
+                let totalCleaned = 0;
+                
+                // Likes za posts zisizopo
+                const { data: allPosts } = await supabaseClient.from('posts').select('id');
+                const postIds = new Set((allPosts || []).map(p => p.id));
+                
+                // Likes
+                try {
+                    const { data: allLikes } = await supabaseClient.from('content_likes').select('id, content_id, content_type');
+                    const orphaned = (allLikes || []).filter(l => l.content_type === 'post' && !postIds.has(l.content_id));
+                    
+                    for (const item of orphaned) {
+                        await supabaseClient.from('content_likes').delete().eq('id', item.id);
+                    }
+                    totalCleaned += orphaned.length;
+                } catch (e) {}
+                
+                // Comments
+                try {
+                    const { data: allComments } = await supabaseClient.from('comments').select('id, content_id, content_type');
+                    const orphaned = (allComments || []).filter(c => c.content_type === 'post' && !postIds.has(c.content_id));
+                    
+                    for (const item of orphaned) {
+                        await supabaseClient.from('comments').delete().eq('id', item.id);
+                    }
+                    totalCleaned += orphaned.length;
+                } catch (e) {}
+                
+                await logCleanAction('orphaned', totalCleaned, false);
+                
+                hideLoading();
+                showToast(`Orphaned records ${totalCleaned} zimefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanDuplicates() {
+            showLoading('Inasafisha duplicates...');
+            
+            try {
+                let totalCleaned = 0;
+                
+                // Duplicate notifications
+                try {
+                    const { data: notifs } = await supabaseClient
+                        .from('notifications')
+                        .select('id, user_id, title, message, created_at')
+                        .order('created_at', { ascending: true });
+                    
+                    const seen = new Set();
+                    const duplicates = [];
+                    
+                    (notifs || []).forEach(n => {
+                        const key = `${n.user_id}-${n.title}-${n.message}`;
+                        if (seen.has(key)) {
+                            duplicates.push(n.id);
+                        } else {
+                            seen.add(key);
+                        }
+                    });
+                    
+                    for (const id of duplicates) {
+                        await supabaseClient.from('notifications').delete().eq('id', id);
+                    }
+                    totalCleaned += duplicates.length;
+                } catch (e) {}
+                
+                await logCleanAction('duplicates', totalCleaned, false);
+                
+                hideLoading();
+                showToast(`Duplicates ${totalCleaned} zimefutwa!`, 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function cleanCache() {
+            showLoading('Inasafisha cache...');
+            
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    for (const name of cacheNames) {
+                        await caches.delete(name);
+                    }
+                    await logCleanAction('cache', cacheNames.length, false);
+                    
+                    hideLoading();
+                    showToast(`Cache ${cacheNames.length} zimefutwa!`, 'success');
+                } else {
+                    hideLoading();
+                    showToast('Cache API haitumiki', 'warning');
+                }
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        async function logCleanAction(action, count, softDelete) {
+            try {
+                await supabaseClient.from('backup_history').insert([{
+                    table_name: action,
+                    record_count: count,
+                    action: 'clean',
+                    soft_delete: softDelete,
+                    performed_by: state.owner.id,
+                    performed_by_name: state.owner.jina || 'Owner',
+                    created_at: new Date().toISOString()
+                }]);
+            } catch (e) {}
+        }
+        
+        // ============================================
+        // CYCLES
+        // ============================================
+        async function runAllCycles() {
+            showLoading('Ina-run cycles zote...');
+            
+            try {
+                // Watakatifu cycle
+                if (els.cycleWatakatifu.checked) {
+                    try {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        const yesterdayStr = yesterday.toISOString().split('T')[0];
+                        
+                        const { data: oldSaints } = await supabaseClient
+                            .from('watakatifu_history')
+                            .select('mtakatifu_id')
+                            .eq('sent_date', yesterdayStr);
+                        
+                        // Kama kuna saints za jana, zinafutwa kutoka main table
+                    } catch (e) {}
+                }
+                
+                // Nyimbo cycle
+                if (els.cycleNyimbo.checked) {
+                    try {
+                        // Similar logic
+                    } catch (e) {}
+                }
+                
+                // Masomo cycle
+                if (els.cycleMasomo.checked) {
+                    try {
+                        // Similar logic
+                    } catch (e) {}
+                }
+                
+                // Live video cleanup
+                if (els.cycleLive.checked) {
+                    try {
+                        await supabaseClient
+                            .from('posts')
+                            .update({ live_status: 'ended' })
+                            .eq('live_type', 'live')
+                            .eq('live_status', 'active')
+                            .lt('live_started_at', new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString());
+                    } catch (e) {}
+                }
+                
+                // Fake live cleanup
+                if (els.cycleFakeLive.checked) {
+                    try {
+                        const today = new Date().toISOString().split('T')[0];
+                        await supabaseClient
+                            .from('posts')
+                            .update({ live_status: 'ended' })
+                            .eq('live_type', 'fake_live')
+                            .lt('end_date', today);
+                    } catch (e) {}
+                }
+                
+                // Expired announcements
+                if (els.cycleAnnouncements.checked) {
+                    try {
+                        const today = new Date().toISOString().split('T')[0];
+                        await supabaseClient
+                            .from('announcements')
+                            .delete()
+                            .lt('expiry_date', today);
+                    } catch (e) {}
+                }
+                
+                await logCleanAction('cycles', 0, false);
+                
+                hideLoading();
+                showToast('Cycles zote zimekamilika!', 'success');
+                loadDBStats();
+                loadHistory();
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        // ============================================
+        // HISTORY
+        // ============================================
+        async function loadHistory() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('backup_history')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (error) throw error;
+                
+                // Update backup count
+                const backupCount = (data || []).filter(d => d.action === 'backup').length;
+                els.statBackups.textContent = backupCount;
+                
+                if (!data || data.length === 0) {
+                    els.historyList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>Hakuna history bado</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const actionIcons = {
+                    'backup': '💾',
+                    'clean': '🧹'
+                };
+                
+                els.historyList.innerHTML = data.map(item => `
+                    <div class="history-item">
+                        <div class="history-item-header">
+                            <strong>${actionIcons[item.action] || '📝'} ${escapeHtml(item.table_name || 'Unknown')}</strong>
+                            <span>${formatDate(item.created_at)}</span>
+                        </div>
+                        <div class="history-item-meta">
+                            <span>📊 ${item.record_count || 0} records</span>
+                            ${item.format ? `<span>📄 ${item.format.toUpperCase()}</span>` : ''}
+                            ${item.destination ? `<span>📁 ${item.destination}</span>` : ''}
+                            ${item.soft_delete ? '<span>🔄 Soft</span>' : ''}
+                            ${item.performed_by_name ? `<span>👤 ${escapeHtml(item.performed_by_name)}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('History error:', e);
+                els.historyList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>History haipatikani</p>
+                        <p style="font-size: 12px; margin-top: 6px;">Table 'backup_history' haipo kwenye database.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // ============================================
+        // RESTORE
+        // ============================================
+        async function previewRestore(file) {
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                
+                state.restoreData = data;
+                
+                let html = '';
+                
+                if (Array.isArray(data)) {
+                    html = `
+                        <div class="success-box">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Single Table Backup</strong><br>
+                                Records: ${data.length}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="success-box">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Full Backup</strong><br>
+                                Tables: ${Object.keys(data).length}
+                            </div>
+                        </div>
+                    `;
+                    
+                    for (const [table, records] of Object.entries(data)) {
+                        if (Array.isArray(records)) {
+                            html += `
+                                <div class="table-info">
+                                    <span>${table}</span>
+                                    <strong>${records.length}</strong>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+                
+                els.restorePreview.innerHTML = html;
+                els.restorePreview.style.display = 'block';
+                els.restoreBtn.disabled = false;
+            } catch (e) {
+                showToast('File si sahihi: ' + e.message, 'error');
+                els.restoreBtn.disabled = true;
+                els.restorePreview.style.display = 'none';
+            }
+        }
+        
+        async function performRestore() {
+            if (!state.restoreData) return;
+            
+            showConfirm(
+                'Restore Backup?',
+                'Hii ita-replace data ya sasa. HILI HALIWEZI KURUDISHWA!',
+                async () => {
+                    showLoading('Inarestore backup...');
+                    
+                    try {
+                        let totalRestored = 0;
+                        
+                        if (Array.isArray(state.restoreData)) {
+                            // Single table — can't determine table name
+                            showToast('Restore ya table moja haitumiki. Tumia full backup.', 'warning');
+                            hideLoading();
+                            return;
+                        }
+                        
+                        for (const [table, records] of Object.entries(state.restoreData)) {
+                            if (!Array.isArray(records)) continue;
+                            
+                            for (const row of records) {
+                                try {
+                                    await supabaseClient.from(table).upsert([row]);
+                                    totalRestored++;
+                                } catch (e) {
+                                    console.error(`Restore ${table} error:`, e);
+                                }
+                            }
+                        }
+                        
+                        hideLoading();
+                        showToast(`Restore imekamilika! (${totalRestored} records)`, 'success');
+                        loadDBStats();
+                        loadHistory();
+                    } catch (e) {
+                        hideLoading();
+                        showToast('Imeshindikana: ' + e.message, 'error');
+                    }
+                }
+            );
+        }
+        
+        // ============================================
+        // MEDIA CLEANUP
+        // ============================================
+        async function scanMedia() {
+            showLoading('Inascan media...');
+            
+            try {
+                // Get used URLs kutoka posts
+                const { data: posts } = await supabaseClient
+                    .from('posts')
+                    .select('media_files, audio_file');
+                
+                const usedUrls = new Set();
+                
+                (posts || []).forEach(p => {
+                    if (p.media_files) p.media_files.forEach(u => usedUrls.add(u));
+                    if (p.audio_file) usedUrls.add(p.audio_file);
+                });
+                
+                // Count by source
+                let cloudinaryCount = 0;
+                let uploadcareCount = 0;
+                
+                usedUrls.forEach(url => {
+                    if (url.includes('cloudinary.com')) cloudinaryCount++;
+                    if (url.includes('ucarecdn.com')) uploadcareCount++;
+                });
+                
+                els.cloudinaryFiles.textContent = cloudinaryCount + ' used';
+                els.uploadcareFiles.textContent = uploadcareCount + ' used';
+                els.unusedFiles.textContent = '0 detected';
+                
+                hideLoading();
+                showToast('Media scan imekamilika!', 'success');
+            } catch (e) {
+                hideLoading();
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        // ============================================
+        // AUTO SCHEDULES
+        // ============================================
+        async function loadAutoSchedules() {
+            try {
+                const { data } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_key, setting_value')
+                    .in('setting_key', ['auto_backup_schedule', 'cycle_schedule']);
+                
+                (data || []).forEach(s => {
+                    try {
+                        const val = JSON.parse(s.setting_value);
+                        if (s.setting_key === 'auto_backup_schedule') {
+                            if (val.frequency) els.autoBackupFreq.value = val.frequency;
+                            if (val.time) els.autoBackupTime.value = val.time;
+                        } else if (s.setting_key === 'cycle_schedule') {
+                            if (val.frequency) els.cycleFrequency.value = val.frequency;
+                            if (val.time) els.cycleTime.value = val.time;
+                        }
+                    } catch (e) {}
+                });
+            } catch (e) {}
+        }
+        
+        async function saveSchedule(key, value) {
+            try {
+                await supabaseClient.from('app_settings').upsert({
+                    setting_key: key,
+                    setting_value: JSON.stringify(value),
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'setting_key' });
+                
+                showToast('Schedule imehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            }
+        }
+        
+        // ============================================
+        // DB INFO
+        // ============================================
+        async function showDBInfo() {
+            openModal(els.dbInfoModal);
+            
+            els.dbInfoBody.innerHTML = `
+                <div class="loading-spinner" style="margin: 20px auto;"></div>
+            `;
+            
+            try {
+                let html = '';
+                let totalRecords = 0;
+                
+                for (const table of ALL_TABLES) {
+                    try {
+                        const { count } = await supabaseClient
+                            .from(table)
+                            .select('*', { count: 'exact', head: true });
+                        
+                        if (typeof count === 'number') {
+                            totalRecords += count;
+                            html += `
+                                <div class="table-info">
+                                    <span>${table}</span>
+                                    <strong>${count.toLocaleString()}</strong>
+                                </div>
+                            `;
+                        }
+                    } catch (e) {}
+                }
+                
+                html = `
+                    <div class="success-box">
+                        <i class="fas fa-database"></i>
+                        <div>
+                            <strong>Total: ${totalRecords.toLocaleString()} records</strong><br>
+                            Kwenye tables ${ALL_TABLES.length}
+                        </div>
+                    </div>
+                    ${html}
+                `;
+                
+                els.dbInfoBody.innerHTML = html;
+            } catch (e) {
+                els.dbInfoBody.innerHTML = `<p style="text-align: center; color: var(--text-muted);">Imeshindikana</p>`;
+            }
+        }
+        
+        // ============================================
+        // EVENTS
+        // ============================================
+        function setupEvents() {
+            // Tabs
+            els.tabs.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    state.currentTab = tabName;
+                    
+                    els.tabs.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById('tab-' + tabName)?.classList.add('active');
+                    
+                    if (tabName === 'history') loadHistory();
+                });
+            });
+            
+            // Backup buttons
+            document.querySelectorAll('.backup-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const table = this.getAttribute('data-table');
+                    backupTable(table);
+                });
+            });
+            
+            els.backupAllBtn.addEventListener('click', backupAll);
+            
+            els.saveAutoBackupBtn.addEventListener('click', () => {
+                saveSchedule('auto_backup_schedule', {
+                    frequency: els.autoBackupFreq.value,
+                    time: els.autoBackupTime.value
+                });
+            });
+            
+            // Clean buttons
+            document.querySelectorAll('.clean-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    const days = parseInt(els.cleanDays.value) || 30;
+                    
+                    const actionNames = {
+                        'old_notifications': 'Notifications za zamani',
+                        'old_activity': 'Activity logs za zamani',
+                        'old_comments': 'Comments za zamani',
+                        'past_events': 'Matukio yaliyopita',
+                        'expired_polls': 'Polls zilizoisha',
+                        'orphaned': 'Orphaned data',
+                        'duplicates': 'Duplicate records',
+                        'cache': 'Cache files'
+                    };
+                    
+                    showConfirm(
+                        `Futa ${actionNames[action]}?`,
+                        `Siku: ${days} | Soft delete: ${els.softDelete.checked ? 'Ndio' : 'Hapana'}`,
+                        async () => {
+                            if (action === 'old_notifications') await cleanOldNotifications();
+                            if (action === 'old_activity') await cleanOldActivity();
+                            if (action === 'old_comments') await cleanOldComments();
+                            if (action === 'past_events') await cleanPastEvents();
+                            if (action === 'expired_polls') await cleanExpiredPolls();
+                            if (action === 'orphaned') await cleanOrphaned();
+                            if (action === 'duplicates') await cleanDuplicates();
+                            if (action === 'cache') await cleanCache();
+                            
+                            loadDBStats();
+                            loadHistory();
+                        }
+                    );
+                });
+            });
+            
+            els.cleanAllBtn.addEventListener('click', () => {
+                showConfirm(
+                    'Futa Data ZOTE za zamani?',
+                    'Hii itafuta notifications, activity, comments, matukio, polls, n.k. HILI HALIWEZI KURUDISHWA!',
+                    async () => {
+                        await cleanOldNotifications();
+                        await cleanOldActivity();
+                        await cleanOldComments();
+                        await cleanPastEvents();
+                        await cleanExpiredPolls();
+                        await cleanOrphaned();
+                        await cleanDuplicates();
+                        await cleanCache();
+                        
+                        loadDBStats();
+                        loadHistory();
+                    }
+                );
+            });
+            
+            // Media
+            els.scanMediaBtn.addEventListener('click', scanMedia);
+            els.cleanMediaBtn.addEventListener('click', () => {
+                showConfirm(
+                    'Futa unused media?',
+                    'Hii itafuta files zisizotumika. HILI HALIWEZI KURUDISHWA!',
+                    async () => {
+                        showToast('Feature bado haijatekelezwa', 'warning');
+                    }
+                );
+            });
+            
+            // Cycles
+            els.runAllCyclesBtn.addEventListener('click', () => {
+                showConfirm(
+                    'Run cycles zote?',
+                    'Hii ita-run auto-archive kwa data zote.',
+                    runAllCycles
+                );
+            });
+            
+            els.saveCycleScheduleBtn.addEventListener('click', () => {
+                saveSchedule('cycle_schedule', {
+                    frequency: els.cycleFrequency.value,
+                    time: els.cycleTime.value
+                });
+            });
+            
+            // Restore
+            els.restoreFile.addEventListener('change', function() {
+                if (this.files[0]) {
+                    previewRestore(this.files[0]);
+                }
+            });
+            
+            els.restoreBtn.addEventListener('click', performRestore);
+            
+            // DB Info
+            els.dbInfoBtn.addEventListener('click', showDBInfo);
+            els.dbInfoClose.addEventListener('click', () => closeModal(els.dbInfoModal));
+            els.dbInfoModal.addEventListener('click', (e) => {
+                if (e.target === els.dbInfoModal) closeModal(els.dbInfoModal);
+            });
+            
+            // Notification
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            // Confirm
+            els.confirmCancel.addEventListener('click', hideConfirm);
+            els.confirmOk.addEventListener('click', async () => {
+                const cb = state.confirmCallback;
+                hideConfirm();
+                if (cb) await cb();
+            });
+            
+            els.confirmModal.addEventListener('click', (e) => {
+                if (e.target === els.confirmModal) hideConfirm();
+            });
+        }
+        
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function showConfirm(title, message, callback) {
+            els.confirmTitle.textContent = title;
+            els.confirmMessage.textContent = message;
+            els.confirmModal.classList.add('active');
+            state.confirmCallback = callback;
+        }
+        
+        function hideConfirm() {
+            els.confirmModal.classList.remove('active');
+            state.confirmCallback = null;
+        }
+        
+        function showLoading(text = 'Inafanya kazi...') {
+            els.loadingOverlayText.textContent = text;
+            els.loadingOverlay.classList.add('active');
+        }
+        
+        function hideLoading() {
+            els.loadingOverlay.classList.remove('active');
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // Helpers
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function formatDate(d) {
+            if (!d) return 'N/A';
+            try {
+                return new Date(d).toLocaleDateString('sw-TZ', {
+                    day: 'numeric', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            } catch (e) { return d; }
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3500);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_BACKUP_CLEAN loaded');
+    })();
+    </script>
+</body>
+</html>

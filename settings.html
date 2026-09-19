@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Settings — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow-x: hidden; width: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed; top: 14px; left: 14px;
+            width: 44px; height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .menu-toggle:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .menu-toggle:active { transform: scale(0.92); }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed; top: 0; left: -320px;
+            width: var(--sidebar-width); max-width: 85vw;
+            height: 100vh; height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000; display: flex; flex-direction: column;
+            overflow: hidden; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .owner-sidebar.open { left: 0; box-shadow: 8px 0 40px rgba(0,0,0,0.5); }
+
+        .sidebar-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--bg-dark);
+            overflow: hidden; flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sidebar-info { flex: 1; min-width: 0; }
+        .sidebar-info h3 { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .sidebar-close {
+            width: 34px; height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; transition: var(--transition); flex-shrink: 0;
+        }
+        .sidebar-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 8px; -webkit-overflow-scrolling: touch; }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .nav-category { margin-bottom: 4px; }
+        .nav-category-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; margin-bottom: 4px;
+            border-radius: var(--radius-sm); cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary); font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .nav-category-header:hover { background: var(--primary-soft); }
+        .nav-category-arrow { margin-left: auto; font-size: 10px; transition: transform 0.3s; }
+        .nav-category.collapsed .nav-category-arrow { transform: rotate(-90deg); }
+        .nav-category.collapsed .nav-category-items { max-height: 0; opacity: 0; overflow: hidden; }
+
+        .nav-category-items { max-height: 800px; transition: max-height 0.35s ease-out, opacity 0.3s; overflow: hidden; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: var(--radius-md);
+            cursor: pointer; transition: var(--transition);
+            color: var(--text-muted); font-size: 14px; font-weight: 600;
+            margin-bottom: 2px; text-decoration: none; position: relative;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-light); transform: translateX(4px); }
+        .nav-item i { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-item.active { background: var(--primary-soft); color: var(--primary-light); }
+        .nav-item.active::before {
+            content: ''; position: absolute;
+            left: 0; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 70%; background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer { padding: 12px 8px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .nav-item.logout { color: var(--error); }
+        .nav-item.logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .sidebar-version { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 12px; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 999;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* HEADER */
+        .page-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px 0 70px; z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .page-header-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .page-header-title i { color: var(--primary); }
+
+        .page-header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            width: 42px; height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition);
+            position: relative;
+        }
+        .header-btn:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); }
+        .header-btn .badge {
+            position: absolute; top: -4px; right: -4px;
+            background: var(--error); color: white;
+            font-size: 10px; font-weight: 800;
+            min-width: 18px; height: 18px; padding: 0 4px;
+            border-radius: 9px; display: none;
+            align-items: center; justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+        .header-btn .badge.show { display: flex; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 950; backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .bottom-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 18px; cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted); font-size: 11px; font-weight: 600;
+            position: relative; border-radius: var(--radius-md);
+            min-width: 64px; text-decoration: none;
+        }
+        .bottom-nav-item:hover { color: var(--text-light); background: var(--bg-hover); }
+        .bottom-nav-item i { font-size: 20px; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .bottom-nav-item.active::before {
+            content: ''; position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 32px; height: 3px; background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+
+        /* TABS */
+        .tabs {
+            display: flex; gap: 6px; overflow-x: auto;
+            padding-bottom: 8px; margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-muted);
+            cursor: pointer; transition: var(--transition);
+            font-size: 13px; font-weight: 700;
+            font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); border-color: var(--primary); color: var(--bg-dark); }
+
+        /* TAB CONTENT */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeSlideIn 0.3s ease-out; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* SECTION */
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .section h4 {
+            font-size: 15px; font-weight: 800;
+            margin-bottom: 16px;
+            display: flex; align-items: center; gap: 10px;
+            color: var(--primary);
+        }
+
+        /* FORM */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .form-label .required { color: var(--error); margin-left: 3px; }
+        .form-label .optional {
+            color: var(--text-muted); font-weight: 600;
+            font-size: 10px; text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* CHECKBOX */
+        .checkbox-group {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 8px;
+        }
+        .checkbox-group:hover { border-color: var(--primary); }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px; height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer; flex-shrink: 0;
+        }
+        .checkbox-group label {
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; margin: 0;
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* IMAGE PREVIEW */
+        .image-preview {
+            margin-top: 12px;
+            display: none;
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+        .image-preview.show { display: block; }
+        .image-preview img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            display: block;
+        }
+        .image-preview-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            z-index: 5;
+        }
+
+        /* SLIDES GRID */
+        .slides-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .slide-item {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+        .slide-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .slide-item-header span {
+            font-weight: 700;
+            color: var(--primary-light);
+            font-size: 13px;
+        }
+        .btn-remove-slide {
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-remove-slide:hover { transform: translateY(-2px); }
+
+        .btn-add-slide {
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-family: inherit;
+        }
+        .btn-add-slide:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* INFO BOX */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+        }
+        .info-box i { color: var(--info); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid var(--warning);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: flex; align-items: flex-start;
+            gap: 8px;
+            color: #fcd34d;
+        }
+        .warning-box i { color: var(--warning); font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+        /* PUSH TOGGLE */
+        .push-toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .push-toggle-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .push-toggle-item.enabled::before { opacity: 1; }
+        .push-toggle-item.enabled {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: var(--primary);
+        }
+
+        .push-toggle-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .push-toggle-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(212, 175, 55, 0.12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--primary);
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .push-toggle-item.enabled .push-toggle-icon {
+            background: var(--primary);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .push-toggle-text { flex: 1; min-width: 0; }
+        .push-toggle-text h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            line-height: 1.3;
+        }
+        .push-toggle-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .push-switch {
+            position: relative;
+            width: 52px;
+            height: 30px;
+            background: var(--border);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+        }
+        .push-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .push-switch.active { background: var(--primary); }
+        .push-switch.active::after { left: 25px; }
+        .push-switch.disabled { opacity: 0.4; cursor: not-allowed; }
+        .push-switch.loading::after {
+            animation: pushSpin 1s linear infinite;
+            background: transparent;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            width: 20px;
+            height: 20px;
+            top: 5px;
+            left: 5px;
+        }
+        @keyframes pushSpin { to { transform: rotate(360deg); } }
+
+        .push-test-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px 18px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .push-test-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+        .push-test-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* TOAST */
+        .toast {
+            position: fixed; top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success); color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px; font-weight: 600;
+            z-index: 99999; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex; align-items: center; gap: 10px;
+            opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .form-row { grid-template-columns: 1fr; }
+            .section { padding: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item active"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Tabs -->
+        <div class="tabs" id="tabs">
+            <button class="tab-btn active" data-tab="profile">
+                <i class="fas fa-user"></i> Profile
+            </button>
+            <button class="tab-btn" data-tab="welcome">
+                <i class="fas fa-play-circle"></i> Welcome
+            </button>
+            <button class="tab-btn" data-tab="notifications">
+                <i class="fas fa-bell"></i> Notifications
+            </button>
+            <button class="tab-btn" data-tab="app">
+                <i class="fas fa-mobile-alt"></i> App
+            </button>
+            <button class="tab-btn" data-tab="footer">
+                <i class="fas fa-window-minimize"></i> Footer
+            </button>
+            <button class="tab-btn" data-tab="social">
+                <i class="fas fa-share-nodes"></i> Social
+            </button>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: PROFILE -->
+        <!-- ============================================ -->
+        <div class="tab-content active" id="tab-profile">
+            
+            <!-- Profile Info -->
+            <div class="section">
+                <h4><i class="fas fa-user"></i> Profile Yako</h4>
+                
+                <form id="profileForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Jina</span></label>
+                        <input type="text" id="ownerJina" class="form-input" placeholder="Jina lako">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Namba ya Simu</span></label>
+                        <input type="tel" id="ownerPhone" class="form-input" placeholder="0712345678" inputmode="numeric" maxlength="10">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Email <span class="optional">Optional</span></span></label>
+                        <input type="email" id="ownerEmail" class="form-input" placeholder="email@example.com">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="profileBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Profile</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Change PIN -->
+            <div class="section">
+                <h4><i class="fas fa-lock"></i> Badilisha PIN</h4>
+                
+                <form id="pinForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>PIN ya Sasa <span class="required">*</span></span>
+                        </label>
+                        <input type="password" id="currentPin" class="form-input" placeholder="••••" maxlength="4" inputmode="numeric" style="letter-spacing: 12px; text-align: center; font-size: 20px; font-weight: 800;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>PIN Mpya <span class="required">*</span></span>
+                        </label>
+                        <input type="password" id="newPin" class="form-input" placeholder="••••" maxlength="4" inputmode="numeric" style="letter-spacing: 12px; text-align: center; font-size: 20px; font-weight: 800;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span>Thibitisha PIN Mpya <span class="required">*</span></span>
+                        </label>
+                        <input type="password" id="confirmPin" class="form-input" placeholder="••••" maxlength="4" inputmode="numeric" style="letter-spacing: 12px; text-align: center; font-size: 20px; font-weight: 800;">
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>PIN lazima iwe tarakimu 4. Usitumie 0000, 1234, 1111, n.k.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="pinBtn" style="margin-top: 12px;">
+                        <i class="fas fa-key"></i>
+                        <span>Badilisha PIN</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Push Notifications -->
+            <div class="section">
+                <h4><i class="fas fa-bell"></i> Push Notifications</h4>
+                
+                <div class="push-toggle-item" id="pushToggleItem">
+                    <div class="push-toggle-left">
+                        <div class="push-toggle-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="push-toggle-text">
+                            <h4>Ruhusu Push Notifications</h4>
+                            <p id="pushStatusText">Inacheck...</p>
+                        </div>
+                    </div>
+                    <div class="push-switch" id="pushSwitch"></div>
+                </div>
+                
+                <button class="push-test-btn" id="testPushBtn" style="display: none;">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Tuma Test Notification</span>
+                </button>
+                
+                <div class="info-box" style="margin-top: 12px;">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        Push notifications zitakuwezesha kupokea taarifa muhimu kama: matangazo, posts mpya, na vitu vingine vya haraka.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: WELCOME -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-welcome">
+            
+            <!-- Welcome Screen -->
+            <div class="section">
+                <h4><i class="fas fa-play-circle"></i> Welcome Screen</h4>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Welcome screen inaonekana kwa users kila wanapoingia kwenye app.</div>
+                </div>
+                
+                <form id="welcomeForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Title</span></label>
+                        <input type="text" id="welcomeTitle" class="form-input" placeholder="Karibu KMCA">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Subtitle</span></label>
+                        <input type="text" id="welcomeSubtitle" class="form-input" placeholder="Kwaya ya Vijana Mtakatifu Carlo Acutis">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Description</span></label>
+                        <textarea id="welcomeDescription" class="form-textarea" placeholder="Karibu kwenye app yetu..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Image <span class="optional">Optional</span></span></label>
+                        <div class="upload-area" id="welcomeImageArea" style="border: 2px dashed var(--border-strong); border-radius: var(--radius-md); padding: 20px; text-align: center; cursor: pointer; background: var(--bg-input);">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 28px; color: var(--primary); margin-bottom: 8px; display: block;"></i>
+                            <p style="font-size: 13px; font-weight: 600;">Chagua picha</p>
+                        </div>
+                        <input type="file" id="welcomeImage" accept="image/*" style="display: none;">
+                        <div class="image-preview" id="welcomeImagePreview">
+                            <img alt="">
+                            <button type="button" class="image-preview-remove" id="welcomeImageRemove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Button Text</span></label>
+                        <input type="text" id="welcomeButtonText" class="form-input" placeholder="Ingia" value="Ingia">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Button Link</span></label>
+                        <input type="text" id="welcomeButtonLink" class="form-input" placeholder="home.html" value="home.html">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><span>Auto-redirect (seconds)</span></label>
+                            <input type="number" id="welcomeAutoRedirect" class="form-input" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span>Order Index</span></label>
+                            <input type="number" id="welcomeOrderIndex" class="form-input" value="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="welcomeShowEveryLogin" checked>
+                        <label for="welcomeShowEveryLogin">Onyesha kila user anapoingia</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="welcomeIsActive" checked>
+                        <label for="welcomeIsActive">Active</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="welcomeBtn" style="margin-top: 8px;">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Welcome</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Welcome Slides -->
+            <div class="section">
+                <h4><i class="fas fa-images"></i> Welcome Slides</h4>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Ongeza slides nyingi kwa welcome carousel.</div>
+                </div>
+                
+                <div class="slides-grid" id="slidesGrid">
+                    <!-- Slides zitaingizwa hapa -->
+                </div>
+                
+                <button type="button" class="btn-add-slide" id="addSlideBtn">
+                    <i class="fas fa-plus"></i>
+                    Ongeza Slide
+                </button>
+                
+                <button type="button" class="btn-primary" id="saveSlidesBtn" style="margin-top: 16px;">
+                    <i class="fas fa-save"></i>
+                    Hifadhi Slides
+                </button>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: NOTIFICATIONS -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-notifications">
+            <div class="section">
+                <h4><i class="fas fa-bell"></i> Daily Content Notifications</h4>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Weka muda wa notifications za kila siku kwa content mbalimbali.</div>
+                </div>
+                
+                <form id="notificationsForm" onsubmit="return false;">
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notifSaintEnabled" checked>
+                        <label for="notifSaintEnabled">✝️ Mtakatifu wa Leo</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Muda wa Mtakatifu</span></label>
+                        <input type="time" id="notifSaintTime" class="form-input" value="12:00">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notifBibleEnabled" checked>
+                        <label for="notifBibleEnabled">📖 Bible Verse ya Leo</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Muda wa Bible</span></label>
+                        <input type="time" id="notifBibleTime" class="form-input" value="12:00">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notifWimboEnabled" checked>
+                        <label for="notifWimboEnabled">🎵 Wimbo wa Siku</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Muda wa Wimbo</span></label>
+                        <input type="time" id="notifWimboTime" class="form-input" value="12:00">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="notifMasomoEnabled" checked>
+                        <label for="notifMasomoEnabled">📚 Masomo ya Dominica</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Muda wa Masomo</span></label>
+                        <input type="time" id="notifMasomoTime" class="form-input" value="12:00">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="notifBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Notifications</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: APP -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-app">
+            
+            <!-- App Settings -->
+            <div class="section">
+                <h4><i class="fas fa-mobile-alt"></i> App Settings</h4>
+                
+                <form id="appSettingsForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Jina la App</span></label>
+                        <input type="text" id="appName" class="form-input" placeholder="KMCA">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Subtitle</span></label>
+                        <input type="text" id="appSubtitle" class="form-input" placeholder="Kwaya ya Vijana...">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="appSettingsBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Settings</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- PWA Settings -->
+            <div class="section">
+                <h4><i class="fas fa-mobile-alt"></i> PWA Settings</h4>
+                
+                <form id="pwaSettingsForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>PWA App Name</span></label>
+                        <input type="text" id="pwaAppName" class="form-input" placeholder="KMCA Owner">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><span>Theme Color</span></label>
+                            <input type="color" id="pwaThemeColor" class="form-input" value="#020617" style="height: 48px; padding: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span>Background Color</span></label>
+                            <input type="color" id="pwaBgColor" class="form-input" value="#020617" style="height: 48px; padding: 6px;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><span>Display Mode</span></label>
+                            <select id="pwaDisplayMode" class="form-select">
+                                <option value="standalone">Standalone</option>
+                                <option value="fullscreen">Fullscreen</option>
+                                <option value="minimal-ui">Minimal UI</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><span>Orientation</span></label>
+                            <select id="pwaOrientation" class="form-select">
+                                <option value="portrait">Portrait</option>
+                                <option value="landscape">Landscape</option>
+                                <option value="any">Any</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="pwaAutoUpdate" checked>
+                        <label for="pwaAutoUpdate">Auto Update</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="pwaOfflineMode" checked>
+                        <label for="pwaOfflineMode">Offline Mode</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="pwaSettingsBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi PWA</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Share Settings -->
+            <div class="section">
+                <h4><i class="fas fa-share-alt"></i> Share Settings</h4>
+                
+                <form id="shareForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Share Base URL</span></label>
+                        <input type="url" id="shareBaseUrl" class="form-input" placeholder="https://...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Share Page Path</span></label>
+                        <input type="text" id="sharePagePath" class="form-input" placeholder="/share.html">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="shareBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Share Settings</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Watermark -->
+            <div class="section">
+                <h4><i class="fas fa-image"></i> Watermark</h4>
+                
+                <form id="watermarkForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Watermark Logo</span></label>
+                        <div class="upload-area" id="watermarkArea" style="border: 2px dashed var(--border-strong); border-radius: var(--radius-md); padding: 20px; text-align: center; cursor: pointer; background: var(--bg-input);">
+                            <i class="fas fa-cloud-upload-alt" style="font-size: 28px; color: var(--primary); margin-bottom: 8px; display: block;"></i>
+                            <p style="font-size: 13px; font-weight: 600;">Chagua watermark logo</p>
+                        </div>
+                        <input type="file" id="watermarkLogo" accept="image/*" style="display: none;">
+                        <div class="image-preview" id="watermarkPreview">
+                            <img alt="">
+                            <button type="button" class="image-preview-remove" id="watermarkRemove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="watermarkBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Watermark</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: FOOTER -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-footer">
+            
+            <!-- Footer -->
+            <div class="section">
+                <h4><i class="fas fa-window-minimize"></i> Footer</h4>
+                
+                <form id="footerForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Mawasiliano</span></label>
+                        <input type="text" id="footerMawasiliano" class="form-input" placeholder="KMCA - Kwaya ya Vijana">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Email</span></label>
+                        <input type="email" id="footerEmail" class="form-input" placeholder="kmca@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Phone</span></label>
+                        <input type="tel" id="footerPhone" class="form-input" placeholder="+255...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Copyright</span></label>
+                        <input type="text" id="footerCopyright" class="form-input" placeholder="© 2026 KMCA">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="footerBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Footer</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- About -->
+            <div class="section">
+                <h4><i class="fas fa-info-circle"></i> About</h4>
+                
+                <form id="aboutForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Kichwa</span></label>
+                        <input type="text" id="aboutTitle" class="form-input" placeholder="Kuhusu KMCA">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Maelezo</span></label>
+                        <textarea id="aboutContent" class="form-textarea" rows="4" placeholder="Maelezo ya app..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="aboutBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi About</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- ============================================ -->
+        <!-- TAB: SOCIAL -->
+        <!-- ============================================ -->
+        <div class="tab-content" id="tab-social">
+            <div class="section">
+                <h4><i class="fas fa-share-nodes"></i> Social Media</h4>
+                
+                <form id="socialForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Facebook</span></label>
+                        <input type="url" id="socialFacebook" class="form-input" placeholder="https://facebook.com/...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Instagram</span></label>
+                        <input type="url" id="socialInstagram" class="form-input" placeholder="https://instagram.com/...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>YouTube</span></label>
+                        <input type="url" id="socialYoutube" class="form-input" placeholder="https://youtube.com/...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>TikTok</span></label>
+                        <input type="url" id="socialTiktok" class="form-input" placeholder="https://tiktok.com/...">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary" id="socialBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Hifadhi Social</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="users.html" class="bottom-nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+        <a href="settings.html" class="bottom-nav-item active"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    <script src="upload-manager.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            welcomeId: null,
+            slides: [],
+            welcomeImageUrl: null,
+            watermarkUrl: null,
+            pushSubscribed: false
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            tabs: document.getElementById('tabs'),
+            // Profile
+            profileForm: document.getElementById('profileForm'),
+            ownerJina: document.getElementById('ownerJina'),
+            ownerPhone: document.getElementById('ownerPhone'),
+            ownerEmail: document.getElementById('ownerEmail'),
+            profileBtn: document.getElementById('profileBtn'),
+            // PIN
+            pinForm: document.getElementById('pinForm'),
+            currentPin: document.getElementById('currentPin'),
+            newPin: document.getElementById('newPin'),
+            confirmPin: document.getElementById('confirmPin'),
+            pinBtn: document.getElementById('pinBtn'),
+            // Push
+            pushToggleItem: document.getElementById('pushToggleItem'),
+            pushSwitch: document.getElementById('pushSwitch'),
+            pushStatusText: document.getElementById('pushStatusText'),
+            testPushBtn: document.getElementById('testPushBtn'),
+            // Welcome
+            welcomeForm: document.getElementById('welcomeForm'),
+            welcomeTitle: document.getElementById('welcomeTitle'),
+            welcomeSubtitle: document.getElementById('welcomeSubtitle'),
+            welcomeDescription: document.getElementById('welcomeDescription'),
+            welcomeImageArea: document.getElementById('welcomeImageArea'),
+            welcomeImage: document.getElementById('welcomeImage'),
+            welcomeImagePreview: document.getElementById('welcomeImagePreview'),
+            welcomeImageRemove: document.getElementById('welcomeImageRemove'),
+            welcomeButtonText: document.getElementById('welcomeButtonText'),
+            welcomeButtonLink: document.getElementById('welcomeButtonLink'),
+            welcomeAutoRedirect: document.getElementById('welcomeAutoRedirect'),
+            welcomeOrderIndex: document.getElementById('welcomeOrderIndex'),
+            welcomeShowEveryLogin: document.getElementById('welcomeShowEveryLogin'),
+            welcomeIsActive: document.getElementById('welcomeIsActive'),
+            welcomeBtn: document.getElementById('welcomeBtn'),
+            slidesGrid: document.getElementById('slidesGrid'),
+            addSlideBtn: document.getElementById('addSlideBtn'),
+            saveSlidesBtn: document.getElementById('saveSlidesBtn'),
+            // Notifications
+            notificationsForm: document.getElementById('notificationsForm'),
+            notifSaintEnabled: document.getElementById('notifSaintEnabled'),
+            notifSaintTime: document.getElementById('notifSaintTime'),
+            notifBibleEnabled: document.getElementById('notifBibleEnabled'),
+            notifBibleTime: document.getElementById('notifBibleTime'),
+            notifWimboEnabled: document.getElementById('notifWimboEnabled'),
+            notifWimboTime: document.getElementById('notifWimboTime'),
+            notifMasomoEnabled: document.getElementById('notifMasomoEnabled'),
+            notifMasomoTime: document.getElementById('notifMasomoTime'),
+            notifBtn: document.getElementById('notifBtn'),
+            // App
+            appSettingsForm: document.getElementById('appSettingsForm'),
+            appName: document.getElementById('appName'),
+            appSubtitle: document.getElementById('appSubtitle'),
+            appSettingsBtn: document.getElementById('appSettingsBtn'),
+            // PWA
+            pwaSettingsForm: document.getElementById('pwaSettingsForm'),
+            pwaAppName: document.getElementById('pwaAppName'),
+            pwaThemeColor: document.getElementById('pwaThemeColor'),
+            pwaBgColor: document.getElementById('pwaBgColor'),
+            pwaDisplayMode: document.getElementById('pwaDisplayMode'),
+            pwaOrientation: document.getElementById('pwaOrientation'),
+            pwaAutoUpdate: document.getElementById('pwaAutoUpdate'),
+            pwaOfflineMode: document.getElementById('pwaOfflineMode'),
+            pwaSettingsBtn: document.getElementById('pwaSettingsBtn'),
+            // Share
+            shareForm: document.getElementById('shareForm'),
+            shareBaseUrl: document.getElementById('shareBaseUrl'),
+            sharePagePath: document.getElementById('sharePagePath'),
+            shareBtn: document.getElementById('shareBtn'),
+            // Watermark
+            watermarkForm: document.getElementById('watermarkForm'),
+            watermarkArea: document.getElementById('watermarkArea'),
+            watermarkLogo: document.getElementById('watermarkLogo'),
+            watermarkPreview: document.getElementById('watermarkPreview'),
+            watermarkRemove: document.getElementById('watermarkRemove'),
+            watermarkBtn: document.getElementById('watermarkBtn'),
+            // Footer
+            footerForm: document.getElementById('footerForm'),
+            footerMawasiliano: document.getElementById('footerMawasiliano'),
+            footerEmail: document.getElementById('footerEmail'),
+            footerPhone: document.getElementById('footerPhone'),
+            footerCopyright: document.getElementById('footerCopyright'),
+            footerBtn: document.getElementById('footerBtn'),
+            // About
+            aboutForm: document.getElementById('aboutForm'),
+            aboutTitle: document.getElementById('aboutTitle'),
+            aboutContent: document.getElementById('aboutContent'),
+            aboutBtn: document.getElementById('aboutBtn'),
+            // Social
+            socialForm: document.getElementById('socialForm'),
+            socialFacebook: document.getElementById('socialFacebook'),
+            socialInstagram: document.getElementById('socialInstagram'),
+            socialYoutube: document.getElementById('socialYoutube'),
+            socialTiktok: document.getElementById('socialTiktok'),
+            socialBtn: document.getElementById('socialBtn'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        // ============================================
+        // INIT
+        // ============================================
+        async function init() {
+            console.log('⚙️ Settings initializing...');
+            
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            
+            // Load data
+            await Promise.allSettled([
+                loadProfile(),
+                loadAllSettings(),
+                loadWelcome(),
+                loadSlides(),
+                loadFooter(),
+                loadAbout(),
+                checkPushStatus()
+            ]);
+            
+            console.log('✅ Settings ready');
+        }
+        
+        // ============================================
+        // GET OWNER SESSION
+        // ============================================
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        // ============================================
+        // RENDER SIDEBAR
+        // ============================================
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}" onerror="this.parentElement.textContent='${initials}'">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        // ============================================
+        // SETUP SIDEBAR
+        // ============================================
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka kwenye panel?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    localStorage.removeItem('kmca_owner_backup_time');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        // ============================================
+        // LOAD PROFILE
+        // ============================================
+        function loadProfile() {
+            const o = state.owner;
+            els.ownerJina.value = o.jina || '';
+            els.ownerPhone.value = o.phone || '';
+            els.ownerEmail.value = o.email || '';
+        }
+        
+        // ============================================
+        // LOAD ALL SETTINGS
+        // ============================================
+        async function loadAllSettings() {
+            try {
+                const { data } = await supabaseClient
+                    .from('app_settings')
+                    .select('setting_key, setting_value');
+                
+                const settings = {};
+                (data || []).forEach(s => {
+                    settings[s.setting_key] = s.setting_value;
+                });
+                
+                // App settings
+                els.appName.value = settings.app_name || 'KMCA';
+                els.appSubtitle.value = settings.app_subtitle || '';
+                
+                // PWA settings
+                els.pwaAppName.value = settings.pwa_app_name || 'KMCA Owner';
+                els.pwaThemeColor.value = settings.pwa_theme_color || '#020617';
+                els.pwaBgColor.value = settings.pwa_bg_color || '#020617';
+                els.pwaDisplayMode.value = settings.pwa_display_mode || 'standalone';
+                els.pwaOrientation.value = settings.pwa_orientation || 'portrait';
+                els.pwaAutoUpdate.checked = String(settings.pwa_auto_update) !== 'false';
+                els.pwaOfflineMode.checked = String(settings.pwa_offline_mode) !== 'false';
+                
+                // Share settings
+                els.shareBaseUrl.value = settings.share_link || '';
+                els.sharePagePath.value = settings.share_page_path || '/share.html';
+                
+                // Notification settings
+                els.notifSaintEnabled.checked = String(settings.notif_saint_enabled) !== 'false';
+                els.notifBibleEnabled.checked = String(settings.notif_bible_enabled) !== 'false';
+                els.notifWimboEnabled.checked = String(settings.notif_wimbo_enabled) !== 'false';
+                els.notifMasomoEnabled.checked = String(settings.notif_masomo_enabled) !== 'false';
+                
+                els.notifSaintTime.value = settings.notif_saint_time || '12:00';
+                els.notifBibleTime.value = settings.notif_bible_time || '12:00';
+                els.notifWimboTime.value = settings.notif_wimbo_time || '12:00';
+                els.notifMasomoTime.value = settings.notif_masomo_time || '12:00';
+                
+                // Social
+                els.socialFacebook.value = settings.social_facebook || '';
+                els.socialInstagram.value = settings.social_instagram || '';
+                els.socialYoutube.value = settings.social_youtube || '';
+                els.socialTiktok.value = settings.social_tiktok || '';
+                
+                // Watermark
+                if (settings.watermark_logo) {
+                    state.watermarkUrl = settings.watermark_logo;
+                    els.watermarkPreview.querySelector('img').src = settings.watermark_logo;
+                    els.watermarkPreview.classList.add('show');
+                }
+                
+            } catch (e) {
+                console.error('Load settings error:', e);
+            }
+        }
+        
+        // ============================================
+        // LOAD WELCOME
+        // ============================================
+        async function loadWelcome() {
+            try {
+                const { data } = await supabaseClient
+                    .from('welcome')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('order_index', { ascending: true })
+                    .limit(1);
+                
+                if (data && data.length > 0) {
+                    const w = data[0];
+                    state.welcomeId = w.id;
+                    state.welcomeImageUrl = w.image_file || null;
+                    
+                    els.welcomeTitle.value = w.title || '';
+                    els.welcomeSubtitle.value = w.subtitle || '';
+                    els.welcomeDescription.value = w.description || '';
+                    els.welcomeButtonText.value = w.button_text || 'Ingia';
+                    els.welcomeButtonLink.value = w.button_link || 'home.html';
+                    els.welcomeAutoRedirect.value = w.auto_redirect_seconds || 0;
+                    els.welcomeOrderIndex.value = w.order_index || 0;
+                    els.welcomeShowEveryLogin.checked = w.show_every_login !== false;
+                    els.welcomeIsActive.checked = w.is_active !== false;
+                    
+                    if (w.image_file) {
+                        els.welcomeImagePreview.querySelector('img').src = w.image_file;
+                        els.welcomeImagePreview.classList.add('show');
+                    }
+                }
+            } catch (e) {
+                console.log('Welcome load error (ignored):', e.message);
+            }
+        }
+        
+        // ============================================
+        // LOAD SLIDES
+        // ============================================
+        async function loadSlides() {
+            if (!state.welcomeId) return;
+            
+            try {
+                const { data } = await supabaseClient
+                    .from('welcome_slides')
+                    .select('*')
+                    .eq('welcome_id', state.welcomeId)
+                    .eq('is_active', true)
+                    .order('order_index', { ascending: true });
+                
+                state.slides = data || [];
+                renderSlides();
+            } catch (e) {
+                console.log('Slides load error (ignored):', e.message);
+            }
+        }
+        
+        // ============================================
+        // RENDER SLIDES
+        // ============================================
+        function renderSlides() {
+            if (state.slides.length === 0) {
+                els.slidesGrid.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 13px;">Hakuna slides bado</p>';
+                return;
+            }
+            
+            els.slidesGrid.innerHTML = state.slides.map((s, i) => `
+                <div class="slide-item" data-index="${i}">
+                    <div class="slide-item-header">
+                        <span>Slide ${i + 1}</span>
+                        <button type="button" class="btn-remove-slide" data-index="${i}">
+                            <i class="fas fa-trash"></i> Ondoa
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Title</span></label>
+                        <input type="text" class="slide-title form-input" value="${escapeAttr(s.title || '')}" placeholder="Slide title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span>Description</span></label>
+                        <input type="text" class="slide-description form-input" value="${escapeAttr(s.description || '')}" placeholder="Slide description">
+                    </div>
+                    ${s.image_file ? `
+                        <div class="image-preview show">
+                            <img src="${s.image_file}" alt="" style="max-height: 120px;">
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            els.slidesGrid.querySelectorAll('.btn-remove-slide').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    state.slides.splice(index, 1);
+                    renderSlides();
+                });
+            });
+        }
+        
+        // ============================================
+        // ADD SLIDE
+        // ============================================
+        function addSlide() {
+            state.slides.push({
+                title: '',
+                description: '',
+                image_file: '',
+                order_index: state.slides.length,
+                is_active: true
+            });
+            renderSlides();
+        }
+        
+        // ============================================
+        // SAVE SLIDES
+        // ============================================
+        async function saveSlides() {
+            if (!state.welcomeId) {
+                showToast('Hifadhi welcome kwanza', 'warning');
+                return;
+            }
+            
+            els.saveSlidesBtn.disabled = true;
+            els.saveSlidesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                // Delete old slides
+                try {
+                    await supabaseClient
+                        .from('welcome_slides')
+                        .delete()
+                        .eq('welcome_id', state.welcomeId);
+                } catch (e) {}
+                
+                // Get slide data from DOM
+                const slideItems = els.slidesGrid.querySelectorAll('.slide-item');
+                
+                for (let i = 0; i < slideItems.length; i++) {
+                    const item = slideItems[i];
+                    const title = item.querySelector('.slide-title').value.trim();
+                    const description = item.querySelector('.slide-description').value.trim();
+                    
+                    await supabaseClient
+                        .from('welcome_slides')
+                        .insert([{
+                            welcome_id: state.welcomeId,
+                            title: title || null,
+                            description: description || null,
+                            image_file: state.slides[i]?.image_file || null,
+                            order_index: i,
+                            is_active: true
+                        }]);
+                }
+                
+                showToast('Slides zimehifadhiwa!', 'success');
+                await loadSlides();
+            } catch (e) {
+                console.error('Save slides error:', e);
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.saveSlidesBtn.disabled = false;
+                els.saveSlidesBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Slides</span>';
+            }
+        }
+        
+        // ============================================
+        // LOAD FOOTER
+        // ============================================
+        async function loadFooter() {
+            try {
+                const { data } = await supabaseClient
+                    .from('footer')
+                    .select('*')
+                    .limit(1)
+                    .maybeSingle();
+                
+                if (data) {
+                    els.footerMawasiliano.value = data.mawasiliano || '';
+                    els.footerEmail.value = data.email || '';
+                    els.footerPhone.value = data.phone || '';
+                    els.footerCopyright.value = data.copyright || '';
+                }
+            } catch (e) {
+                console.log('Footer load error (ignored):', e.message);
+            }
+        }
+        
+        // ============================================
+        // LOAD ABOUT
+        // ============================================
+        async function loadAbout() {
+            try {
+                const { data } = await supabaseClient
+                    .from('about')
+                    .select('*')
+                    .limit(1)
+                    .maybeSingle();
+                
+                if (data) {
+                    els.aboutTitle.value = data.title || '';
+                    els.aboutContent.value = data.content || '';
+                }
+            } catch (e) {
+                console.log('About load error (ignored):', e.message);
+            }
+        }
+        
+        // ============================================
+        // CHECK PUSH STATUS
+        // ============================================
+        async function checkPushStatus() {
+            // Hide test button initially
+            els.testPushBtn.style.display = 'none';
+            
+            if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+                els.pushStatusText.textContent = 'Hazitumiki kwenye browser hii';
+                els.pushSwitch.classList.add('disabled');
+                return;
+            }
+            
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                const permission = Notification.permission;
+                
+                if (permission === 'denied') {
+                    els.pushStatusText.textContent = 'Zimezuiwa kwenye browser';
+                    els.pushStatusText.style.color = 'var(--error)';
+                    els.pushSwitch.classList.add('disabled');
+                    return;
+                }
+                
+                if (sub) {
+                    els.pushSwitch.classList.add('active');
+                    els.pushToggleItem.classList.add('enabled');
+                    els.pushStatusText.textContent = 'Zimewashwa ✓';
+                    els.pushStatusText.style.color = 'var(--success)';
+                    els.testPushBtn.style.display = 'flex';
+                    state.pushSubscribed = true;
+                } else {
+                    els.pushSwitch.classList.remove('active');
+                    els.pushToggleItem.classList.remove('enabled');
+                    els.pushStatusText.textContent = 'Zimezimwa';
+                    els.pushStatusText.style.color = 'var(--text-muted)';
+                    state.pushSubscribed = false;
+                }
+            } catch (e) {
+                console.error('Push status error:', e);
+            }
+        }
+        
+        // ============================================
+        // TOGGLE PUSH
+        // ============================================
+        async function togglePush() {
+            if (els.pushSwitch.classList.contains('disabled') || els.pushSwitch.classList.contains('loading')) return;
+            
+            if (state.pushSubscribed) {
+                // Unsubscribe
+                if (!confirm('Zima push notifications? Hutapata taarifa kwenye kifaa hiki.')) return;
+                
+                els.pushSwitch.classList.add('loading');
+                
+                try {
+                    const reg = await navigator.serviceWorker.ready;
+                    const sub = await reg.pushManager.getSubscription();
+                    
+                    if (sub) {
+                        const endpoint = sub.endpoint;
+                        await sub.unsubscribe();
+                        
+                        try {
+                            await supabaseClient
+                                .from('push_subscriptions')
+                                .delete()
+                                .eq('user_id', state.owner.id)
+                                .eq('endpoint', endpoint);
+                        } catch (e) {}
+                    }
+                    
+                    showToast('Push zimezimwa', 'warning');
+                    await checkPushStatus();
+                } catch (e) {
+                    showToast('Imeshindikana: ' + e.message, 'error');
+                } finally {
+                    els.pushSwitch.classList.remove('loading');
+                }
+            } else {
+                // Subscribe
+                els.pushSwitch.classList.add('loading');
+                
+                try {
+                    await subscribeOwnerToPush(state.owner.id);
+                    showToast('Push zimewashwa! 🔔', 'success');
+                    await checkPushStatus();
+                } catch (e) {
+                    showToast('Imeshindikana: ' + e.message, 'error');
+                } finally {
+                    els.pushSwitch.classList.remove('loading');
+                }
+            }
+        }
+        
+        // ============================================
+        // SUBSCRIBE TO PUSH
+        // ============================================
+        async function subscribeOwnerToPush(ownerId) {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                throw new Error('Push hazitumiki');
+            }
+            
+            // Request permission
+            let permission = Notification.permission;
+            if (permission === 'default') {
+                permission = await Notification.requestPermission();
+            }
+            
+            if (permission !== 'granted') {
+                throw new Error('Hukubali notifications');
+            }
+            
+            const reg = await navigator.serviceWorker.ready;
+            
+            // VAPID key
+            const VAPID_KEY = 'BKNmfI7QOo1GE2kXwHIUHPTEMoKFNF2FjKWE5-9Wes7YYgmuEF8eYmzp4YscPtyVbg0So4j3wpeMvBsQm1hyVrw';
+            
+            // Get or create subscription
+            let sub = await reg.pushManager.getSubscription();
+            
+            if (!sub) {
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_KEY)
+                });
+            }
+            
+            // Save to Supabase
+            const p256dh = btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh'))));
+            const auth = btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth'))));
+            
+            const deviceType = /android/i.test(navigator.userAgent) ? 'android' :
+                               /iPad|iPhone|iPod/.test(navigator.userAgent) ? 'ios' : 'desktop';
+            
+            await supabaseClient
+                .from('push_subscriptions')
+                .upsert({
+                    user_id: ownerId,
+                    endpoint: sub.endpoint,
+                    p256dh: p256dh,
+                    auth: auth,
+                    device_type: deviceType,
+                    user_agent: navigator.userAgent,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'user_id,endpoint' });
+        }
+        
+        // ============================================
+        // URL BASE64 TO UINT8ARRAY
+        // ============================================
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const rawData = atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+        
+        // ============================================
+        // SETUP EVENTS
+        // ============================================
+        function setupEvents() {
+            // Tabs
+            els.tabs.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    els.tabs.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById('tab-' + tabName)?.classList.add('active');
+                });
+            });
+            
+            // Notification
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            // Phone input numbers only
+            els.ownerPhone.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '').slice(0, 10);
+            });
+            
+            // PIN inputs numbers only
+            [els.currentPin, els.newPin, els.confirmPin].forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 4);
+                });
+            });
+            
+            // Profile save
+            els.profileForm.addEventListener('submit', saveProfile);
+            
+            // PIN save
+            els.pinForm.addEventListener('submit', savePin);
+            
+            // Push toggle
+            els.pushSwitch.addEventListener('click', togglePush);
+            
+            // Test push
+            els.testPushBtn.addEventListener('click', async function() {
+                this.disabled = true;
+                const original = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inatuma...';
+                
+                try {
+                    if (typeof sendTestPushToSelf === 'function') {
+                        await sendTestPushToSelf(state.owner.id);
+                        showToast('Test notification imetumwa! 🔔', 'success');
+                    } else {
+                        // Fallback: tumia Notification API moja kwa moja
+                        new Notification('🧪 Test Notification', {
+                            body: 'Hii ni test kutoka KMCA Owner Panel. Push inafanya kazi!',
+                            icon: 'owner-icon-192.png'
+                        });
+                        showToast('Test notification imetumwa!', 'success');
+                    }
+                } catch (e) {
+                    showToast('Imeshindikana: ' + e.message, 'error');
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = original;
+                }
+            });
+            
+            // Welcome image
+            els.welcomeImageArea.addEventListener('click', () => els.welcomeImage.click());
+            
+            els.welcomeImage.addEventListener('change', async function() {
+                const file = this.files[0];
+                if (!file) return;
+                
+                showToast('Ina-upload picha...', 'info');
+                
+                try {
+                    if (typeof uploadFileSmart === 'function') {
+                        const result = await uploadFileSmart(file);
+                        if (result.success) {
+                            state.welcomeImageUrl = result.url;
+                            els.welcomeImagePreview.querySelector('img').src = result.url;
+                            els.welcomeImagePreview.classList.add('show');
+                            showToast('Picha ime-uploadwa!', 'success');
+                        } else {
+                            showToast('Upload failed: ' + result.error, 'error');
+                        }
+                    } else {
+                        showToast('Upload manager haipo', 'error');
+                    }
+                } catch (e) {
+                    showToast('Error: ' + e.message, 'error');
+                }
+                
+                this.value = '';
+            });
+            
+            els.welcomeImageRemove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.welcomeImageUrl = null;
+                els.welcomeImagePreview.classList.remove('show');
+                els.welcomeImage.value = '';
+            });
+            
+            // Welcome save
+            els.welcomeForm.addEventListener('submit', saveWelcome);
+            
+            // Slides
+            els.addSlideBtn.addEventListener('click', addSlide);
+            els.saveSlidesBtn.addEventListener('click', saveSlides);
+            
+            // Notifications save
+            els.notificationsForm.addEventListener('submit', saveNotifications);
+            
+            // App save
+            els.appSettingsForm.addEventListener('submit', saveAppSettings);
+            
+            // PWA save
+            els.pwaSettingsForm.addEventListener('submit', savePwaSettings);
+            
+            // Share save
+            els.shareForm.addEventListener('submit', saveShareSettings);
+            
+            // Watermark
+            els.watermarkArea.addEventListener('click', () => els.watermarkLogo.click());
+            
+            els.watermarkLogo.addEventListener('change', async function() {
+                const file = this.files[0];
+                if (!file) return;
+                
+                showToast('Ina-upload watermark...', 'info');
+                
+                try {
+                    if (typeof uploadFileSmart === 'function') {
+                        const result = await uploadFileSmart(file);
+                        if (result.success) {
+                            state.watermarkUrl = result.url;
+                            els.watermarkPreview.querySelector('img').src = result.url;
+                            els.watermarkPreview.classList.add('show');
+                            showToast('Watermark ime-uploadwa!', 'success');
+                        } else {
+                            showToast('Upload failed: ' + result.error, 'error');
+                        }
+                    }
+                } catch (e) {
+                    showToast('Error: ' + e.message, 'error');
+                }
+                
+                this.value = '';
+            });
+            
+            els.watermarkRemove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.watermarkUrl = null;
+                els.watermarkPreview.classList.remove('show');
+                els.watermarkLogo.value = '';
+            });
+            
+            els.watermarkForm.addEventListener('submit', saveWatermark);
+            
+            // Footer save
+            els.footerForm.addEventListener('submit', saveFooter);
+            
+            // About save
+            els.aboutForm.addEventListener('submit', saveAbout);
+            
+            // Social save
+            els.socialForm.addEventListener('submit', saveSocial);
+        }
+        
+        // ============================================
+        // SAVE PROFILE
+        // ============================================
+        async function saveProfile(e) {
+            e.preventDefault();
+            
+            const jina = els.ownerJina.value.trim();
+            const phone = els.ownerPhone.value.trim();
+            const email = els.ownerEmail.value.trim();
+            
+            if (!jina) {
+                showToast('Weka jina', 'warning');
+                return;
+            }
+            
+            if (phone && !/^0[67]\d{8}$/.test(phone)) {
+                showToast('Namba si sahihi. Format: 07XXXXXXXX', 'error');
+                return;
+            }
+            
+            els.profileBtn.disabled = true;
+            els.profileBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('owners')
+                    .update({ jina, phone, email: email || null })
+                    .eq('id', state.owner.id);
+                
+                if (error) throw error;
+                
+                // Update local session
+                state.owner.jina = jina;
+                state.owner.phone = phone;
+                state.owner.email = email;
+                sessionStorage.setItem('kmca_owner', JSON.stringify(state.owner));
+                localStorage.setItem('kmca_owner_backup', JSON.stringify(state.owner));
+                
+                renderSidebar();
+                showToast('Profile imehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.profileBtn.disabled = false;
+                els.profileBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Profile</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE PIN
+        // ============================================
+        async function savePin(e) {
+            e.preventDefault();
+            
+            const current = els.currentPin.value.trim();
+            const next = els.newPin.value.trim();
+            const confirm = els.confirmPin.value.trim();
+            
+            if (!current || !next || !confirm) {
+                showToast('Jaza PIN zote', 'warning');
+                return;
+            }
+            
+            if (current !== String(state.owner.pin)) {
+                showToast('PIN ya sasa si sahihi', 'error');
+                return;
+            }
+            
+            if (!/^\d{4}$/.test(next)) {
+                showToast('PIN mpya lazima iwe tarakimu 4', 'error');
+                return;
+            }
+            
+            if (next !== confirm) {
+                showToast('PIN hazifanani', 'error');
+                return;
+            }
+            
+            if (['0000', '1234', '1111', '2222'].includes(next)) {
+                showToast('PIN ni dhaifu', 'error');
+                return;
+            }
+            
+            els.pinBtn.disabled = true;
+            els.pinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inabadilisha...';
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('owners')
+                    .update({ pin: next })
+                    .eq('id', state.owner.id);
+                
+                if (error) throw error;
+                
+                state.owner.pin = next;
+                sessionStorage.setItem('kmca_owner', JSON.stringify(state.owner));
+                localStorage.setItem('kmca_owner_backup', JSON.stringify(state.owner));
+                
+                els.pinForm.reset();
+                showToast('PIN imebadilishwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.pinBtn.disabled = false;
+                els.pinBtn.innerHTML = '<i class="fas fa-key"></i> <span>Badilisha PIN</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE WELCOME
+        // ============================================
+        async function saveWelcome(e) {
+            e.preventDefault();
+            
+            els.welcomeBtn.disabled = true;
+            els.welcomeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const welcomeData = {
+                    title: els.welcomeTitle.value.trim() || null,
+                    subtitle: els.welcomeSubtitle.value.trim() || null,
+                    description: els.welcomeDescription.value.trim() || null,
+                    image_file: state.welcomeImageUrl,
+                    button_text: els.welcomeButtonText.value.trim() || 'Ingia',
+                    button_link: els.welcomeButtonLink.value.trim() || 'home.html',
+                    auto_redirect_seconds: parseInt(els.welcomeAutoRedirect.value) || 0,
+                    order_index: parseInt(els.welcomeOrderIndex.value) || 0,
+                    show_every_login: els.welcomeShowEveryLogin.checked,
+                    is_active: els.welcomeIsActive.checked,
+                    updated_at: new Date().toISOString()
+                };
+                
+                let error;
+                
+                if (state.welcomeId) {
+                    const r = await supabaseClient
+                        .from('welcome')
+                        .update(welcomeData)
+                        .eq('id', state.welcomeId);
+                    error = r.error;
+                } else {
+                    const r = await supabaseClient
+                        .from('welcome')
+                        .insert([welcomeData])
+                        .select();
+                    error = r.error;
+                    if (r.data && r.data[0]) state.welcomeId = r.data[0].id;
+                }
+                
+                if (error) throw error;
+                
+                showToast('Welcome imehifadhiwa!', 'success');
+                await loadWelcome();
+                await loadSlides();
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.welcomeBtn.disabled = false;
+                els.welcomeBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Welcome</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE NOTIFICATIONS
+        // ============================================
+        async function saveNotifications(e) {
+            e.preventDefault();
+            
+            els.notifBtn.disabled = true;
+            els.notifBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const settings = {
+                    notif_saint_enabled: els.notifSaintEnabled.checked,
+                    notif_bible_enabled: els.notifBibleEnabled.checked,
+                    notif_wimbo_enabled: els.notifWimboEnabled.checked,
+                    notif_masomo_enabled: els.notifMasomoEnabled.checked,
+                    notif_saint_time: els.notifSaintTime.value,
+                    notif_bible_time: els.notifBibleTime.value,
+                    notif_wimbo_time: els.notifWimboTime.value,
+                    notif_masomo_time: els.notifMasomoTime.value
+                };
+                
+                for (const [key, value] of Object.entries(settings)) {
+                    await supabaseClient
+                        .from('app_settings')
+                        .upsert({
+                            setting_key: key,
+                            setting_value: String(value),
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'setting_key' });
+                }
+                
+                showToast('Notifications zimehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.notifBtn.disabled = false;
+                els.notifBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Notifications</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE APP SETTINGS
+        // ============================================
+        async function saveAppSettings(e) {
+            e.preventDefault();
+            
+            els.appSettingsBtn.disabled = true;
+            els.appSettingsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                await supabaseClient
+                    .from('app_settings')
+                    .upsert({
+                        setting_key: 'app_name',
+                        setting_value: els.appName.value.trim(),
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+                
+                await supabaseClient
+                    .from('app_settings')
+                    .upsert({
+                        setting_key: 'app_subtitle',
+                        setting_value: els.appSubtitle.value.trim(),
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+                
+                showToast('App settings zimehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.appSettingsBtn.disabled = false;
+                els.appSettingsBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Settings</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE PWA SETTINGS
+        // ============================================
+        async function savePwaSettings(e) {
+            e.preventDefault();
+            
+            els.pwaSettingsBtn.disabled = true;
+            els.pwaSettingsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const settings = {
+                    pwa_app_name: els.pwaAppName.value.trim(),
+                    pwa_theme_color: els.pwaThemeColor.value,
+                    pwa_bg_color: els.pwaBgColor.value,
+                    pwa_display_mode: els.pwaDisplayMode.value,
+                    pwa_orientation: els.pwaOrientation.value,
+                    pwa_auto_update: els.pwaAutoUpdate.checked,
+                    pwa_offline_mode: els.pwaOfflineMode.checked
+                };
+                
+                for (const [key, value] of Object.entries(settings)) {
+                    await supabaseClient
+                        .from('app_settings')
+                        .upsert({
+                            setting_key: key,
+                            setting_value: String(value),
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'setting_key' });
+                }
+                
+                showToast('PWA settings zimehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.pwaSettingsBtn.disabled = false;
+                els.pwaSettingsBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi PWA</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE SHARE SETTINGS
+        // ============================================
+        async function saveShareSettings(e) {
+            e.preventDefault();
+            
+            els.shareBtn.disabled = true;
+            els.shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                await supabaseClient
+                    .from('app_settings')
+                    .upsert({
+                        setting_key: 'share_link',
+                        setting_value: els.shareBaseUrl.value.trim(),
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+                
+                await supabaseClient
+                    .from('app_settings')
+                    .upsert({
+                        setting_key: 'share_page_path',
+                        setting_value: els.sharePagePath.value.trim(),
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+                
+                showToast('Share settings zimehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.shareBtn.disabled = false;
+                els.shareBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Share Settings</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE WATERMARK
+        // ============================================
+        async function saveWatermark(e) {
+            e.preventDefault();
+            
+            if (!state.watermarkUrl) {
+                showToast('Chagua watermark kwanza', 'warning');
+                return;
+            }
+            
+            els.watermarkBtn.disabled = true;
+            els.watermarkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                await supabaseClient
+                    .from('app_settings')
+                    .upsert({
+                        setting_key: 'watermark_logo',
+                        setting_value: state.watermarkUrl,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'setting_key' });
+                
+                showToast('Watermark imehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.watermarkBtn.disabled = false;
+                els.watermarkBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Watermark</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE FOOTER
+        // ============================================
+        async function saveFooter(e) {
+            e.preventDefault();
+            
+            els.footerBtn.disabled = true;
+            els.footerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const data = {
+                    mawasiliano: els.footerMawasiliano.value.trim(),
+                    email: els.footerEmail.value.trim(),
+                    phone: els.footerPhone.value.trim(),
+                    copyright: els.footerCopyright.value.trim()
+                };
+                
+                const { data: existing } = await supabaseClient
+                    .from('footer')
+                    .select('id')
+                    .limit(1);
+                
+                let error;
+                if (existing && existing[0]) {
+                    const r = await supabaseClient
+                        .from('footer')
+                        .update(data)
+                        .eq('id', existing[0].id);
+                    error = r.error;
+                } else {
+                    const r = await supabaseClient.from('footer').insert([data]);
+                    error = r.error;
+                }
+                
+                if (error) throw error;
+                
+                showToast('Footer imehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.footerBtn.disabled = false;
+                els.footerBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Footer</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE ABOUT
+        // ============================================
+        async function saveAbout(e) {
+            e.preventDefault();
+            
+            els.aboutBtn.disabled = true;
+            els.aboutBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const data = {
+                    title: els.aboutTitle.value.trim(),
+                    content: els.aboutContent.value.trim()
+                };
+                
+                const { data: existing } = await supabaseClient
+                    .from('about')
+                    .select('id')
+                    .limit(1);
+                
+                let error;
+                if (existing && existing[0]) {
+                    const r = await supabaseClient
+                        .from('about')
+                        .update(data)
+                        .eq('id', existing[0].id);
+                    error = r.error;
+                } else {
+                    const r = await supabaseClient.from('about').insert([data]);
+                    error = r.error;
+                }
+                
+                if (error) throw error;
+                
+                showToast('About imehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.aboutBtn.disabled = false;
+                els.aboutBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi About</span>';
+            }
+        }
+        
+        // ============================================
+        // SAVE SOCIAL
+        // ============================================
+        async function saveSocial(e) {
+            e.preventDefault();
+            
+            els.socialBtn.disabled = true;
+            els.socialBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                const settings = {
+                    social_facebook: els.socialFacebook.value.trim(),
+                    social_instagram: els.socialInstagram.value.trim(),
+                    social_youtube: els.socialYoutube.value.trim(),
+                    social_tiktok: els.socialTiktok.value.trim()
+                };
+                
+                for (const [key, value] of Object.entries(settings)) {
+                    await supabaseClient
+                        .from('app_settings')
+                        .upsert({
+                            setting_key: key,
+                            setting_value: value,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'setting_key' });
+                }
+                
+                showToast('Social URLs zimehifadhiwa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana: ' + e.message, 'error');
+            } finally {
+                els.socialBtn.disabled = false;
+                els.socialBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi Social</span>';
+            }
+        }
+        
+        // ============================================
+        // NOTIFICATION BADGE
+        // ============================================
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // ============================================
+        // HELPERS
+        // ============================================
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function escapeAttr(t) {
+            if (!t) return '';
+            return String(t).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_SETTINGS loaded');
+    })();
+    </script>
+</body>
+</html>

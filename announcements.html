@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Matangazo — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* MENU BUTTON */
+        .menu-toggle {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* SIDEBAR */
+        .owner-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: var(--sidebar-width);
+            max-width: 85vw;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .owner-sidebar.open {
+            left: 0;
+            box-shadow: 8px 0 40px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-close {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .sidebar-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-category {
+            margin-bottom: 4px;
+        }
+
+        .nav-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-category-header:hover {
+            background: var(--primary-soft);
+        }
+
+        .nav-category-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .nav-category.collapsed .nav-category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .nav-category.collapsed .nav-category-items {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .nav-category-items {
+            max-height: 800px;
+            transition: max-height 0.35s ease-out, opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-light);
+            transform: translateX(4px);
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary-light);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer {
+            padding: 12px 8px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .nav-item.logout {
+            color: var(--error);
+        }
+
+        .nav-item.logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 12px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* HEADER */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 70px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .page-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header-title i {
+            color: var(--primary);
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+
+        .header-btn .badge.show {
+            display: flex;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* BOTTOM NAV */
+        .owner-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 950;
+            backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            position: relative;
+            border-radius: var(--radius-md);
+            min-width: 64px;
+            text-decoration: none;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--text-light);
+            background: var(--bg-hover);
+        }
+
+        .bottom-nav-item i {
+            font-size: 20px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* MAIN */
+        .page-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .mini-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 8px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .mini-stat:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .mini-stat-value {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .mini-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px 12px 42px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .toolbar-btn {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .toolbar-btn.primary:hover {
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Filters */
+        .filters-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .filters-panel.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Announcements List */
+        .announcements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ann-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeSlideIn 0.4s ease-out backwards;
+            position: relative;
+        }
+
+        .ann-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ann-item.urgent {
+            border-left: 4px solid var(--error);
+        }
+
+        .ann-item.important {
+            border-left: 4px solid var(--warning);
+        }
+
+        .ann-item.normal {
+            border-left: 4px solid var(--border-strong);
+        }
+
+        .ann-item.expired {
+            opacity: 0.6;
+        }
+
+        .ann-header {
+            padding: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .ann-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .ann-icon.urgent {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+            animation: urgentPulse 2s infinite;
+        }
+
+        .ann-icon.important {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .ann-icon.normal {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { 
+                box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+            }
+            50% { 
+                box-shadow: 0 4px 24px rgba(239, 68, 68, 0.6);
+            }
+        }
+
+        .ann-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ann-header-info h3 {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .ann-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .ann-priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ann-priority-badge.urgent {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .ann-priority-badge.important {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .ann-priority-badge.normal {
+            background: var(--bg-input);
+            color: var(--text-muted);
+        }
+
+        .ann-target-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .ann-date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .ann-expiry-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .ann-expiry-badge.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .ann-expiry-badge.soon {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .ann-expiry-badge.expired {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-muted);
+        }
+
+        .ann-content-preview {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .ann-attachment-preview {
+            padding: 0 14px 14px;
+        }
+
+        .ann-attachment-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .ann-attachment-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .ann-attachment-chip i {
+            color: var(--primary);
+        }
+
+        /* Actions */
+        .ann-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .ann-action-btn {
+            flex: 1;
+            padding: 10px 6px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .ann-action-btn:hover {
+            background: var(--bg-input);
+            color: var(--text-light);
+        }
+
+        .ann-action-btn i {
+            font-size: 14px;
+        }
+
+        .ann-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .ann-action-btn.primary:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: var(--border-strong);
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .empty-state button {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 560px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 i {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--border);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+        }
+
+        .modal-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .modal-btn.primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--error);
+            margin-left: 3px;
+        }
+
+        .form-label .optional {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 36px;
+        }
+
+        /* Priority picker */
+        .priority-picker {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .priority-option {
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .priority-option:hover {
+            transform: translateY(-2px);
+        }
+
+        .priority-option.active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .priority-option.normal.active {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .priority-option.important.active {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .priority-option.urgent.active {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .priority-option i {
+            font-size: 22px;
+        }
+
+        .priority-option.normal i { color: var(--primary); }
+        .priority-option.important i { color: var(--warning); }
+        .priority-option.urgent i { color: var(--error); }
+
+        .priority-option span {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        /* Target picker */
+        .target-picker {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .target-option {
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .target-option:hover {
+            border-color: var(--primary);
+        }
+
+        .target-option.active {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .target-option i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .target-option span {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .target-option small {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Users picker */
+        .users-picker {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .users-picker.show {
+            display: block;
+            animation: fadeSlideIn 0.3s ease-out;
+        }
+
+        .users-search {
+            margin-bottom: 8px;
+        }
+
+        .users-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .users-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .users-actions button:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .users-checkbox-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--bg-dark);
+            border-radius: var(--radius-sm);
+            padding: 8px;
+        }
+
+        .user-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .user-checkbox-item:hover {
+            background: var(--bg-input);
+        }
+
+        .user-checkbox-item input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .user-checkbox-item span {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .selected-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Attachment */
+        .upload-area {
+            border: 2px dashed var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-input);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .upload-area i {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .upload-area p {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .upload-area span {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .attachment-preview {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .attachment-preview.show {
+            display: flex;
+        }
+
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-soft);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .attachment-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attachment-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-size {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .attachment-remove {
+            width: 30px;
+            height: 30px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-box i {
+            color: var(--info);
+            font-size: 14px;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        /* View Details */
+        .view-detail {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .view-detail:last-child {
+            border-bottom: none;
+        }
+
+        .view-detail-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .view-detail-value {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .ann-action-btn { font-size: 11px; padding: 8px 4px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .ann-icon { width: 44px; height: 44px; font-size: 18px; }
+            .priority-picker { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item active"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-bullhorn"></i>
+            <span>Matangazo</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- Mini Stats -->
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statTotal">—</div>
+                <div class="mini-stat-label">Jumla</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statUrgent">—</div>
+                <div class="mini-stat-label">Dharura</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statActive">—</div>
+                <div class="mini-stat-label">Active</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-value" id="statToday">—</div>
+                <div class="mini-stat-label">Leo</div>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tafuta matangazo...">
+            </div>
+            <button class="toolbar-btn" id="filterToggle">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            <button class="toolbar-btn primary" id="addAnnBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add</span>
+            </button>
+        </div>
+        
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-group">
+                <span class="filter-group-label">Priority</span>
+                <div class="filter-chips" data-filter="priority">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="urgent">🚨 Dharura</button>
+                    <button class="filter-chip" data-value="important">⚠️ Muhimu</button>
+                    <button class="filter-chip" data-value="normal">📌 Normal</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Target</span>
+                <div class="filter-chips" data-filter="target">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="all_users">👥 Users Wote</button>
+                    <button class="filter-chip" data-value="selected">🎯 Selected</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Hali</span>
+                <div class="filter-chips" data-filter="status">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="active">🟢 Active</button>
+                    <button class="filter-chip" data-value="expired">⚫ Zimeisha</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Panga kwa</span>
+                <div class="filter-chips" data-filter="sort">
+                    <button class="filter-chip active" data-value="newest">🕐 Mpya Kwanza</button>
+                    <button class="filter-chip" data-value="oldest">🕰️ Zamani Kwanza</button>
+                    <button class="filter-chip" data-value="priority">🚨 Priority</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="announcements-list" id="annList">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Inapakia matangazo...</p>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="announcements.html" class="bottom-nav-item active"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- ADD/EDIT ANNOUNCEMENT MODAL -->
+    <div class="modal" id="annModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-bullhorn"></i> <span id="modalTitle">Add Tangazo Mpya</span></h3>
+                <button class="modal-close" id="annModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="annForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Kichwa <span class="required">*</span></span></label>
+                        <input type="text" id="annTitle" class="form-input" placeholder="Kichwa cha tangazo" maxlength="200">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Maelezo <span class="required">*</span></span></label>
+                        <textarea id="annContent" class="form-textarea" placeholder="Maelezo ya tangazo..." maxlength="5000"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Priority <span class="required">*</span></span></label>
+                        <div class="priority-picker" id="priorityPicker">
+                            <button type="button" class="priority-option normal active" data-priority="normal">
+                                <i class="fas fa-thumbtack"></i>
+                                <span>📌 Normal</span>
+                            </button>
+                            <button type="button" class="priority-option important" data-priority="important">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>⚠️ Muhimu</span>
+                            </button>
+                            <button type="button" class="priority-option urgent" data-priority="urgent">
+                                <i class="fas fa-bullhorn"></i>
+                                <span>🚨 Dharura</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Tuma kwa <span class="required">*</span></span></label>
+                        <div class="target-picker" id="targetPicker">
+                            <button type="button" class="target-option active" data-target="all_users">
+                                <i class="fas fa-users"></i>
+                                <span>👥 Users Wote</span>
+                                <small>Wote watapata</small>
+                            </button>
+                            <button type="button" class="target-option" data-target="selected">
+                                <i class="fas fa-user-check"></i>
+                                <span>🎯 Selected</span>
+                                <small>Wachache tu</small>
+                            </button>
+                        </div>
+                        
+                        <!-- Users picker (only if target = selected) -->
+                        <div class="users-picker" id="usersPicker">
+                            <div class="users-search">
+                                <input type="text" id="usersSearchInput" class="form-input" placeholder="Tafuta users...">
+                            </div>
+                            <div class="users-actions">
+                                <button type="button" id="selectAllUsersBtn">Select Wote</button>
+                                <button type="button" id="deselectAllUsersBtn">Deselect Wote</button>
+                            </div>
+                            <div class="users-checkbox-list" id="usersCheckboxList">
+                                <p style="text-align: center; color: var(--text-muted); padding: 20px;">Inapakia users...</p>
+                            </div>
+                            <div class="selected-count">
+                                <span id="selectedUsersCount">0</span> / <span id="totalUsersCount">0</span> users wamechaguliwa
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>📅 Tarehe ya Kusend <span class="required">*</span></span></label>
+                        <input type="datetime-local" id="annSchedule" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>🗑️ Tarehe ya Kujifuta <span class="optional">Optional</span></span></label>
+                        <input type="date" id="annExpiry" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Attachment <span class="optional">Optional</span></span></label>
+                        <div class="upload-area" id="annAttachmentArea">
+                            <i class="fas fa-paperclip"></i>
+                            <p>Chagua attachment</p>
+                            <span>Picha, PDF, DOC, ZIP (max 10 MB)</span>
+                        </div>
+                        <input type="file" id="annAttachmentInput" accept="image/*,.pdf,.doc,.docx,.zip" style="display: none;">
+                        
+                        <div class="attachment-preview" id="attachmentPreview">
+                            <div class="attachment-icon"><i class="fas fa-file"></i></div>
+                            <div class="attachment-info">
+                                <div class="attachment-name" id="attachmentName">—</div>
+                                <div class="attachment-size" id="attachmentSize">—</div>
+                            </div>
+                            <button type="button" class="attachment-remove" id="attachmentRemove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            Tangazo litatumwa kwa users kwa <strong>tarehe ya kusend</strong>.
+                            <strong>Urgent</strong> → Notification ya haraka, <strong>Important</strong> → Notification ya kawaida, <strong>Normal</strong> → Kwenye list pekee.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelAnnBtn">Ghairi</button>
+                <button class="modal-btn primary" id="saveAnnBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Tuma</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- VIEW ANNOUNCEMENT MODAL -->
+    <div class="modal" id="viewAnnModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-bullhorn"></i> Angalia Tangazo</h3>
+                <button class="modal-close" id="viewAnnClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="viewAnnBody"></div>
+        </div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    <script src="upload-manager.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            announcements: [],
+            filteredAnn: [],
+            allUsers: [],
+            selectedUserIds: new Set(),
+            currentPage: 1,
+            perPage: 10,
+            filters: { priority: 'all', target: 'all', status: 'all', sort: 'newest', search: '' },
+            editingId: null,
+            priority: 'normal',
+            target: 'all_users',
+            attachmentUrl: null,
+            attachmentName: null,
+            attachmentSize: null
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            statTotal: document.getElementById('statTotal'),
+            statUrgent: document.getElementById('statUrgent'),
+            statActive: document.getElementById('statActive'),
+            statToday: document.getElementById('statToday'),
+            searchInput: document.getElementById('searchInput'),
+            filterToggle: document.getElementById('filterToggle'),
+            addAnnBtn: document.getElementById('addAnnBtn'),
+            filtersPanel: document.getElementById('filtersPanel'),
+            annList: document.getElementById('annList'),
+            pagination: document.getElementById('pagination'),
+            // Modal
+            annModal: document.getElementById('annModal'),
+            annModalClose: document.getElementById('annModalClose'),
+            modalTitle: document.getElementById('modalTitle'),
+            annTitle: document.getElementById('annTitle'),
+            annContent: document.getElementById('annContent'),
+            priorityPicker: document.getElementById('priorityPicker'),
+            targetPicker: document.getElementById('targetPicker'),
+            usersPicker: document.getElementById('usersPicker'),
+            usersSearchInput: document.getElementById('usersSearchInput'),
+            selectAllUsersBtn: document.getElementById('selectAllUsersBtn'),
+            deselectAllUsersBtn: document.getElementById('deselectAllUsersBtn'),
+            usersCheckboxList: document.getElementById('usersCheckboxList'),
+            selectedUsersCount: document.getElementById('selectedUsersCount'),
+            totalUsersCount: document.getElementById('totalUsersCount'),
+            annSchedule: document.getElementById('annSchedule'),
+            annExpiry: document.getElementById('annExpiry'),
+            annAttachmentArea: document.getElementById('annAttachmentArea'),
+            annAttachmentInput: document.getElementById('annAttachmentInput'),
+            attachmentPreview: document.getElementById('attachmentPreview'),
+            attachmentName: document.getElementById('attachmentName'),
+            attachmentSize: document.getElementById('attachmentSize'),
+            attachmentRemove: document.getElementById('attachmentRemove'),
+            cancelAnnBtn: document.getElementById('cancelAnnBtn'),
+            saveAnnBtn: document.getElementById('saveAnnBtn'),
+            // View
+            viewAnnModal: document.getElementById('viewAnnModal'),
+            viewAnnClose: document.getElementById('viewAnnClose'),
+            viewAnnBody: document.getElementById('viewAnnBody'),
+            // Toast
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        async function init() {
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            await loadAnnouncements();
+        }
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        async function loadAnnouncements() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('announcements')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                state.announcements = data || [];
+                updateStats();
+                applyFilters();
+            } catch (e) {
+                console.error('Load announcements error:', e);
+                els.annList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Imeshindikana</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function loadUsers() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('id, jina, phone')
+                    .order('jina', { ascending: true });
+                
+                if (error) throw error;
+                state.allUsers = data || [];
+                els.totalUsersCount.textContent = state.allUsers.length;
+                renderUsersList(state.allUsers);
+            } catch (e) {
+                console.error('Load users error:', e);
+            }
+        }
+        
+        function renderUsersList(users) {
+            const list = els.usersCheckboxList;
+            
+            if (!users || users.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Hakuna users</p>';
+                return;
+            }
+            
+            list.innerHTML = users.map(u => `
+                <label class="user-checkbox-item">
+                    <input type="checkbox" value="${u.id}" ${state.selectedUserIds.has(u.id) ? 'checked' : ''}>
+                    <span>${escapeHtml(u.jina || 'No name')} ${u.phone ? '(' + u.phone + ')' : ''}</span>
+                </label>
+            `).join('');
+            
+            list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (cb.checked) {
+                        state.selectedUserIds.add(cb.value);
+                    } else {
+                        state.selectedUserIds.delete(cb.value);
+                    }
+                    updateSelectedCount();
+                });
+            });
+            
+            updateSelectedCount();
+        }
+        
+        function updateSelectedCount() {
+            els.selectedUsersCount.textContent = state.selectedUserIds.size;
+        }
+        
+        function updateStats() {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            let total = state.announcements.length;
+            let urgent = 0;
+            let active = 0;
+            let todayCount = 0;
+            
+            state.announcements.forEach(a => {
+                if (a.priority === 'urgent') urgent++;
+                if (isActive(a)) active++;
+                if (a.created_at && a.created_at.split('T')[0] === todayStr) todayCount++;
+            });
+            
+            els.statTotal.textContent = total;
+            els.statUrgent.textContent = urgent;
+            els.statActive.textContent = active;
+            els.statToday.textContent = todayCount;
+        }
+        
+        function isExpired(ann) {
+            if (!ann.expiry_date) return false;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const exp = new Date(ann.expiry_date + 'T00:00:00');
+            return exp < today;
+        }
+        
+        function isActive(ann) {
+            return !isExpired(ann);
+        }
+        
+        function applyFilters() {
+            let r = [...state.announcements];
+            
+            // Priority filter
+            if (state.filters.priority !== 'all') {
+                r = r.filter(a => a.priority === state.filters.priority);
+            }
+            
+            // Target filter
+            if (state.filters.target !== 'all') {
+                r = r.filter(a => a.target === state.filters.target);
+            }
+            
+            // Status filter
+            if (state.filters.status === 'active') {
+                r = r.filter(a => isActive(a));
+            } else if (state.filters.status === 'expired') {
+                r = r.filter(a => isExpired(a));
+            }
+            
+            // Search
+            if (state.filters.search) {
+                const t = state.filters.search.toLowerCase();
+                r = r.filter(a => 
+                    (a.title || '').toLowerCase().includes(t) ||
+                    (a.content || '').toLowerCase().includes(t)
+                );
+            }
+            
+            // Sort
+            if (state.filters.sort === 'newest') {
+                r.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (state.filters.sort === 'oldest') {
+                r.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            } else if (state.filters.sort === 'priority') {
+                const order = { urgent: 0, important: 1, normal: 2 };
+                r.sort((a, b) => (order[a.priority] || 2) - (order[b.priority] || 2));
+            }
+            
+            state.filteredAnn = r;
+            renderAnnouncements();
+        }
+        
+        function renderAnnouncements() {
+            const list = els.annList;
+            
+            if (state.filteredAnn.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bullhorn"></i>
+                        <h3>Hakuna matangazo</h3>
+                        <p>Anza ku-add tangazo jipya</p>
+                        <button id="emptyAddBtn"><i class="fas fa-plus"></i> Add Tangazo</button>
+                    </div>
+                `;
+                document.getElementById('emptyAddBtn')?.addEventListener('click', openAddModal);
+                els.pagination.innerHTML = '';
+                return;
+            }
+            
+            const total = state.filteredAnn.length;
+            const totalPages = Math.ceil(total / state.perPage);
+            if (state.currentPage > totalPages) state.currentPage = 1;
+            
+            const start = (state.currentPage - 1) * state.perPage;
+            const items = state.filteredAnn.slice(start, start + state.perPage);
+            
+            list.innerHTML = items.map((a, i) => renderAnnItem(a, i)).join('');
+            items.forEach(a => setupAnnItemEvents(a));
+            renderPagination(totalPages);
+        }
+        
+        function renderAnnItem(ann, idx) {
+            const priority = ann.priority || 'normal';
+            const expired = isExpired(ann);
+            
+            const priorityIcons = {
+                urgent: 'fa-bullhorn',
+                important: 'fa-exclamation-triangle',
+                normal: 'fa-thumbtack'
+            };
+            
+            const priorityLabels = {
+                urgent: '🚨 DHARURA',
+                important: '⚠️ MUHIMU',
+                normal: '📌 NORMAL'
+            };
+            
+            // Expiry countdown
+            let expiryBadge = '';
+            if (ann.expiry_date) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const exp = new Date(ann.expiry_date + 'T00:00:00');
+                const diff = Math.round((exp - today) / (1000 * 60 * 60 * 24));
+                
+                if (diff < 0) {
+                    expiryBadge = `<span class="ann-expiry-badge expired"><i class="fas fa-times-circle"></i> Imeisha</span>`;
+                } else if (diff === 0) {
+                    expiryBadge = `<span class="ann-expiry-badge soon"><i class="fas fa-exclamation-circle"></i> Inaisha leo</span>`;
+                } else if (diff <= 3) {
+                    expiryBadge = `<span class="ann-expiry-badge soon"><i class="fas fa-clock"></i> Inaisha siku ${diff}</span>`;
+                } else {
+                    expiryBadge = `<span class="ann-expiry-badge active"><i class="fas fa-check-circle"></i> Siku ${diff} zimebaki</span>`;
+                }
+            }
+            
+            const dateFormatted = ann.created_at
+                ? new Date(ann.created_at).toLocaleDateString('sw-TZ', { day: 'numeric', month: 'short', year: 'numeric' })
+                : '—';
+            
+            const targetLabel = ann.target === 'all_users' ? '👥 Users Wote' : '🎯 Selected Users';
+            
+            // Attachment
+            let attachmentHtml = '';
+            if (ann.attachment_url) {
+                const isImage = ann.attachment_url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                attachmentHtml = `
+                    <div class="ann-attachment-preview">
+                        <a href="${ann.attachment_url}" target="_blank" class="ann-attachment-chip">
+                            <i class="fas ${isImage ? 'fa-image' : 'fa-paperclip'}"></i>
+                            <span>${isImage ? 'Ona Picha' : 'Fungua Attachment'}</span>
+                        </a>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="ann-item ${priority} ${expired ? 'expired' : ''}" data-ann-id="${ann.id}" style="animation-delay: ${idx * 0.05}s">
+                    <div class="ann-header">
+                        <div class="ann-icon ${priority}">
+                            <i class="fas ${priorityIcons[priority]}"></i>
+                        </div>
+                        <div class="ann-header-info">
+                            <h3>${escapeHtml(ann.title || 'Bila Kichwa')}</h3>
+                            <div class="ann-meta">
+                                <span class="ann-priority-badge ${priority}">
+                                    ${priorityLabels[priority]}
+                                </span>
+                                <span class="ann-target-badge">
+                                    ${targetLabel}
+                                </span>
+                                ${expiryBadge}
+                            </div>
+                            ${ann.content ? `<div class="ann-content-preview">${escapeHtml(ann.content)}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    ${attachmentHtml}
+                    
+                    <div class="ann-actions">
+                        <button class="ann-action-btn primary" data-action="view" title="Angalia">
+                            <i class="fas fa-eye"></i>
+                            <span>Ona</span>
+                        </button>
+                        <button class="ann-action-btn" data-action="copy" title="Copy">
+                            <i class="fas fa-copy"></i>
+                            <span>Copy</span>
+                        </button>
+                        <button class="ann-action-btn" data-action="edit" title="Hariri">
+                            <i class="fas fa-edit"></i>
+                            <span>Hariri</span>
+                        </button>
+                        <button class="ann-action-btn" data-action="duplicate" title="Duplicate">
+                            <i class="fas fa-clone"></i>
+                            <span>Dupl.</span>
+                        </button>
+                        <button class="ann-action-btn" data-action="resend" title="Tuma tena">
+                            <i class="fas fa-redo"></i>
+                            <span>Tuma Tena</span>
+                        </button>
+                        <button class="ann-action-btn danger" data-action="delete" title="Futa">
+                            <i class="fas fa-trash"></i>
+                            <span>Futa</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function setupAnnItemEvents(ann) {
+            const item = document.querySelector(`.ann-item[data-ann-id="${ann.id}"]`);
+            if (!item) return;
+            
+            item.querySelectorAll('.ann-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    
+                    if (action === 'view') viewAnn(ann);
+                    else if (action === 'copy') copyAnnText(ann);
+                    else if (action === 'edit') editAnn(ann);
+                    else if (action === 'duplicate') await duplicateAnn(ann);
+                    else if (action === 'resend') await resendAnn(ann);
+                    else if (action === 'delete') await deleteAnn(ann);
+                });
+            });
+        }
+        
+        function viewAnn(ann) {
+            const priority = ann.priority || 'normal';
+            const priorityIcons = {
+                urgent: 'fa-bullhorn',
+                important: 'fa-exclamation-triangle',
+                normal: 'fa-thumbtack'
+            };
+            const priorityLabels = {
+                urgent: '🚨 DHARURA',
+                important: '⚠️ MUHIMU',
+                normal: '📌 NORMAL'
+            };
+            
+            const dateFormatted = ann.scheduled_date
+                ? new Date(ann.scheduled_date).toLocaleString('sw-TZ', { 
+                    day: 'numeric', month: 'long', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                })
+                : '—';
+            
+            let attachmentHtml = '';
+            if (ann.attachment_url) {
+                const isImage = ann.attachment_url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                attachmentHtml = `
+                    <div class="view-detail">
+                        <div class="view-detail-label">📎 Attachment</div>
+                        <div class="view-detail-value">
+                            ${isImage 
+                                ? `<img src="${ann.attachment_url}" style="width: 100%; border-radius: 8px; margin-top: 8px; max-height: 300px; object-fit: contain;">`
+                                : `<a href="${ann.attachment_url}" target="_blank" style="color: var(--primary);"><i class="fas fa-download"></i> Fungua File</a>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const targetLabel = ann.target === 'all_users' ? '👥 Users Wote' : '🎯 Selected Users';
+            
+            els.viewAnnBody.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 60px; margin-bottom: 12px;">${priorityIcons[priority] ? '📢' : '📢'}</div>
+                    <span class="ann-priority-badge ${priority}" style="display: inline-flex;">
+                        ${priorityLabels[priority]}
+                    </span>
+                </div>
+                
+                <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px; text-align: center;">${escapeHtml(ann.title)}</h2>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label">📝 Maelezo</div>
+                    <div class="view-detail-value">${escapeHtml(ann.content)}</div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label">👥 Target</div>
+                    <div class="view-detail-value">${targetLabel}</div>
+                </div>
+                
+                <div class="view-detail">
+                    <div class="view-detail-label">📅 Ilitumwa</div>
+                    <div class="view-detail-value">${dateFormatted}</div>
+                </div>
+                
+                ${ann.expiry_date ? `
+                    <div class="view-detail">
+                        <div class="view-detail-label">🗑️ Inaisha</div>
+                        <div class="view-detail-value">${formatDate(ann.expiry_date)}</div>
+                    </div>
+                ` : ''}
+                
+                ${attachmentHtml}
+            `;
+            
+            openModal(els.viewAnnModal);
+        }
+        
+        async function copyAnnText(ann) {
+            const priority = ann.priority || 'normal';
+            const priorityEmoji = {
+                urgent: '🚨',
+                important: '⚠️',
+                normal: '📌'
+            };
+            
+            let text = `${priorityEmoji[priority]} ${ann.title}\n`;
+            text += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
+            text += `${ann.content}\n\n`;
+            text += `━━━━━━━━━━━━━━━━━━━━━\n`;
+            text += `📿 KMCA - Kwaya ya Mtakatifu Carlo Acutis`;
+            
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('Tangazo limecopywa!', 'success');
+            } catch (e) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Tangazo limecopywa!', 'success');
+            }
+        }
+        
+        async function duplicateAnn(ann) {
+            try {
+                const { id, created_at, ...rest } = ann;
+                const newAnn = {
+                    ...rest,
+                    title: (ann.title || 'Tangazo') + ' (Copy)'
+                };
+                
+                const { error } = await supabaseClient
+                    .from('announcements')
+                    .insert([newAnn]);
+                
+                if (error) throw error;
+                
+                showToast('Imeduplicatewa!', 'success');
+                await loadAnnouncements();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        async function resendAnn(ann) {
+            if (!confirm(`Tuma tena tangazo hili?\n\n"${ann.title}"`)) return;
+            
+            try {
+                // Get all users
+                const { data: users } = await supabaseClient.from('users').select('id');
+                
+                if (!users || users.length === 0) {
+                    showToast('Hakuna users', 'warning');
+                    return;
+                }
+                
+                // Create notifications
+                const notifications = users.map(u => ({
+                    user_id: u.id,
+                    title: ann.title,
+                    message: ann.content.substring(0, 200),
+                    type: 'announcement',
+                    announcement_id: ann.id,
+                    is_read: false
+                }));
+                
+                await supabaseClient.from('notifications').insert(notifications);
+                
+                showToast(`Tangazo limetumwa kwa users ${users.length}!`, 'success');
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        async function deleteAnn(ann) {
+            if (!confirm(`Futa tangazo hili?\n\n"${ann.title}"`)) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('announcements')
+                    .delete()
+                    .eq('id', ann.id);
+                
+                if (error) throw error;
+                
+                showToast('Imefutwa!', 'success');
+                await loadAnnouncements();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        function formatDate(d) {
+            if (!d) return '—';
+            try {
+                return new Date(d).toLocaleDateString('sw-TZ', { 
+                    day: 'numeric', month: 'long', year: 'numeric' 
+                });
+            } catch (e) { return d; }
+        }
+        
+        function editAnn(ann) {
+            state.editingId = ann.id;
+            state.priority = ann.priority || 'normal';
+            state.target = ann.target || 'all_users';
+            state.attachmentUrl = ann.attachment_url || null;
+            state.attachmentName = null;
+            state.attachmentSize = null;
+            state.selectedUserIds.clear();
+            
+            els.modalTitle.textContent = 'Edit Tangazo';
+            els.annTitle.value = ann.title || '';
+            els.annContent.value = ann.content || '';
+            els.annSchedule.value = ann.scheduled_date || '';
+            els.annExpiry.value = ann.expiry_date || '';
+            
+            // Priority picker
+            els.priorityPicker.querySelectorAll('.priority-option').forEach(o => {
+                o.classList.toggle('active', o.getAttribute('data-priority') === state.priority);
+            });
+            
+            // Target picker
+            els.targetPicker.querySelectorAll('.target-option').forEach(o => {
+                o.classList.toggle('active', o.getAttribute('data-target') === state.target);
+            });
+            
+            // Show users picker if target = selected
+            if (state.target === 'selected') {
+                els.usersPicker.classList.add('show');
+                loadUsers();
+            } else {
+                els.usersPicker.classList.remove('show');
+            }
+            
+            // Attachment
+            if (ann.attachment_url) {
+                els.attachmentPreview.classList.add('show');
+                els.attachmentName.textContent = 'Attachment ya sasa';
+                els.attachmentSize.textContent = '—';
+            } else {
+                els.attachmentPreview.classList.remove('show');
+            }
+            
+            openModal(els.annModal);
+        }
+        
+        function openAddModal() {
+            state.editingId = null;
+            state.priority = 'normal';
+            state.target = 'all_users';
+            state.attachmentUrl = null;
+            state.attachmentName = null;
+            state.attachmentSize = null;
+            state.selectedUserIds.clear();
+            
+            els.modalTitle.textContent = 'Add Tangazo Mpya';
+            els.annTitle.value = '';
+            els.annContent.value = '';
+            els.annExpiry.value = '';
+            els.attachmentPreview.classList.remove('show');
+            els.attachmentName.textContent = '—';
+            els.attachmentSize.textContent = '—';
+            els.annAttachmentInput.value = '';
+            
+            // Default schedule: sasa
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            els.annSchedule.value = now.toISOString().slice(0, 16);
+            
+            // Priority
+            els.priorityPicker.querySelectorAll('.priority-option').forEach(o => {
+                o.classList.toggle('active', o.getAttribute('data-priority') === 'normal');
+            });
+            
+            // Target
+            els.targetPicker.querySelectorAll('.target-option').forEach(o => {
+                o.classList.toggle('active', o.getAttribute('data-target') === 'all_users');
+            });
+            
+            els.usersPicker.classList.remove('show');
+            
+            openModal(els.annModal);
+        }
+        
+        async function handleAttachmentUpload(file) {
+            // Validate
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('File ni kubwa mno. Max 10MB', 'error');
+                return;
+            }
+            
+            state.attachmentName = file.name;
+            state.attachmentSize = file.size;
+            
+            showToast('Ina-upload...', 'info');
+            
+            try {
+                const result = await uploadFileSmart(file);
+                
+                if (result.success) {
+                    state.attachmentUrl = result.url;
+                    els.attachmentName.textContent = file.name;
+                    els.attachmentSize.textContent = formatBytes(file.size);
+                    els.attachmentPreview.classList.add('show');
+                    showToast('Attachment ime-uploadwa!', 'success');
+                } else {
+                    showToast('Upload failed: ' + result.error, 'error');
+                }
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        async function handleSaveAnn() {
+            const title = els.annTitle.value.trim();
+            const content = els.annContent.value.trim();
+            const schedule = els.annSchedule.value;
+            const expiry = els.annExpiry.value;
+            
+            if (!title) {
+                showToast('Weka kichwa', 'warning');
+                els.annTitle.focus();
+                return;
+            }
+            
+            if (!content) {
+                showToast('Weka maelezo', 'warning');
+                els.annContent.focus();
+                return;
+            }
+            
+            if (!schedule) {
+                showToast('Weka tarehe ya kusend', 'warning');
+                els.annSchedule.focus();
+                return;
+            }
+            
+            // If target = selected, must have at least 1 user
+            if (state.target === 'selected' && state.selectedUserIds.size === 0) {
+                showToast('Chagua users angalau mmoja', 'warning');
+                return;
+            }
+            
+            els.saveAnnBtn.disabled = true;
+            els.saveAnnBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inatuma...';
+            
+            try {
+                const annData = {
+                    title,
+                    content,
+                    priority: state.priority,
+                    target: state.target,
+                    scheduled_date: schedule,
+                    expiry_date: expiry || null,
+                    attachment_url: state.attachmentUrl
+                };
+                
+                let newAnnId = null;
+                
+                if (state.editingId) {
+                    const r = await supabaseClient
+                        .from('announcements')
+                        .update(annData)
+                        .eq('id', state.editingId);
+                    if (r.error) throw r.error;
+                    newAnnId = state.editingId;
+                } else {
+                    const r = await supabaseClient
+                        .from('announcements')
+                        .insert([annData])
+                        .select();
+                    if (r.error) throw r.error;
+                    newAnnId = r.data[0].id;
+                }
+                
+                // Get recipients
+                let recipientIds = [];
+                
+                if (state.target === 'all_users') {
+                    const { data: users } = await supabaseClient.from('users').select('id');
+                    recipientIds = (users || []).map(u => u.id);
+                } else {
+                    recipientIds = Array.from(state.selectedUserIds);
+                }
+                
+                // Save notifications
+                if (recipientIds.length > 0) {
+                    const notifications = recipientIds.map(userId => ({
+                        user_id: userId,
+                        title: state.priority === 'urgent' 
+                            ? `🚨 ${title}` 
+                            : state.priority === 'important' 
+                                ? `⚠️ ${title}` 
+                                : `📢 ${title}`,
+                        message: content.substring(0, 200),
+                        type: 'announcement',
+                        announcement_id: newAnnId,
+                        is_read: false
+                    }));
+                    
+                    await supabaseClient.from('notifications').insert(notifications);
+                }
+                
+                showToast(`Tangazo limetumwa kwa users ${recipientIds.length}!`, 'success');
+                closeModal(els.annModal);
+                await loadAnnouncements();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                els.saveAnnBtn.disabled = false;
+                els.saveAnnBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Tuma</span>';
+            }
+        }
+        
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function setupEvents() {
+            els.refreshBtn.addEventListener('click', async function() {
+                this.querySelector('i').style.animation = 'spin 1s linear';
+                await loadAnnouncements();
+                setTimeout(() => this.querySelector('i').style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            els.notificationBtn.addEventListener('click', () => {
+                if (typeof window.openOwnerNotifications === 'function') {
+                    window.openOwnerNotifications();
+                }
+            });
+            
+            let searchTimer;
+            els.searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.filters.search = this.value.trim();
+                    state.currentPage = 1;
+                    applyFilters();
+                }, 300);
+            });
+            
+            els.filterToggle.addEventListener('click', function() {
+                els.filtersPanel.classList.toggle('show');
+                this.classList.toggle('active', els.filtersPanel.classList.contains('show'));
+            });
+            
+            document.querySelectorAll('.filter-chips').forEach(g => {
+                const k = g.getAttribute('data-filter');
+                g.querySelectorAll('.filter-chip').forEach(c => {
+                    c.addEventListener('click', function() {
+                        g.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        state.filters[k] = this.getAttribute('data-value');
+                        state.currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            });
+            
+            els.addAnnBtn.addEventListener('click', openAddModal);
+            
+            // Priority picker
+            els.priorityPicker.querySelectorAll('.priority-option').forEach(o => {
+                o.addEventListener('click', function() {
+                    state.priority = this.getAttribute('data-priority');
+                    els.priorityPicker.querySelectorAll('.priority-option').forEach(x => x.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Target picker
+            els.targetPicker.querySelectorAll('.target-option').forEach(o => {
+                o.addEventListener('click', function() {
+                    state.target = this.getAttribute('data-target');
+                    els.targetPicker.querySelectorAll('.target-option').forEach(x => x.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    if (state.target === 'selected') {
+                        els.usersPicker.classList.add('show');
+                        loadUsers();
+                    } else {
+                        els.usersPicker.classList.remove('show');
+                    }
+                });
+            });
+            
+            // Users search
+            els.usersSearchInput.addEventListener('input', function() {
+                const term = this.value.trim().toLowerCase();
+                const filtered = term 
+                    ? state.allUsers.filter(u => 
+                        (u.jina || '').toLowerCase().includes(term) || 
+                        (u.phone || '').includes(term)
+                      )
+                    : state.allUsers;
+                renderUsersList(filtered);
+            });
+            
+            // Select/Deselect all
+            els.selectAllUsersBtn.addEventListener('click', () => {
+                state.allUsers.forEach(u => state.selectedUserIds.add(u.id));
+                renderUsersList(state.allUsers);
+            });
+            
+            els.deselectAllUsersBtn.addEventListener('click', () => {
+                state.selectedUserIds.clear();
+                renderUsersList(state.allUsers);
+            });
+            
+            // Attachment
+            els.annAttachmentArea.addEventListener('click', () => els.annAttachmentInput.click());
+            
+            els.annAttachmentInput.addEventListener('change', async function() {
+                const file = this.files[0];
+                if (!file) return;
+                await handleAttachmentUpload(file);
+                this.value = '';
+            });
+            
+            els.attachmentRemove.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.attachmentUrl = null;
+                state.attachmentName = null;
+                state.attachmentSize = null;
+                els.attachmentPreview.classList.remove('show');
+                els.annAttachmentInput.value = '';
+            });
+            
+            els.annModalClose.addEventListener('click', () => closeModal(els.annModal));
+            els.viewAnnClose.addEventListener('click', () => closeModal(els.viewAnnModal));
+            els.cancelAnnBtn.addEventListener('click', () => closeModal(els.annModal));
+            els.saveAnnBtn.addEventListener('click', handleSaveAnn);
+            
+            [els.annModal, els.viewAnnModal].forEach(m => {
+                m.addEventListener('click', (e) => {
+                    if (e.target === m) closeModal(m);
+                });
+            });
+        }
+        
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
+            
+            let h = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                    h += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                    h += `<button class="pagination-btn" disabled>...</button>`;
+                }
+            }
+            
+            h += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            els.pagination.innerHTML = h;
+            
+            els.pagination.querySelectorAll('.pagination-btn[data-page]').forEach(b => {
+                b.addEventListener('click', function() {
+                    const p = parseInt(this.getAttribute('data-page'));
+                    if (p >= 1 && p <= totalPages) {
+                        state.currentPage = p;
+                        renderAnnouncements();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // Helpers
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function formatBytes(b) {
+            if (!b || b === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(b) / Math.log(k));
+            return parseFloat((b / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_ANNOUNCEMENTS loaded');
+    })();
+    </script>
+</body>
+</html>

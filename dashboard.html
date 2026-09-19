@@ -1,0 +1,3279 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Dashboard — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow-x: hidden; width: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           MENU BUTTON
+           ═══════════════════════════════════════════════════════════ */
+        .menu-toggle {
+            position: fixed; top: 14px; left: 14px;
+            width: 44px; height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .menu-toggle:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4); }
+        .menu-toggle:active { transform: scale(0.92); }
+
+        /* ═══════════════════════════════════════════════════════════
+           SIDEBAR
+           ═══════════════════════════════════════════════════════════ */
+        .owner-sidebar {
+            position: fixed; top: 0; left: -320px;
+            width: var(--sidebar-width); max-width: 85vw;
+            height: 100vh; height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000; display: flex; flex-direction: column;
+            overflow: hidden; transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .owner-sidebar.open { left: 0; box-shadow: 8px 0 40px rgba(0,0,0,0.5); }
+
+        .sidebar-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px; border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+        .sidebar-avatar {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: var(--bg-dark);
+            overflow: hidden; flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-info { flex: 1; min-width: 0; }
+        .sidebar-info h3 { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-info p { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sidebar-close {
+            width: 34px; height: 34px;
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 50%; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 15px; transition: var(--transition); flex-shrink: 0;
+        }
+        .sidebar-close:hover { background: var(--error); color: white; transform: rotate(90deg); }
+
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 8px; -webkit-overflow-scrolling: touch; }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .nav-category { margin-bottom: 4px; }
+        .nav-category-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; margin-bottom: 4px;
+            border-radius: var(--radius-sm); cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary); font-size: 11px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+        }
+        .nav-category-header:hover { background: var(--primary-soft); }
+        .nav-category-arrow { margin-left: auto; font-size: 10px; transition: transform 0.3s; }
+        .nav-category.collapsed .nav-category-arrow { transform: rotate(-90deg); }
+        .nav-category.collapsed .nav-category-items { max-height: 0; opacity: 0; overflow: hidden; }
+        .nav-category-items { max-height: 800px; transition: max-height 0.35s ease-out, opacity 0.3s; overflow: hidden; }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: var(--radius-md);
+            cursor: pointer; transition: var(--transition);
+            color: var(--text-muted); font-size: 14px; font-weight: 600;
+            margin-bottom: 2px; text-decoration: none; position: relative;
+        }
+        .nav-item:hover { background: var(--bg-hover); color: var(--text-light); transform: translateX(4px); }
+        .nav-item i { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .nav-item.active { background: var(--primary-soft); color: var(--primary-light); }
+        .nav-item.active::before {
+            content: ''; position: absolute;
+            left: 0; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 70%; background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+        .sidebar-footer { padding: 12px 8px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .nav-item.logout { color: var(--error); }
+        .nav-item.logout:hover { background: rgba(239, 68, 68, 0.1); }
+        .sidebar-version { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.6; margin-top: 12px; }
+
+        .sidebar-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 999;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* ═══════════════════════════════════════════════════════════
+           HEADER
+           ═══════════════════════════════════════════════════════════ */
+        .page-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 16px 0 70px; z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .page-header-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .page-header-title i { color: var(--primary); }
+        .page-header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            width: 42px; height: 42px;
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: var(--radius-md); color: var(--text-light); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; transition: var(--transition); position: relative;
+        }
+        .header-btn:hover { background: var(--primary); color: var(--bg-dark); transform: translateY(-2px); }
+        .header-btn .badge {
+            position: absolute; top: -4px; right: -4px;
+            background: var(--error); color: white;
+            font-size: 10px; font-weight: 800;
+            min-width: 18px; height: 18px; padding: 0 4px;
+            border-radius: 9px; display: none;
+            align-items: center; justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+        .header-btn .badge.show { display: flex; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        /* ═══════════════════════════════════════════════════════════
+           BOTTOM NAV
+           ═══════════════════════════════════════════════════════════ */
+        .owner-bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 950; backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .bottom-nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 8px 18px; cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted); font-size: 11px; font-weight: 600;
+            position: relative; border-radius: var(--radius-md);
+            min-width: 64px; text-decoration: none;
+        }
+        .bottom-nav-item:hover { color: var(--text-light); background: var(--bg-hover); }
+        .bottom-nav-item i { font-size: 20px; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .bottom-nav-item.active::before {
+            content: ''; position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 32px; height: 3px; background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+        .bottom-nav-item .nav-badge {
+            position: absolute; top: 2px; right: 8px;
+            background: var(--error); color: white;
+            font-size: 10px; font-weight: 800;
+            min-width: 18px; height: 18px; padding: 0 5px;
+            border-radius: 9px; display: none;
+            align-items: center; justify-content: center;
+            border: 2px solid var(--bg-card);
+        }
+        .bottom-nav-item .nav-badge.show { display: flex; }
+
+        /* ═══════════════════════════════════════════════════════════
+           MAIN
+           ═══════════════════════════════════════════════════════════ */
+        .page-main { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+
+        .section-title {
+            font-size: 13px; font-weight: 800;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 24px;
+        }
+        .section-title:first-child { margin-top: 0; }
+        .section-title i { color: var(--primary); font-size: 14px; }
+
+        /* ═══════════════════════════════════════════════════════════
+           WELCOME HERO
+           ═══════════════════════════════════════════════════════════ */
+        .welcome-hero {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.03));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+            animation: heroIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(-15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .welcome-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 50%);
+            animation: heroGlow 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes heroGlow {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, -30px); }
+        }
+
+        .welcome-hero-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-hero-text { flex: 1; min-width: 0; }
+
+        .welcome-hero-greeting {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .welcome-hero-name {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 6px;
+            letter-spacing: -0.8px;
+            line-height: 1.1;
+        }
+
+        .welcome-hero-name span {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-hero-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .welcome-hero-date {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px 18px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .welcome-hero-date-day {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .welcome-hero-date-date {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.1;
+        }
+
+        .welcome-hero-date-month {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           OWNER CHAT HERO
+           ═══════════════════════════════════════════════════════════ */
+        .owner-chat-hero {
+            background: var(--bg-card);
+            border: 2px solid var(--success);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            animation: heroIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.05s both;
+        }
+
+        .owner-chat-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .owner-chat-hero.unread {
+            border-color: var(--error);
+            animation: chatShake 2s infinite;
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
+        }
+
+        .owner-chat-hero.unread:hover {
+            box-shadow: 0 12px 48px rgba(239, 68, 68, 0.6);
+        }
+
+        @keyframes chatShake {
+            0%, 85%, 100% { transform: translateX(0); }
+            88% { transform: translateX(-6px); }
+            91% { transform: translateX(6px); }
+            94% { transform: translateX(-4px); }
+            97% { transform: translateX(4px); }
+        }
+
+        .owner-chat-hero-inner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .owner-chat-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success), #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            flex-shrink: 0;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+            transition: var(--transition);
+        }
+
+        .owner-chat-hero.unread .owner-chat-icon {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+            animation: iconPulseUnread 1.5s infinite;
+        }
+
+        @keyframes iconPulseUnread {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5); }
+            50% { transform: scale(1.08); box-shadow: 0 12px 32px rgba(239, 68, 68, 0.8); }
+        }
+
+        .owner-chat-icon .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: white;
+            color: var(--error);
+            font-size: 12px;
+            font-weight: 900;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 6px;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--bg-card);
+        }
+
+        .owner-chat-hero.unread .owner-chat-icon .badge {
+            display: flex;
+            animation: badgePulse 1.5s infinite;
+        }
+
+        .owner-chat-info { flex: 1; min-width: 0; }
+
+        .owner-chat-title {
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .owner-chat-hero.unread .owner-chat-title { color: var(--error); }
+
+        .owner-chat-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .owner-chat-hero.unread .owner-chat-subtitle {
+            color: var(--error);
+            font-weight: 700;
+        }
+
+        .owner-chat-arrow {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-input);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .owner-chat-hero:hover .owner-chat-arrow {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateX(4px);
+        }
+
+        .owner-chat-hero.unread .owner-chat-arrow {
+            background: var(--error);
+            color: white;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           RECENT MESSAGES
+           ═══════════════════════════════════════════════════════════ */
+        .recent-messages {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: heroIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+        }
+
+        .recent-messages-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .recent-messages-header h4 {
+            font-size: 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recent-messages-header h4 i { color: var(--primary); }
+
+        .recent-messages-header a {
+            font-size: 12px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .recent-messages-header a:hover { transform: translateX(3px); display: inline-block; }
+
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .message-item:last-child { margin-bottom: 0; }
+
+        .message-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+            background: var(--bg-hover);
+        }
+
+        .message-item.unread {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .message-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+            letter-spacing: 1px;
+            border: 2px solid var(--bg-input);
+        }
+
+        .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .message-avatar.group {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: white;
+        }
+
+        .message-avatar.group::after {
+            content: '\f0c0';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        .message-avatar .type-icon {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            border: 2px solid var(--bg-card);
+        }
+
+        .message-avatar .type-icon.group { background: #a855f7; color: white; }
+        .message-avatar .type-icon.private { background: var(--info); color: white; }
+
+        .message-info { flex: 1; min-width: 0; }
+
+        .message-sender {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .message-sender .chat-type {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .message-sender .chat-type.group { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+        .message-sender .chat-type.private { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+
+        .message-preview {
+            font-size: 13px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .message-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .message-unread-badge {
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .messages-empty {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .messages-empty i { font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.5; }
+
+        /* ═══════════════════════════════════════════════════════════
+           STATS
+           ═══════════════════════════════════════════════════════════ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            animation: heroIn 0.5s ease-out backwards;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text-light);
+            line-height: 1.1;
+            margin-bottom: 2px;
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .skeleton {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--bg-input) 25%, var(--border) 50%, var(--bg-input) 75%);
+            background-size: 200% 100%;
+            border-radius: 4px;
+            animation: shimmer 1.5s infinite;
+            color: transparent !important;
+            width: 50px;
+            height: 24px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           INSIGHTS
+           ═══════════════════════════════════════════════════════════ */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-input));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            transition: var(--transition);
+            animation: heroIn 0.5s ease-out backwards;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .insight-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .insight-value {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--primary-light);
+            line-height: 1.2;
+            margin-bottom: 2px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .insight-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           HOSTING MONITOR
+           ═══════════════════════════════════════════════════════════ */
+        .hosting-monitor {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .hosting-monitor h4 {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hosting-monitor h4 i { color: var(--primary); }
+
+        /* Cloudinary Main */
+        .cloudinary-main-card {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(212, 175, 55, 0.02));
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .cloudinary-main-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .cloudinary-main-card.expanded {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 0;
+        }
+
+        .cloudinary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 12px;
+        }
+
+        .cloudinary-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cloudinary-header-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--bg-dark);
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .cloudinary-header-info h5 {
+            font-size: 16px;
+            font-weight: 900;
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+        }
+
+        .cloudinary-header-info p { font-size: 12px; color: var(--text-muted); }
+
+        .cloudinary-percent {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .cloudinary-progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .cloudinary-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 6px;
+            transition: width 1s ease-out;
+            position: relative;
+            min-width: 4px;
+        }
+
+        .cloudinary-progress-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmerBar 2s infinite;
+        }
+
+        @keyframes shimmerBar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .cloudinary-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .cloudinary-stat {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .cloudinary-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .cloudinary-stat-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-light);
+        }
+
+        .cloudinary-expand-hint {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .cloudinary-expand-hint i { transition: transform 0.3s; }
+        .cloudinary-main-card.expanded .cloudinary-expand-hint i { transform: rotate(180deg); }
+
+        /* Breakdown */
+        .cloudinary-breakdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            border: 2px solid var(--primary);
+            border-top: none;
+            border-bottom-left-radius: var(--radius-lg);
+            border-bottom-right-radius: var(--radius-lg);
+            background: var(--bg-card);
+        }
+
+        .cloudinary-breakdown.expanded {
+            max-height: 1000px;
+            padding: 16px;
+        }
+
+        .breakdown-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .breakdown-item:last-child { margin-bottom: 0; }
+
+        .breakdown-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+
+        .breakdown-item-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .breakdown-item-title i {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .breakdown-item-title.video i { background: rgba(59, 130, 246, 0.15); color: var(--info); }
+        .breakdown-item-title.image i { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .breakdown-item-title.emergency i { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+
+        .breakdown-item-percent {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .breakdown-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .breakdown-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease-out;
+        }
+
+        .breakdown-bar-fill.video { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .breakdown-bar-fill.image { background: linear-gradient(90deg, #10b981, #34d399); }
+        .breakdown-bar-fill.emergency { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .breakdown-item-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .breakdown-item-details span:last-child {
+            color: var(--text-light);
+            font-weight: 700;
+        }
+
+        .cloudinary-accounts {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .cloudinary-accounts-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .account-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .account-item:last-child { margin-bottom: 0; }
+
+        .account-item-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .account-item-name i { color: var(--primary); }
+
+        .account-item-value {
+            color: var(--text-muted);
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .account-item.emergency .account-item-name i { color: var(--error); }
+
+        /* Other host cards */
+        .host-card {
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .host-card:last-child { margin-bottom: 0; }
+
+        .host-card:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+
+        .host-card.supabase { border-left: 3px solid var(--info); }
+        .host-card.uploadcare { border-left: 3px solid var(--cyan); }
+
+        .host-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .host-header-left {
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .host-header-left i { color: var(--primary); font-size: 14px; }
+
+        .host-percent {
+            font-size: 12px;
+            font-weight: 800;
+            background: rgba(212, 175, 55, 0.15);
+            padding: 3px 10px;
+            border-radius: 10px;
+            min-width: 42px;
+            text-align: center;
+        }
+
+        .host-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .host-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--info), #60a5fa);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+            min-width: 4px;
+        }
+
+        .host-card.uploadcare .host-fill {
+            background: linear-gradient(90deg, var(--cyan), #22d3ee);
+        }
+
+        .host-details {
+            display: grid;
+            gap: 4px;
+        }
+
+        .host-detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .host-detail-row span:last-child {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           CHARTS GRID
+           ═══════════════════════════════════════════════════════════ */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .chart-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .chart-card.full-width { grid-column: 1 / -1; }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 8px;
+        }
+
+        .chart-header h4 { font-size: 14px; font-weight: 800; }
+
+        .chart-badge {
+            background: var(--bg-input);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container { min-height: 250px; }
+
+        /* ═══════════════════════════════════════════════════════════
+           QUICK ACTIONS
+           ═══════════════════════════════════════════════════════════ */
+        .quick-actions-section { margin-bottom: 24px; }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .quick-action {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-light);
+            font-family: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 28px rgba(212, 175, 55, 0.2);
+        }
+
+        .quick-action i { font-size: 22px; color: var(--primary); }
+        .quick-action span { font-size: 11px; color: var(--text-muted); font-weight: 700; }
+
+        /* ═══════════════════════════════════════════════════════════
+           ACTIVITY FEED
+           ═══════════════════════════════════════════════════════════ */
+        .activity-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .activity-section h4 {
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .activity-section h4 i { color: var(--primary); }
+
+        .feed-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .feed-item:last-child { border-bottom: none; }
+
+        .feed-item-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .feed-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .feed-item-content strong {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .feed-item-content p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 2px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .feed-item-content span {
+            font-size: 10px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px 20px;
+            font-size: 13px;
+        }
+
+        .no-data i {
+            font-size: 32px;
+            color: var(--border-strong);
+            display: block;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           TOAST
+           ═══════════════════════════════════════════════════════════ */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* ═══════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .quick-actions { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(3, 1fr); }
+            .welcome-hero-content { flex-direction: column; align-items: stretch; gap: 16px; }
+            .welcome-hero-date { text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-card { padding: 12px; }
+            .stat-value { font-size: 20px; }
+            .stat-icon { width: 32px; height: 32px; font-size: 14px; }
+            .insights-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .welcome-hero { padding: 20px; }
+            .welcome-hero-name { font-size: 22px; }
+            .cloudinary-stats-row { grid-template-columns: repeat(3, 1fr); }
+            .cloudinary-percent { font-size: 20px; }
+            .cloudinary-header-icon { width: 42px; height: 42px; font-size: 18px; }
+            .cloudinary-header-info h5 { font-size: 14px; }
+            .owner-chat-icon { width: 54px; height: 54px; font-size: 24px; }
+            .owner-chat-title { font-size: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-comments"></i>
+                    <span>Communication</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="chat.html" class="nav-item"><i class="fas fa-comments"></i><span>Owner Chat</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        
+        <!-- ═══ WELCOME HERO ═══ -->
+        <div class="welcome-hero">
+            <div class="welcome-hero-content">
+                <div class="welcome-hero-text">
+                    <div class="welcome-hero-greeting" id="greeting">
+                        <i class="fas fa-sun"></i>
+                        <span>Habari za asubuhi</span>
+                    </div>
+                    <h2 class="welcome-hero-name">
+                        <span id="ownerFirstName">Owner</span> 👋
+                    </h2>
+                    <p class="welcome-hero-subtitle">
+                        Hapa ni shughuli zako za leo kwenye app
+                    </p>
+                </div>
+                <div class="welcome-hero-date">
+                    <div class="welcome-hero-date-day" id="currentDay">—</div>
+                    <div class="welcome-hero-date-date" id="currentDate">—</div>
+                    <div class="welcome-hero-date-month" id="currentMonth">—</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ═══ OWNER CHAT HERO ═══ -->
+        <div class="owner-chat-hero" id="ownerChatHero">
+            <div class="owner-chat-hero-inner">
+                <div class="owner-chat-icon" id="ownerChatIcon">
+                    <i class="fas fa-comments"></i>
+                    <span class="badge" id="ownerChatBadge">0</span>
+                </div>
+                <div class="owner-chat-info">
+                    <div class="owner-chat-title" id="ownerChatTitle">
+                        Owner Chat
+                    </div>
+                    <div class="owner-chat-subtitle" id="ownerChatSubtitle">
+                        Inacheck messages...
+                    </div>
+                </div>
+                <div class="owner-chat-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ═══ RECENT MESSAGES ═══ -->
+        <div class="recent-messages">
+            <div class="recent-messages-header">
+                <h4><i class="fas fa-inbox"></i> Messages za Hivi Karibuni</h4>
+                <a href="chat.html">Zote <i class="fas fa-arrow-right" style="font-size: 10px;"></i></a>
+            </div>
+            <div id="recentMessagesList">
+                <div class="messages-empty">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Inapakia messages...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ═══ STATS ═══ -->
+        <div class="section-title">
+            <i class="fas fa-chart-simple"></i>
+            <span>Takwimu za Msingi</span>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
+                <div class="stat-value" id="statPosts"><span class="skeleton"></span></div>
+                <div class="stat-label">Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="statUsers"><span class="skeleton"></span></div>
+                <div class="stat-label">Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                <div class="stat-value" id="statLikes"><span class="skeleton"></span></div>
+                <div class="stat-label">Likes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-comments"></i></div>
+                <div class="stat-value" id="statComments"><span class="skeleton"></span></div>
+                <div class="stat-label">Comments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-share"></i></div>
+                <div class="stat-value" id="statShares"><span class="skeleton"></span></div>
+                <div class="stat-label">Shares</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-download"></i></div>
+                <div class="stat-value" id="statDownloads"><span class="skeleton"></span></div>
+                <div class="stat-label">Downloads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-value" id="statRating"><span class="skeleton"></span></div>
+                <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                <div class="stat-value" id="statEngagement"><span class="skeleton"></span></div>
+                <div class="stat-label">Engagement</div>
+            </div>
+        </div>
+        
+        <!-- ═══ INSIGHTS ═══ -->
+        <div class="section-title">
+            <i class="fas fa-lightbulb"></i>
+            <span>Maarifa Muhimu</span>
+        </div>
+        
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="insight-value" id="insightAvgEngagement"><span class="skeleton"></span></div>
+                <div class="insight-label">Avg / Post</div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="insight-value" id="insightTotalContent"><span class="skeleton"></span></div>
+                <div class="insight-label">Active Content</div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-hdd"></i></div>
+                <div class="insight-value" id="insightStorage"><span class="skeleton"></span></div>
+                <div class="insight-label">Total Storage</div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-trophy"></i></div>
+                <div class="insight-value" id="insightTopPost" style="font-size: 14px;"><span class="skeleton"></span></div>
+                <div class="insight-label">Top Post</div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-users-cog"></i></div>
+                <div class="insight-value" id="insightActiveUsers"><span class="skeleton"></span></div>
+                <div class="insight-label">Active (7d)</div>
+            </div>
+            <div class="insight-card">
+                <div class="insight-icon"><i class="fas fa-clock"></i></div>
+                <div class="insight-value" id="insightNewUsers"><span class="skeleton"></span></div>
+                <div class="insight-label">New (7d)</div>
+            </div>
+        </div>
+        
+        <!-- ═══ HOSTING MONITOR ═══ -->
+        <div class="section-title">
+            <i class="fas fa-server"></i>
+            <span>Hosting Monitor</span>
+        </div>
+        
+        <div class="hosting-monitor">
+            <h4><i class="fas fa-server"></i> HOSTING MONITOR</h4>
+            
+            <!-- Cloudinary Main -->
+            <div class="cloudinary-main-card" id="cloudinaryMainCard">
+                <div class="cloudinary-header">
+                    <div class="cloudinary-header-left">
+                        <div class="cloudinary-header-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="cloudinary-header-info">
+                            <h5>Cloudinary</h5>
+                            <p>GB 100 Total + Bandwidth</p>
+                        </div>
+                    </div>
+                    <div class="cloudinary-percent" id="cloudinaryTotalPercent">0%</div>
+                </div>
+                
+                <div class="cloudinary-progress-bar">
+                    <div class="cloudinary-progress-fill" id="cloudinaryTotalFill" style="width: 0%;"></div>
+                </div>
+                
+                <div class="cloudinary-stats-row">
+                    <div class="cloudinary-stat">
+                        <div class="cloudinary-stat-label">Storage</div>
+                        <div class="cloudinary-stat-value" id="cloudinaryStorage">—</div>
+                    </div>
+                    <div class="cloudinary-stat">
+                        <div class="cloudinary-stat-label">Bandwidth</div>
+                        <div class="cloudinary-stat-value" id="cloudinaryBandwidth">—</div>
+                    </div>
+                    <div class="cloudinary-stat">
+                        <div class="cloudinary-stat-label">Files</div>
+                        <div class="cloudinary-stat-value" id="cloudinaryFiles">—</div>
+                    </div>
+                </div>
+                
+                <div class="cloudinary-expand-hint">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>Bonyeza kuona mgawanyo wa GB 100</span>
+                </div>
+            </div>
+            
+            <!-- Cloudinary Breakdown -->
+            <div class="cloudinary-breakdown" id="cloudinaryBreakdown">
+                <div class="breakdown-item">
+                    <div class="breakdown-item-header">
+                        <div class="breakdown-item-title video">
+                            <i class="fas fa-video"></i>
+                            <span>🎥 Video</span>
+                        </div>
+                        <div class="breakdown-item-percent" id="videoPercent">0%</div>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill video" id="videoFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="breakdown-item-details">
+                        <span id="videoFiles">0 files</span>
+                        <span id="videoSize">0 MB / 25 GB</span>
+                    </div>
+                </div>
+                
+                <div class="breakdown-item">
+                    <div class="breakdown-item-header">
+                        <div class="breakdown-item-title image">
+                            <i class="fas fa-image"></i>
+                            <span>📷 Picha</span>
+                        </div>
+                        <div class="breakdown-item-percent" id="imagePercent">0%</div>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill image" id="imageFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="breakdown-item-details">
+                        <span id="imageFiles">0 files</span>
+                        <span id="imageSize">0 MB / 25 GB</span>
+                    </div>
+                </div>
+                
+                <div class="breakdown-item">
+                    <div class="breakdown-item-header">
+                        <div class="breakdown-item-title emergency">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>🚨 Emergency</span>
+                        </div>
+                        <div class="breakdown-item-percent" id="emergencyPercent">0%</div>
+                    </div>
+                    <div class="breakdown-bar">
+                        <div class="breakdown-bar-fill emergency" id="emergencyFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="breakdown-item-details">
+                        <span id="emergencyFiles">0 files</span>
+                        <span id="emergencySize">0 MB / 50 GB</span>
+                    </div>
+                </div>
+                
+                <div class="cloudinary-accounts">
+                    <div class="cloudinary-accounts-title">Akaunti Zilizounganishwa</div>
+                    
+                    <div class="account-item">
+                        <div class="account-item-name">
+                            <i class="fas fa-video"></i>
+                            <span>🎥 Old (Video)</span>
+                        </div>
+                        <div class="account-item-value">pv88ocpt</div>
+                    </div>
+                    
+                    <div class="account-item">
+                        <div class="account-item-name">
+                            <i class="fas fa-image"></i>
+                            <span>📷 Kmca 2 (Picha)</span>
+                        </div>
+                        <div class="account-item-value">fuik0cav</div>
+                    </div>
+                    
+                    <div class="account-item emergency">
+                        <div class="account-item-name">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>🚨 Kmca 5</span>
+                        </div>
+                        <div class="account-item-value">evxn8kjr</div>
+                    </div>
+                    
+                    <div class="account-item emergency">
+                        <div class="account-item-name">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>🚨 kmca</span>
+                        </div>
+                        <div class="account-item-value">bnq4lifd</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Supabase -->
+            <div class="host-card supabase">
+                <div class="host-header">
+                    <div class="host-header-left"><i class="fas fa-database"></i> <span>Supabase</span></div>
+                    <div class="host-percent" id="supabasePercent">0%</div>
+                </div>
+                <div class="host-bar"><div class="host-fill" id="supabaseFill" style="width: 0%;"></div></div>
+                <div class="host-details">
+                    <div class="host-detail-row"><span>💾 Storage</span><span id="supabaseStorage">—</span></div>
+                    <div class="host-detail-row"><span>📊 Database</span><span id="supabaseDb">—</span></div>
+                    <div class="host-detail-row"><span>👥 Users</span><span id="supabaseUsers">—</span></div>
+                </div>
+            </div>
+            
+            <!-- Uploadcare -->
+            <div class="host-card uploadcare">
+                <div class="host-header">
+                    <div class="host-header-left"><i class="fas fa-folder"></i> <span>Uploadcare</span></div>
+                    <div class="host-percent" id="uploadcarePercent">0%</div>
+                </div>
+                <div class="host-bar"><div class="host-fill" id="uploadcareFill" style="width: 0%;"></div></div>
+                <div class="host-details">
+                    <div class="host-detail-row"><span>💾 Storage</span><span id="uploadcareStorage">—</span></div>
+                    <div class="host-detail-row"><span>📁 Files</span><span id="uploadcareCount">—</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ═══ CHARTS ═══ -->
+        <div class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            <span>Uchanganuzi</span>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📊 User Activity</h4>
+                    <span class="chart-badge">Mwezi Huu</span>
+                </div>
+                <div class="chart-container" id="userActivityChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📈 Users Growth</h4>
+                    <span class="chart-badge">Miezi 3</span>
+                </div>
+                <div class="chart-container" id="usersGrowthChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>💾 Storage Distribution</h4>
+                    <span class="chart-badge">Current</span>
+                </div>
+                <div class="chart-container" id="storageChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📝 Posts per Day</h4>
+                    <span class="chart-badge">Wiki Hii</span>
+                </div>
+                <div class="chart-container" id="postsChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>🔥 Engagement</h4>
+                    <span class="chart-badge">All Time</span>
+                </div>
+                <div class="chart-container" id="engagementBreakdownChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h4>📊 Content Distribution</h4>
+                    <span class="chart-badge">By Type</span>
+                </div>
+                <div class="chart-container" id="contentDistributionChart"></div>
+            </div>
+        </div>
+        
+        <!-- ═══ QUICK ACTIONS ═══ -->
+        <div class="quick-actions-section">
+            <div class="section-title">
+                <i class="fas fa-bolt"></i>
+                <span>Vitendo vya Haraka</span>
+            </div>
+            <div class="quick-actions">
+                <a href="posts.html" class="quick-action"><i class="fas fa-plus-circle"></i><span>Post</span></a>
+                <a href="events.html" class="quick-action"><i class="fas fa-calendar-plus"></i><span>Tukio</span></a>
+                <a href="polls.html" class="quick-action"><i class="fas fa-vote-yea"></i><span>Poll</span></a>
+                <a href="bible-verses.html" class="quick-action"><i class="fas fa-bible"></i><span>Bible</span></a>
+                <a href="announcements.html" class="quick-action"><i class="fas fa-bullhorn"></i><span>Tangazo</span></a>
+                <a href="backup-clean.html" class="quick-action"><i class="fas fa-database"></i><span>Backup</span></a>
+            </div>
+        </div>
+        
+        <!-- ═══ USER ACTIVITY FEED ═══ -->
+        <div class="activity-section">
+            <h4><i class="fas fa-clock"></i> Recent User Activity</h4>
+            <div id="userActivityFeed">
+                <div class="no-data"><i class="fas fa-spinner fa-spin"></i><p>Inapakia...</p></div>
+            </div>
+        </div>
+        
+        <!-- ═══ OWNER ACTIVITY ═══ -->
+        <div class="activity-section">
+            <h4><i class="fas fa-history"></i> Owner Activity Log</h4>
+            <div id="ownerActivityFeed">
+                <div class="no-data"><i class="fas fa-spinner fa-spin"></i><p>Inapakia...</p></div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="posts.html" class="bottom-nav-item">
+            <i class="fas fa-newspaper"></i>
+            <span>Posts</span>
+        </a>
+        <a href="chat.html" class="bottom-nav-item">
+            <i class="fas fa-comments"></i>
+            <span>Chat</span>
+            <span class="nav-badge" id="chatNavBadge">0</span>
+        </a>
+        <a href="settings.html" class="bottom-nav-item">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    <script src="owner-push-notifications.js"></script>
+    <script src="chat-notifications.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // STATE
+        // ═══════════════════════════════════════════════════════════
+        
+        const state = {
+            owner: null,
+            unreadCount: 0,
+            chatSubscription: null,
+            charts: {},
+            expanded: false
+        };
+        
+        // ═══════════════════════════════════════════════════════════
+        // DOM
+        // ═══════════════════════════════════════════════════════════
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            greeting: document.getElementById('greeting'),
+            ownerFirstName: document.getElementById('ownerFirstName'),
+            currentDay: document.getElementById('currentDay'),
+            currentDate: document.getElementById('currentDate'),
+            currentMonth: document.getElementById('currentMonth'),
+            ownerChatHero: document.getElementById('ownerChatHero'),
+            ownerChatBadge: document.getElementById('ownerChatBadge'),
+            ownerChatTitle: document.getElementById('ownerChatTitle'),
+            ownerChatSubtitle: document.getElementById('ownerChatSubtitle'),
+            recentMessagesList: document.getElementById('recentMessagesList'),
+            chatNavBadge: document.getElementById('chatNavBadge'),
+            cloudinaryMainCard: document.getElementById('cloudinaryMainCard'),
+            cloudinaryBreakdown: document.getElementById('cloudinaryBreakdown'),
+            cloudinaryTotalPercent: document.getElementById('cloudinaryTotalPercent'),
+            cloudinaryTotalFill: document.getElementById('cloudinaryTotalFill'),
+            cloudinaryStorage: document.getElementById('cloudinaryStorage'),
+            cloudinaryBandwidth: document.getElementById('cloudinaryBandwidth'),
+            cloudinaryFiles: document.getElementById('cloudinaryFiles'),
+            videoPercent: document.getElementById('videoPercent'),
+            videoFill: document.getElementById('videoFill'),
+            videoFiles: document.getElementById('videoFiles'),
+            videoSize: document.getElementById('videoSize'),
+            imagePercent: document.getElementById('imagePercent'),
+            imageFill: document.getElementById('imageFill'),
+            imageFiles: document.getElementById('imageFiles'),
+            imageSize: document.getElementById('imageSize'),
+            emergencyPercent: document.getElementById('emergencyPercent'),
+            emergencyFill: document.getElementById('emergencyFill'),
+            emergencyFiles: document.getElementById('emergencyFiles'),
+            emergencySize: document.getElementById('emergencySize'),
+            supabasePercent: document.getElementById('supabasePercent'),
+            supabaseFill: document.getElementById('supabaseFill'),
+            supabaseStorage: document.getElementById('supabaseStorage'),
+            supabaseDb: document.getElementById('supabaseDb'),
+            supabaseUsers: document.getElementById('supabaseUsers'),
+            uploadcarePercent: document.getElementById('uploadcarePercent'),
+            uploadcareFill: document.getElementById('uploadcareFill'),
+            uploadcareStorage: document.getElementById('uploadcareStorage'),
+            uploadcareCount: document.getElementById('uploadcareCount'),
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        // ═══════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════
+        
+        async function init() {
+            console.log('📊 Dashboard initializing...');
+            
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            renderWelcome();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            
+            // Init notifications
+            if (window.ChatNotifications) {
+                window.ChatNotifications.init({ requestPermissionOnInit: false });
+            }
+            
+            // Load data in parallel
+            await Promise.allSettled([
+                loadStats(),
+                loadInsights(),
+                loadUnreadMessages(),
+                loadRecentMessages(),
+                loadHostingMonitor(),
+                loadUserActivityFeed(),
+                loadOwnerActivity()
+            ]);
+            
+            loadAllCharts();
+            subscribeToChatMessages();
+            
+            console.log('✅ Dashboard ready');
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // GET OWNER
+        // ═══════════════════════════════════════════════════════════
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // SIDEBAR
+        // ═══════════════════════════════════════════════════════════
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}" onerror="this.parentElement.textContent='${initials}'">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // WELCOME HERO
+        // ═══════════════════════════════════════════════════════════
+        
+        function renderWelcome() {
+            const firstName = state.owner.jina?.split(' ')[0] || 'Owner';
+            els.ownerFirstName.textContent = firstName;
+            
+            // Greeting based on time
+            const hour = new Date().getHours();
+            let greetingText = '';
+            let greetingIcon = '';
+            
+            if (hour >= 5 && hour < 12) {
+                greetingText = 'Habari za asubuhi';
+                greetingIcon = 'fa-sun';
+            } else if (hour >= 12 && hour < 17) {
+                greetingText = 'Habari za mchana';
+                greetingIcon = 'fa-cloud-sun';
+            } else if (hour >= 17 && hour < 20) {
+                greetingText = 'Habari za jioni';
+                greetingIcon = 'fa-cloud-moon';
+            } else {
+                greetingText = 'Habari za usiku';
+                greetingIcon = 'fa-moon';
+            }
+            
+            els.greeting.innerHTML = `<i class="fas ${greetingIcon}"></i><span>${greetingText}</span>`;
+            
+            // Date
+            const today = new Date();
+            const days = ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'];
+            const months = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ago', 'Sep', 'Okt', 'Nov', 'Des'];
+            
+            els.currentDay.textContent = days[today.getDay()];
+            els.currentDate.textContent = today.getDate();
+            els.currentMonth.textContent = months[today.getMonth()];
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // LOAD STATS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadStats() {
+            const specs = [
+                ['posts', 'statPosts'],
+                ['users', 'statUsers'],
+                ['content_likes', 'statLikes'],
+                ['comments', 'statComments'],
+                ['content_shares', 'statShares'],
+                ['content_downloads', 'statDownloads']
+            ];
+            
+            for (const [table, elId] of specs) {
+                try {
+                    const { count } = await supabaseClient
+                        .from(table)
+                        .select('*', { count: 'exact', head: true });
+                    
+                    setStatValue(elId, count || 0);
+                } catch (e) {
+                    setStatValue(elId, 0);
+                }
+            }
+            
+            // Rating
+            let rating = 0;
+            try {
+                const { data } = await supabaseClient.from('posts').select('rating').not('rating', 'is', null);
+                if (data && data.length) {
+                    const nums = data.map(p => Number(p.rating)).filter(Number.isFinite);
+                    if (nums.length) rating = (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(1);
+                }
+            } catch (e) {}
+            setStatValue('statRating', rating || '—');
+            
+            // Engagement
+            let totalEng = 0;
+            for (const t of ['content_likes', 'comments', 'content_shares', 'content_downloads']) {
+                try {
+                    const { count } = await supabaseClient.from(t).select('*', { count: 'exact', head: true });
+                    totalEng += count || 0;
+                } catch (e) {}
+            }
+            setStatValue('statEngagement', formatNumber(totalEng));
+        }
+        
+        function setStatValue(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = '';
+            el.textContent = typeof value === 'number' ? formatNumber(value) : value;
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // LOAD INSIGHTS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadInsights() {
+            try {
+                const [likes, comments, shares, downloads] = await Promise.all([
+                    supabaseClient.from('content_likes').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('comments').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('content_shares').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('content_downloads').select('*', { count: 'exact', head: true })
+                ]);
+                
+                const totalEng = (likes.count || 0) + (comments.count || 0) + (shares.count || 0) + (downloads.count || 0);
+                const { count: postsCount } = await supabaseClient.from('posts').select('*', { count: 'exact', head: true });
+                
+                const avg = postsCount > 0 ? (totalEng / postsCount).toFixed(1) : '0';
+                setInsightValue('insightAvgEngagement', avg);
+                
+                // Content
+                const contentResults = await Promise.all([
+                    supabaseClient.from('posts').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('bible_verses').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('nyimbo_za_siku').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('masomo_dominica').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('watakatifu').select('*', { count: 'exact', head: true })
+                ]);
+                
+                const totalContent = contentResults.reduce((s, r) => s + (r.count || 0), 0);
+                setInsightValue('insightTotalContent', formatNumber(totalContent));
+                
+                // Storage
+                const storage = await calculateTotalStorage();
+                setInsightValue('insightStorage', storage);
+                
+                // Top post
+                const topPost = await getTopEngagedPost();
+                setInsightValue('insightTopPost', topPost || 'Hakuna');
+                document.getElementById('insightTopPost').style.fontSize = '14px';
+                
+                // Active users
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                
+                try {
+                    const { data: acts } = await supabaseClient
+                        .from('user_activities')
+                        .select('user_id')
+                        .gte('created_at', weekAgo.toISOString());
+                    
+                    const unique = new Set((acts || []).map(a => a.user_id).filter(Boolean));
+                    setInsightValue('insightActiveUsers', formatNumber(unique.size));
+                } catch (e) {
+                    setInsightValue('insightActiveUsers', '0');
+                }
+                
+                // New users
+                try {
+                    const { count } = await supabaseClient
+                        .from('users')
+                        .select('*', { count: 'exact', head: true })
+                        .gte('created_at', weekAgo.toISOString());
+                    setInsightValue('insightNewUsers', formatNumber(count || 0));
+                } catch (e) {
+                    setInsightValue('insightNewUsers', '0');
+                }
+            } catch (e) {
+                console.error('Insights error:', e);
+            }
+        }
+        
+        function setInsightValue(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = '';
+            el.textContent = value;
+        }
+        
+        async function calculateTotalStorage() {
+            let totalMB = 0;
+            
+            const buckets = ['music', 'posts', 'videos', 'thumbnails', 'logos', 'pdfs'];
+            for (const bucket of buckets) {
+                try {
+                    const { data } = await supabaseClient.storage.from(bucket).list();
+                    if (data) data.forEach(f => totalMB += (f.metadata?.size || 0) / (1024 * 1024));
+                } catch (e) {}
+            }
+            
+            try {
+                const { data: posts } = await supabaseClient.from('posts').select('media_files, audio_file');
+                let cVideo = 0, cImage = 0, cEmergency = 0, ucare = 0;
+                
+                (posts || []).forEach(p => {
+                    if (p.media_files && Array.isArray(p.media_files)) {
+                        p.media_files.forEach(url => {
+                            if (!url) return;
+                            if (url.includes('cloudinary.com')) {
+                                const isVid = url.match(/\.(mp4|webm|mov)/i) || url.includes('/video/');
+                                const isEmg = url.includes('evxn8kjr') || url.includes('bnq4lifd');
+                                if (isEmg) cEmergency++;
+                                else if (isVid) cVideo++;
+                                else cImage++;
+                            }
+                            if (url.includes('ucarecdn.com')) ucare++;
+                        });
+                    }
+                    if (p.audio_file?.includes('ucarecdn.com')) ucare++;
+                });
+                
+                totalMB += cVideo * 5 + cImage * 1 + cEmergency * 3 + ucare * 2;
+            } catch (e) {}
+            
+            return formatGB(totalMB);
+        }
+        
+        async function getTopEngagedPost() {
+            try {
+                const { data: posts } = await supabaseClient
+                    .from('posts')
+                    .select('id, title')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (!posts || posts.length === 0) return null;
+                
+                const postIds = posts.map(p => p.id);
+                const { data: likes } = await supabaseClient
+                    .from('content_likes')
+                    .select('content_id')
+                    .eq('content_type', 'post')
+                    .in('content_id', postIds);
+                
+                const counts = {};
+                (likes || []).forEach(l => counts[l.content_id] = (counts[l.content_id] || 0) + 1);
+                
+                let topPost = null, maxLikes = 0;
+                posts.forEach(p => {
+                    const c = counts[p.id] || 0;
+                    if (c > maxLikes) { maxLikes = c; topPost = p; }
+                });
+                
+                if (topPost && maxLikes > 0) {
+                    const t = topPost.title || 'Post';
+                    return t.length > 20 ? t.substring(0, 20) + '...' : t;
+                }
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // LOAD UNREAD MESSAGES
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadUnreadMessages() {
+            try {
+                let count = 0;
+                
+                try {
+                    const { data, error } = await supabaseClient.rpc('get_owner_total_unread', {
+                        p_owner_id: state.owner.id
+                    });
+                    
+                    if (!error && typeof data === 'number') {
+                        count = data;
+                    } else {
+                        throw new Error('RPC failed');
+                    }
+                } catch (e) {
+                    // Fallback
+                    const { data: chats } = await supabaseClient
+                        .from('owner_chats')
+                        .select('chat_id')
+                        .or(`chat_type.eq.group,owner1_id.eq.${state.owner.id},owner2_id.eq.${state.owner.id}`);
+                    
+                    for (const chat of (chats || [])) {
+                        const { count: chatCount } = await supabaseClient
+                            .from('owner_chat_messages')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('chat_id', chat.chat_id)
+                            .eq('is_deleted', false)
+                            .neq('sender_id', state.owner.id)
+                            .not('read_by', 'cs', `{${state.owner.id}}`);
+                        
+                        count += chatCount || 0;
+                    }
+                }
+                
+                state.unreadCount = count;
+                updateOwnerChatButton(count);
+                updateChatNavBadge(count);
+                
+            } catch (error) {
+                console.error('Load unread error:', error);
+                updateOwnerChatButton(0);
+            }
+        }
+        
+        function updateOwnerChatButton(count) {
+            const hero = els.ownerChatHero;
+            const badge = els.ownerChatBadge;
+            const subtitle = els.ownerChatSubtitle;
+            const title = els.ownerChatTitle;
+            
+            if (count > 0) {
+                hero.classList.add('unread');
+                badge.textContent = count > 99 ? '99+' : count;
+                subtitle.textContent = `Una ujumbe ${count} mpya - Bonyeza kuona`;
+                title.textContent = '🔔 Owner Chat';
+            } else {
+                hero.classList.remove('unread');
+                badge.textContent = '0';
+                subtitle.textContent = 'Hakuna messages mpya - Bonyeza kuwasiliana';
+                title.textContent = '💬 Owner Chat';
+            }
+        }
+        
+        function updateChatNavBadge(count) {
+            if (count > 0) {
+                els.chatNavBadge.textContent = count > 99 ? '99+' : count;
+                els.chatNavBadge.classList.add('show');
+            } else {
+                els.chatNavBadge.classList.remove('show');
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // LOAD RECENT MESSAGES
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadRecentMessages() {
+            try {
+                const { data: chats } = await supabaseClient
+                    .from('owner_chats')
+                    .select('chat_id, chat_type, owner1_id, owner2_id')
+                    .or(`chat_type.eq.group,owner1_id.eq.${state.owner.id},owner2_id.eq.${state.owner.id}`);
+                
+                if (!chats || chats.length === 0) {
+                    renderEmptyMessages();
+                    return;
+                }
+                
+                const chatIds = chats.map(c => c.chat_id);
+                
+                const { data: messages } = await supabaseClient
+                    .from('owner_chat_messages')
+                    .select('*')
+                    .in('chat_id', chatIds)
+                    .eq('is_deleted', false)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (!messages || messages.length === 0) {
+                    renderEmptyMessages();
+                    return;
+                }
+                
+                const ownerIds = [...new Set(messages.map(m => m.sender_id))];
+                const { data: owners } = await supabaseClient
+                    .from('owners')
+                    .select('id, jina, profile_picture')
+                    .in('id', ownerIds);
+                
+                const ownersMap = {};
+                (owners || []).forEach(o => ownersMap[o.id] = o);
+                
+                const enrichedMessages = messages.map(m => {
+                    const chat = chats.find(c => c.chat_id === m.chat_id);
+                    const sender = ownersMap[m.sender_id] || {};
+                    
+                    return {
+                        ...m,
+                        chat,
+                        sender,
+                        isGroup: chat?.chat_type === 'group',
+                        isMine: m.sender_id === state.owner.id
+                    };
+                });
+                
+                renderRecentMessages(enrichedMessages);
+                
+            } catch (error) {
+                console.error('Load recent messages error:', error);
+                renderEmptyMessages();
+            }
+        }
+        
+        function renderEmptyMessages() {
+            els.recentMessagesList.innerHTML = `
+                <div class="messages-empty">
+                    <i class="fas fa-inbox"></i>
+                    <p>Hakuna messages bado</p>
+                </div>
+            `;
+        }
+        
+        function renderRecentMessages(messages) {
+            if (messages.length === 0) {
+                renderEmptyMessages();
+                return;
+            }
+            
+            els.recentMessagesList.innerHTML = messages.map(msg => {
+                const initials = getInitials(msg.sender.jina);
+                const hasPic = msg.sender.profile_picture && 
+                               msg.sender.profile_picture !== 'null' && 
+                               msg.sender.profile_picture.trim() !== '';
+                
+                let avatarHtml = '';
+                if (msg.isGroup) {
+                    avatarHtml = `
+                        <div class="message-avatar group">
+                            <div class="type-icon group"><i class="fas fa-users"></i></div>
+                        </div>
+                    `;
+                } else if (hasPic) {
+                    avatarHtml = `
+                        <div class="message-avatar">
+                            <img src="${msg.sender.profile_picture}" alt="${msg.sender.jina}" onerror="this.parentElement.textContent='${initials}'">
+                            <div class="type-icon private"><i class="fas fa-user"></i></div>
+                        </div>
+                    `;
+                } else {
+                    avatarHtml = `
+                        <div class="message-avatar">
+                            ${initials}
+                            <div class="type-icon private"><i class="fas fa-user"></i></div>
+                        </div>
+                    `;
+                }
+                
+                let preview = '';
+                switch (msg.message_type) {
+                    case 'image': preview = '🖼️ Picha'; break;
+                    case 'video': preview = '🎥 Video'; break;
+                    case 'file': preview = '📎 ' + (msg.attachment_name || 'File'); break;
+                    case 'voice': preview = '🎤 Voice note'; break;
+                    default: preview = msg.message || 'Message';
+                }
+                if (preview.length > 60) preview = preview.substring(0, 60) + '...';
+                
+                const senderName = msg.isMine ? 'Wewe' : (msg.sender.jina || 'Unknown');
+                const chatTypeHtml = msg.isGroup 
+                    ? '<span class="chat-type group">👥 Group</span>' 
+                    : '<span class="chat-type private">👤 Private</span>';
+                
+                const isUnread = !msg.isMine && !(msg.read_by || []).includes(state.owner.id);
+                const unreadHtml = isUnread 
+                    ? `<div class="message-unread-badge">NEW</div>` 
+                    : '';
+                
+                return `
+                    <a href="chat-view.html?chat=${msg.chat_id}" class="message-item ${isUnread ? 'unread' : ''}">
+                        ${avatarHtml}
+                        <div class="message-info">
+                            <div class="message-sender">
+                                ${escapeHtml(senderName)}
+                                ${chatTypeHtml}
+                            </div>
+                            <div class="message-preview">${escapeHtml(preview)}</div>
+                        </div>
+                        <div class="message-meta">
+                            <div class="message-time">${formatChatTime(msg.created_at)}</div>
+                            ${unreadHtml}
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // HOSTING MONITOR
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadHostingMonitor() {
+            try {
+                // Cloudinary
+                const cloud = await getCloudinaryStats();
+                
+                const totalMB = cloud.videoMB + cloud.imageMB + cloud.emergencyMB;
+                const totalLimitMB = 100 * 1024;
+                const totalPercent = Math.min(Math.round((totalMB / totalLimitMB) * 100), 100);
+                
+                els.cloudinaryTotalPercent.textContent = totalPercent + '%';
+                els.cloudinaryTotalFill.style.width = totalPercent + '%';
+                els.cloudinaryStorage.textContent = formatSize(totalMB) + ' / 100 GB';
+                els.cloudinaryBandwidth.textContent = formatSize(cloud.bandwidthMB) + ' / 100 GB';
+                els.cloudinaryFiles.textContent = cloud.totalFiles;
+                
+                updateBreakdown(cloud.videoMB, cloud.videoCount, 25 * 1024, els.videoPercent, els.videoFill, els.videoFiles, els.videoSize);
+                updateBreakdown(cloud.imageMB, cloud.imageCount, 25 * 1024, els.imagePercent, els.imageFill, els.imageFiles, els.imageSize);
+                updateBreakdown(cloud.emergencyMB, cloud.emergencyCount, 50 * 1024, els.emergencyPercent, els.emergencyFill, els.emergencyFiles, els.emergencySize);
+                
+                // Supabase
+                let supabaseBytes = 0;
+                const buckets = ['music', 'posts', 'videos', 'thumbnails', 'logos', 'pdfs'];
+                
+                for (const bucket of buckets) {
+                    try {
+                        const { data } = await supabaseClient.storage.from(bucket).list();
+                        if (data) data.forEach(f => supabaseBytes += (f.metadata?.size || 0));
+                    } catch (e) {}
+                }
+                
+                const supabaseMB = supabaseBytes / (1024 * 1024);
+                const supPercent = Math.min(Math.round((supabaseMB / 1024) * 100), 100);
+                
+                els.supabasePercent.textContent = supPercent + '%';
+                els.supabaseFill.style.width = supPercent + '%';
+                els.supabaseStorage.textContent = supabaseMB.toFixed(2) + ' MB / 1 GB';
+                els.supabaseDb.textContent = '—';
+                
+                try {
+                    const { count } = await supabaseClient.from('users').select('*', { count: 'exact', head: true });
+                    els.supabaseUsers.textContent = (count || 0).toLocaleString() + ' / 50,000';
+                } catch (e) {}
+                
+                // Uploadcare
+                const uploadcareMB = cloud.uploadcareMB;
+                const uploadPercent = Math.min(Math.round((uploadcareMB / (3 * 1024)) * 100), 100);
+                
+                els.uploadcarePercent.textContent = uploadPercent + '%';
+                els.uploadcareFill.style.width = uploadPercent + '%';
+                els.uploadcareStorage.textContent = uploadcareMB.toFixed(2) + ' MB / 3 GB';
+                els.uploadcareCount.textContent = cloud.uploadcareCount + ' files';
+                
+            } catch (error) {
+                console.error('Hosting monitor error:', error);
+            }
+        }
+        
+        function updateBreakdown(sizeMB, fileCount, limitMB, percentEl, fillEl, filesEl, sizeEl) {
+            const percent = Math.min(Math.round((sizeMB / limitMB) * 100), 100);
+            percentEl.textContent = percent + '%';
+            fillEl.style.width = percent + '%';
+            filesEl.textContent = fileCount + ' files';
+            sizeEl.textContent = formatSize(sizeMB) + ' / ' + formatSize(limitMB);
+        }
+        
+        async function getCloudinaryStats() {
+            let videoCount = 0, imageCount = 0, emergencyCount = 0, uploadcareCount = 0;
+            
+            try {
+                const { data: posts } = await supabaseClient
+                    .from('posts')
+                    .select('media_files, audio_file');
+                
+                (posts || []).forEach(p => {
+                    if (p.media_files && Array.isArray(p.media_files)) {
+                        p.media_files.forEach(url => {
+                            if (!url) return;
+                            
+                            if (url.includes('cloudinary.com')) {
+                                const isVideo = url.match(/\.(mp4|webm|mov|avi|mkv|m4v)/i) || url.includes('/video/');
+                                const isEmergency = url.includes('evxn8kjr') || url.includes('bnq4lifd');
+                                
+                                if (isEmergency) emergencyCount++;
+                                else if (isVideo) videoCount++;
+                                else imageCount++;
+                            }
+                            
+                            if (url.includes('ucarecdn.com')) uploadcareCount++;
+                        });
+                    }
+                    
+                    if (p.audio_file?.includes('ucarecdn.com')) uploadcareCount++;
+                });
+            } catch (e) {}
+            
+            return {
+                videoMB: videoCount * 5,
+                imageMB: imageCount * 1,
+                emergencyMB: emergencyCount * 3,
+                uploadcareMB: uploadcareCount * 2,
+                bandwidthMB: (videoCount * 5) + (imageCount * 1) + (emergencyCount * 3),
+                videoCount,
+                imageCount,
+                emergencyCount,
+                uploadcareCount,
+                totalFiles: videoCount + imageCount + emergencyCount + uploadcareCount
+            };
+        }
+        
+        function formatSize(mb) {
+            if (mb >= 1024) return (mb / 1024).toFixed(2) + ' GB';
+            if (mb < 1) return (mb * 1024).toFixed(0) + ' KB';
+            return mb.toFixed(2) + ' MB';
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // CHARTS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadAllCharts() {
+            setTimeout(() => {
+                Promise.allSettled([
+                    loadUserActivityChart(),
+                    loadUsersGrowthChart(),
+                    loadStorageChart(),
+                    loadPostsChart(),
+                    loadEngagementBreakdownChart(),
+                    loadContentDistributionChart()
+                ]);
+            }, 300);
+        }
+        
+        async function loadUserActivityChart() {
+            try {
+                const { data } = await supabaseClient
+                    .from('user_activities')
+                    .select('activity_type, created_at')
+                    .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
+                
+                const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+                const days = [], likes = [], comments = [], shares = [];
+                for (let i = 1; i <= daysInMonth; i++) {
+                    days.push(i.toString());
+                    likes.push(0); comments.push(0); shares.push(0);
+                }
+                
+                (data || []).forEach(a => {
+                    const d = new Date(a.created_at).getDate() - 1;
+                    if (a.activity_type === 'like_post') likes[d]++;
+                    if (a.activity_type === 'comment_post') comments[d]++;
+                    if (a.activity_type === 'share_post') shares[d]++;
+                });
+                
+                renderChart('userActivityChart', {
+                    series: [
+                        { name: 'Likes', data: likes },
+                        { name: 'Comments', data: comments },
+                        { name: 'Shares', data: shares }
+                    ],
+                    chart: { type: 'line', height: 250, background: 'transparent', foreColor: '#94a3b8' },
+                    colors: ['#3b82f6', '#10b981', '#d4af37'],
+                    stroke: { curve: 'smooth', width: 2 },
+                    xaxis: { categories: days, labels: { style: { colors: '#94a3b8' } } },
+                    yaxis: { labels: { style: { colors: '#94a3b8' } } },
+                    grid: { borderColor: '#334155' },
+                    theme: { mode: 'dark' },
+                    legend: { labels: { colors: '#94a3b8' } }
+                });
+            } catch (e) {}
+        }
+        
+        async function loadUsersGrowthChart() {
+            try {
+                const labels = [], data = [];
+                for (let i = 2; i >= 0; i--) {
+                    const month = new Date(new Date().getFullYear(), new Date().getMonth() - i, 1);
+                    const next = new Date(new Date().getFullYear(), new Date().getMonth() - i + 1, 1);
+                    labels.push(month.toLocaleDateString('sw-TZ', { month: 'short' }));
+                    
+                    const { count } = await supabaseClient
+                        .from('users')
+                        .select('*', { count: 'exact', head: true })
+                        .gte('created_at', month.toISOString())
+                        .lt('created_at', next.toISOString());
+                    
+                    data.push(count || 0);
+                }
+                
+                renderChart('usersGrowthChart', {
+                    series: [{ name: 'Users', data }],
+                    chart: { type: 'area', height: 250, background: 'transparent', foreColor: '#94a3b8' },
+                    colors: ['#d4af37'],
+                    fill: { type: 'gradient', gradient: { opacityFrom: 0.7, opacityTo: 0.1 } },
+                    stroke: { curve: 'smooth', width: 2 },
+                    xaxis: { categories: labels, labels: { style: { colors: '#94a3b8' } } },
+                    yaxis: { labels: { style: { colors: '#94a3b8' } } },
+                    grid: { borderColor: '#334155' },
+                    theme: { mode: 'dark' }
+                });
+            } catch (e) {}
+        }
+        
+        async function loadStorageChart() {
+            const cloud = await getCloudinaryStats();
+            
+            let supabaseMB = 0;
+            const buckets = ['music', 'posts', 'videos', 'thumbnails', 'logos', 'pdfs'];
+            for (const bucket of buckets) {
+                try {
+                    const { data } = await supabaseClient.storage.from(bucket).list();
+                    if (data) data.forEach(f => supabaseMB += (f.metadata?.size || 0) / (1024 * 1024));
+                } catch (e) {}
+            }
+            
+            renderChart('storageChart', {
+                series: [supabaseMB, cloud.videoMB, cloud.imageMB, cloud.emergencyMB, cloud.uploadcareMB],
+                labels: ['Supabase', '🎥 Video', '📷 Picha', '🚨 Emergency', 'Uploadcare'],
+                chart: { type: 'donut', height: 250, background: 'transparent' },
+                colors: ['#3b82f6', '#d4af37', '#10b981', '#ef4444', '#06b6d4'],
+                legend: { labels: { colors: '#94a3b8' }, position: 'bottom' },
+                theme: { mode: 'dark' }
+            });
+        }
+        
+        async function loadPostsChart() {
+            try {
+                const postData = [0, 0, 0, 0, 0, 0, 0];
+                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                
+                const weekStart = new Date();
+                weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1);
+                weekStart.setHours(0, 0, 0, 0);
+                
+                const { data } = await supabaseClient
+                    .from('posts')
+                    .select('created_at')
+                    .gte('created_at', weekStart.toISOString());
+                
+                (data || []).forEach(p => {
+                    const d = new Date(p.created_at).getDay();
+                    const i = d === 0 ? 6 : d - 1;
+                    postData[i]++;
+                });
+                
+                renderChart('postsChart', {
+                    series: [{ name: 'Posts', data: postData }],
+                    chart: { type: 'bar', height: 250, background: 'transparent', foreColor: '#94a3b8' },
+                    colors: ['#d4af37'],
+                    xaxis: { categories: days, labels: { style: { colors: '#94a3b8' } } },
+                    yaxis: { labels: { style: { colors: '#94a3b8' } } },
+                    plotOptions: { bar: { borderRadius: 5, columnWidth: '55%' } },
+                    grid: { borderColor: '#334155' },
+                    theme: { mode: 'dark' }
+                });
+            } catch (e) {}
+        }
+        
+        async function loadEngagementBreakdownChart() {
+            try {
+                const [l, c, s, d] = await Promise.all([
+                    supabaseClient.from('content_likes').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('comments').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('content_shares').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('content_downloads').select('*', { count: 'exact', head: true })
+                ]);
+                
+                renderChart('engagementBreakdownChart', {
+                    series: [l.count || 0, c.count || 0, s.count || 0, d.count || 0],
+                    labels: ['❤️ Likes', '💬 Comments', '🔗 Shares', '⬇️ Downloads'],
+                    chart: { type: 'donut', height: 250, background: 'transparent' },
+                    colors: ['#ef4444', '#3b82f6', '#d4af37', '#10b981'],
+                    legend: { labels: { colors: '#94a3b8' }, position: 'bottom' },
+                    theme: { mode: 'dark' }
+                });
+            } catch (e) {}
+        }
+        
+        async function loadContentDistributionChart() {
+            try {
+                const results = await Promise.all([
+                    supabaseClient.from('posts').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('bible_verses').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('nyimbo_za_siku').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('masomo_dominica').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('watakatifu').select('*', { count: 'exact', head: true })
+                ]);
+                
+                renderChart('contentDistributionChart', {
+                    series: [{ name: 'Count', data: results.map(r => r.count || 0) }],
+                    chart: { type: 'bar', height: 250, background: 'transparent', foreColor: '#94a3b8' },
+                    colors: ['#d4af37', '#10b981', '#a855f7', '#06b6d4', '#f43f5e'],
+                    xaxis: {
+                        categories: ['📝 Posts', '📖 Bible', '🎵 Nyimbo', '📚 Masomo', '✝️ Watakatifu'],
+                        labels: { style: { colors: '#94a3b8', fontSize: '10px' } }
+                    },
+                    yaxis: { labels: { style: { colors: '#94a3b8' } } },
+                    plotOptions: { bar: { borderRadius: 5, columnWidth: '65%', distributed: true } },
+                    legend: { show: false },
+                    grid: { borderColor: '#334155' },
+                    theme: { mode: 'dark' }
+                });
+            } catch (e) {}
+        }
+        
+        function renderChart(id, options) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (state.charts[id]) {
+                try { state.charts[id].destroy(); } catch (e) {}
+            }
+            try {
+                state.charts[id] = new ApexCharts(el, options);
+                state.charts[id].render();
+            } catch (e) {
+                console.error(`Chart ${id} error:`, e);
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // ACTIVITY FEEDS
+        // ═══════════════════════════════════════════════════════════
+        
+        async function loadUserActivityFeed() {
+            const feed = document.getElementById('userActivityFeed');
+            if (!feed) return;
+            
+            try {
+                const { data } = await supabaseClient
+                    .from('user_activities')
+                    .select('*, users(jina)')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (!data || data.length === 0) {
+                    feed.innerHTML = '<div class="no-data"><i class="fas fa-inbox"></i><p>Hakuna user activity bado</p></div>';
+                    return;
+                }
+                
+                const icons = {
+                    'like_post': 'fa-heart', 'comment_post': 'fa-comment',
+                    'share_post': 'fa-share', 'download_post': 'fa-download',
+                    'view_mtakatifu': 'fa-cross', 'view_bible': 'fa-bible',
+                    'view_wimbo': 'fa-music', 'vote_poll': 'fa-vote-yea',
+                    'register': 'fa-user-plus', 'login': 'fa-sign-in-alt'
+                };
+                
+                feed.innerHTML = data.map(a => {
+                    const icon = icons[a.activity_type] || 'fa-circle';
+                    const name = a.users?.jina || 'Mtumiaji';
+                    return `
+                        <div class="feed-item">
+                            <div class="feed-item-icon"><i class="fas ${icon}"></i></div>
+                            <div class="feed-item-content">
+                                <strong>${escapeHtml(name)}</strong>
+                                <p>${escapeHtml(a.activity_details || a.activity_type)}</p>
+                                <span>${getTimeAgo(a.created_at)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                feed.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i><p>Imeshindikana kupakia</p></div>';
+            }
+        }
+        
+        async function loadOwnerActivity() {
+            const feed = document.getElementById('ownerActivityFeed');
+            if (!feed) return;
+            
+            try {
+                const { data } = await supabaseClient
+                    .from('activity_logs')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (!data || data.length === 0) {
+                    feed.innerHTML = '<div class="no-data"><i class="fas fa-inbox"></i><p>Hakuna activity bado</p></div>';
+                    return;
+                }
+                
+                feed.innerHTML = data.map(a => `
+                    <div class="feed-item">
+                        <div class="feed-item-icon"><i class="fas fa-history"></i></div>
+                        <div class="feed-item-content">
+                            <strong>${escapeHtml(a.action || 'Action')}</strong>
+                            <p>${escapeHtml(a.details || '')}</p>
+                            <span>${getTimeAgo(a.created_at)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                feed.innerHTML = '<div class="no-data"><i class="fas fa-exclamation-triangle"></i><p>Imeshindikana kupakia</p></div>';
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // REALTIME
+        // ═══════════════════════════════════════════════════════════
+        
+        function subscribeToChatMessages() {
+            state.chatSubscription = supabaseClient
+                .channel('dashboard-chat')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'owner_chat_messages'
+                }, (payload) => {
+                    const msg = payload.new;
+                    if (!msg || msg.sender_id === state.owner.id) return;
+                    
+                    state.unreadCount++;
+                    updateOwnerChatButton(state.unreadCount);
+                    updateChatNavBadge(state.unreadCount);
+                    loadRecentMessages();
+                })
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'owner_chat_messages'
+                }, () => {
+                    loadUnreadMessages();
+                    loadRecentMessages();
+                })
+                .subscribe();
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // EVENTS
+        // ═══════════════════════════════════════════════════════════
+        
+        function setupEvents() {
+            els.refreshBtn.addEventListener('click', async function() {
+                const icon = this.querySelector('i');
+                icon.style.animation = 'spin 1s linear';
+                
+                await Promise.allSettled([
+                    loadStats(),
+                    loadInsights(),
+                    loadUnreadMessages(),
+                    loadRecentMessages(),
+                    loadHostingMonitor(),
+                    loadUserActivityFeed(),
+                    loadOwnerActivity()
+                ]);
+                
+                loadAllCharts();
+                
+                setTimeout(() => icon.style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            els.ownerChatHero.addEventListener('click', () => {
+                if (navigator.vibrate) navigator.vibrate(10);
+                window.location.href = 'chat.html';
+            });
+            
+            els.cloudinaryMainCard.addEventListener('click', () => {
+                state.expanded = !state.expanded;
+                els.cloudinaryMainCard.classList.toggle('expanded', state.expanded);
+                els.cloudinaryBreakdown.classList.toggle('expanded', state.expanded);
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka kwenye panel?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    localStorage.removeItem('kmca_owner_backup_time');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // ═══════════════════════════════════════════════════════════
+        // HELPERS
+        // ═══════════════════════════════════════════════════════════
+        
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function getTimeAgo(dateString) {
+            if (!dateString) return '';
+            const d = new Date(dateString);
+            const now = new Date();
+            const s = Math.floor((now - d) / 1000);
+            if (s < 60) return 'Sasa hivi';
+            if (s < 3600) return Math.floor(s / 60) + 'm';
+            if (s < 86400) return Math.floor(s / 3600) + 'h';
+            if (s < 604800) return Math.floor(s / 86400) + 'd';
+            return d.toLocaleDateString('sw-TZ', { day: 'numeric', month: 'short' });
+        }
+        
+        function formatChatTime(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Sasa';
+            if (diffMins < 60) return diffMins + 'm';
+            if (diffHours < 24) return diffHours + 'h';
+            if (diffDays < 7) return diffDays + 'd';
+            return date.toLocaleDateString('sw-TZ', { day: 'numeric', month: 'short' });
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return String(num);
+        }
+        
+        function formatGB(mb) {
+            if (mb >= 1024) return (mb / 1024).toFixed(2) + ' GB';
+            return mb.toFixed(2) + ' MB';
+        }
+        
+        function showToast(message, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = message;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_DASHBOARD loaded (Modern)');
+    })();
+    </script>
+</body>
+</html>

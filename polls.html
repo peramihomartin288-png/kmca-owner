@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020617">
+    <title>Polls — KMCA Owner</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="owner-icon-180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KMCA Owner">
+    <link rel="icon" href="favicon.ico">
+    
+    <style>
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f0d060;
+            --primary-soft: rgba(212, 175, 55, 0.12);
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --bg-input: #1e293b;
+            --bg-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --border-strong: #475569;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --header-height: 64px;
+            --bottom-nav-height: 64px;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: calc(var(--bottom-nav-height) + 20px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================================
+           MENU BUTTON
+           ============================================================ */
+        .menu-toggle {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 990;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.92);
+        }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .owner-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: var(--sidebar-width);
+            max-width: 85vw;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .owner-sidebar.open {
+            left: 0;
+            box-shadow: 8px 0 40px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), transparent 70%);
+            flex-shrink: 0;
+        }
+
+        .sidebar-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bg-dark);
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .sidebar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-close {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .sidebar-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-category {
+            margin-bottom: 4px;
+        }
+
+        .nav-category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-category-header:hover {
+            background: var(--primary-soft);
+        }
+
+        .nav-category-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .nav-category.collapsed .nav-category-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .nav-category.collapsed .nav-category-items {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .nav-category-items {
+            max-height: 800px;
+            transition: max-height 0.35s ease-out, opacity 0.3s;
+            overflow: hidden;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-light);
+            transform: translateX(4px);
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary-light);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-footer {
+            padding: 12px 8px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .nav-item.logout {
+            color: var(--error);
+        }
+
+        .nav-item.logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .sidebar-version {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 12px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .page-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 70px;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .page-header-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-header-title i {
+            color: var(--primary);
+        }
+
+        .page-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--error);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-card);
+            animation: badgePulse 2s infinite;
+        }
+
+        .header-btn .badge.show {
+            display: flex;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* ============================================================
+           BOTTOM NAV
+           ============================================================ */
+        .owner-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 950;
+            backdrop-filter: blur(20px);
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            position: relative;
+            border-radius: var(--radius-md);
+            min-width: 64px;
+            text-decoration: none;
+        }
+
+        .bottom-nav-item:hover {
+            color: var(--text-light);
+            background: var(--bg-hover);
+        }
+
+        .bottom-nav-item i {
+            font-size: 20px;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* ============================================================
+           MAIN
+           ============================================================ */
+        .page-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px 12px 42px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .toolbar-btn {
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        .toolbar-btn.primary:hover {
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Filters */
+        .filters-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 16px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .filters-panel.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        /* Polls List */
+        .polls-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .poll-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: fadeSlideIn 0.4s ease-out backwards;
+            position: relative;
+        }
+
+        .poll-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .poll-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .poll-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .poll-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .poll-header-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .poll-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .poll-meta span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .poll-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .poll-status.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            animation: livePulse 2s infinite;
+        }
+
+        .poll-status.upcoming {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        .poll-status.ended {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-muted);
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+        }
+
+        .poll-header-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .poll-action-btn {
+            width: 34px;
+            height: 34px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .poll-action-btn:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .poll-action-btn.danger:hover {
+            background: var(--error);
+            color: white;
+            border-color: var(--error);
+        }
+
+        /* Poll Options (preview) */
+        .poll-body {
+            padding: 12px 14px;
+        }
+
+        .poll-options-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .poll-option-preview {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .poll-option-preview-radio {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border-strong);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .poll-option-preview-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .poll-options-more {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding: 4px 0;
+        }
+
+        /* Poll Stats */
+        .poll-stats {
+            display: flex;
+            gap: 16px;
+            padding: 10px 14px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .poll-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .poll-stat i {
+            color: var(--primary);
+            font-size: 12px;
+        }
+
+        /* Empty / Loading */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            color: var(--border-strong);
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .empty-state button {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-input);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-input);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 520px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+            margin: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-header h3 i {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--error);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-btn.cancel {
+            background: var(--bg-input);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--border);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--bg-dark);
+        }
+
+        .modal-btn.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .modal-btn.primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--error);
+            margin-left: 3px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--text-light);
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Options list */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            animation: fadeSlideIn 0.3s ease-out;
+        }
+
+        .option-row .form-input {
+            flex: 1;
+        }
+
+        .option-row-remove {
+            width: 40px;
+            height: 40px;
+            background: var(--error);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .option-row-remove:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .add-option-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+
+        .add-option-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid var(--info);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-box i {
+            color: var(--info);
+            font-size: 14px;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        /* Results */
+        .result-bar {
+            margin-bottom: 12px;
+        }
+
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+            gap: 8px;
+        }
+
+        .result-label span:first-child {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .result-label span:last-child {
+            font-weight: 700;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .result-bar-bg {
+            width: 100%;
+            height: 24px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .result-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--bg-dark);
+            min-width: 40px;
+        }
+
+        .result-bar-fill.user-vote {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: var(--success);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 99999;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
+        .toast.info { background: var(--info); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .page-main { padding: 16px 12px; }
+            .page-header { padding: 0 12px 0 64px; }
+            .page-header-title { font-size: 15px; }
+            .header-btn { width: 38px; height: 38px; font-size: 14px; }
+            .menu-toggle { width: 40px; height: 40px; top: 12px; left: 12px; font-size: 16px; }
+            .poll-header { padding: 12px 10px; }
+            .poll-header-actions { gap: 2px; }
+            .poll-action-btn { width: 30px; height: 30px; font-size: 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- MENU BUTTON -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- SIDEBAR -->
+    <aside class="owner-sidebar" id="ownerSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar" id="sidebarAvatar">👤</div>
+            <div class="sidebar-info">
+                <h3 id="sidebarName">Owner</h3>
+                <p id="sidebarRole">KMCA Owner Panel</p>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Funga">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Content</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="posts.html" class="nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+                    <a href="polls.html" class="nav-item active"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+                    <a href="events.html" class="nav-item"><i class="fas fa-calendar-alt"></i><span>Matukio</span></a>
+                    <a href="watakatifu.html" class="nav-item"><i class="fas fa-cross"></i><span>Watakatifu</span></a>
+                    <a href="bible-verses.html" class="nav-item"><i class="fas fa-bible"></i><span>Bible Verses</span></a>
+                    <a href="nyimbo.html" class="nav-item"><i class="fas fa-music"></i><span>Nyimbo za Siku</span></a>
+                    <a href="masomo.html" class="nav-item"><i class="fas fa-book-open"></i><span>Masomo</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-users"></i>
+                    <span>Management</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="users.html" class="nav-item"><i class="fas fa-users"></i><span>Users</span></a>
+                    <a href="announcements.html" class="nav-item"><i class="fas fa-bullhorn"></i><span>Matangazo</span></a>
+                    <a href="owners.html" class="nav-item"><i class="fas fa-user-shield"></i><span>Owners</span></a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-photo-video"></i><span>Media Library</span></a>
+                </div>
+            </div>
+            
+            <div class="nav-category">
+                <div class="nav-category-header">
+                    <i class="fas fa-cog"></i>
+                    <span>System</span>
+                    <i class="fas fa-chevron-down nav-category-arrow"></i>
+                </div>
+                <div class="nav-category-items">
+                    <a href="backup-clean.html" class="nav-item"><i class="fas fa-database"></i><span>Backup & Clean</span></a>
+                    <a href="urls.html" class="nav-item"><i class="fas fa-link"></i><span>URL Management</span></a>
+                    <a href="pwa.html" class="nav-item"><i class="fas fa-mobile-alt"></i><span>PWA Management</span></a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="nav-item logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>Toka</span></div>
+            <div class="sidebar-version">v2.0.0</div>
+        </div>
+    </aside>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- HEADER -->
+    <header class="page-header">
+        <div class="page-header-title">
+            <i class="fas fa-vote-yea"></i>
+            <span>Polls</span>
+        </div>
+        <div class="page-header-actions">
+            <button class="header-btn" id="refreshBtn" aria-label="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="header-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge">0</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- MAIN -->
+    <main class="page-main">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tafuta polls...">
+            </div>
+            <button class="toolbar-btn" id="filterToggle">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+            <button class="toolbar-btn primary" id="addPollBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add Poll</span>
+            </button>
+        </div>
+        
+        <div class="filters-panel" id="filtersPanel">
+            <div class="filter-group">
+                <span class="filter-group-label">Hali</span>
+                <div class="filter-chips" data-filter="status">
+                    <button class="filter-chip active" data-value="all">Zote</button>
+                    <button class="filter-chip" data-value="active">🟢 Active</button>
+                    <button class="filter-chip" data-value="upcoming">🔵 Zinakuja</button>
+                    <button class="filter-chip" data-value="ended">⚫ Zimeisha</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="filter-group-label">Panga kwa</span>
+                <div class="filter-chips" data-filter="sort">
+                    <button class="filter-chip active" data-value="newest">🕐 Mpya Kwanza</button>
+                    <button class="filter-chip" data-value="oldest">🕰️ Zamani Kwanza</button>
+                    <button class="filter-chip" data-value="popular">🔥 Idadi ya Kura</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="polls-list" id="pollsList">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Inapakia polls...</p>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </main>
+    
+    <!-- BOTTOM NAV -->
+    <nav class="owner-bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="posts.html" class="bottom-nav-item"><i class="fas fa-newspaper"></i><span>Posts</span></a>
+        <a href="polls.html" class="bottom-nav-item active"><i class="fas fa-vote-yea"></i><span>Polls</span></a>
+        <a href="settings.html" class="bottom-nav-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+    </nav>
+    
+    <!-- ADD/EDIT POLL MODAL -->
+    <div class="modal" id="pollModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-vote-yea"></i> <span id="modalTitle">Add Poll Mpya</span></h3>
+                <button class="modal-close" id="pollModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="pollForm" onsubmit="return false;">
+                    <div class="form-group">
+                        <label class="form-label"><span>Swali <span class="required">*</span></span></label>
+                        <input type="text" id="pollSwali" class="form-input" placeholder="mfano: Unataka wimbo gani?" maxlength="200">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Chaguo <span class="required">*</span></span></label>
+                        <div class="options-list" id="optionsList"></div>
+                        <button type="button" class="add-option-btn" id="addOptionBtn">
+                            <i class="fas fa-plus"></i>
+                            Ongeza Chaguo
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Tarehe ya Kusend <span class="required">*</span></span></label>
+                        <input type="datetime-local" id="pollTareheSend" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label"><span>Tarehe ya Kujifuta <span class="required">*</span></span></label>
+                        <input type="date" id="pollTareheDelete" class="form-input">
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            Poll itaanza kuonekana <strong>tarehe ya kusend</strong>, kisha itaisha <strong>tarehe ya kujifuta</strong>.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="cancelPollBtn">Ghairi</button>
+                <button class="modal-btn primary" id="savePollBtn">
+                    <i class="fas fa-save"></i>
+                    <span>Hifadhi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- VIEW RESULTS MODAL -->
+    <div class="modal" id="viewPollModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-bar"></i> Matokeo</h3>
+                <button class="modal-close" id="viewPollClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="viewPollBody"></div>
+        </div>
+    </div>
+    
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastText">Success</span>
+    </div>
+    
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="hosting-config.js"></script>
+    <script src="service-worker-register.js"></script>
+    
+    <script>
+    (function() {
+        'use strict';
+        
+        const CONFIG = window.HOSTING_CONFIG || {};
+        const SUPABASE_URL = CONFIG.supabase?.url;
+        const SUPABASE_ANON_KEY = CONFIG.supabase?.anonKey;
+        
+        let supabaseClient = null;
+        if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabaseClient = supabaseClient;
+        }
+        
+        const state = {
+            owner: null,
+            polls: [],
+            filteredPolls: [],
+            voteCounts: {},
+            currentPage: 1,
+            perPage: 10,
+            filters: { status: 'all', sort: 'newest', search: '' },
+            editingId: null,
+            options: []
+        };
+        
+        const els = {
+            menuToggle: document.getElementById('menuToggle'),
+            sidebar: document.getElementById('ownerSidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            sidebarClose: document.getElementById('sidebarClose'),
+            sidebarAvatar: document.getElementById('sidebarAvatar'),
+            sidebarName: document.getElementById('sidebarName'),
+            sidebarRole: document.getElementById('sidebarRole'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
+            notificationBtn: document.getElementById('notificationBtn'),
+            notificationBadge: document.getElementById('notificationBadge'),
+            searchInput: document.getElementById('searchInput'),
+            filterToggle: document.getElementById('filterToggle'),
+            addPollBtn: document.getElementById('addPollBtn'),
+            filtersPanel: document.getElementById('filtersPanel'),
+            pollsList: document.getElementById('pollsList'),
+            pagination: document.getElementById('pagination'),
+            pollModal: document.getElementById('pollModal'),
+            pollModalClose: document.getElementById('pollModalClose'),
+            modalTitle: document.getElementById('modalTitle'),
+            pollSwali: document.getElementById('pollSwali'),
+            optionsList: document.getElementById('optionsList'),
+            addOptionBtn: document.getElementById('addOptionBtn'),
+            pollTareheSend: document.getElementById('pollTareheSend'),
+            pollTareheDelete: document.getElementById('pollTareheDelete'),
+            cancelPollBtn: document.getElementById('cancelPollBtn'),
+            savePollBtn: document.getElementById('savePollBtn'),
+            viewPollModal: document.getElementById('viewPollModal'),
+            viewPollClose: document.getElementById('viewPollClose'),
+            viewPollBody: document.getElementById('viewPollBody'),
+            toast: document.getElementById('toast'),
+            toastText: document.getElementById('toastText')
+        };
+        
+        async function init() {
+            state.owner = getOwnerSession();
+            if (!state.owner) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            renderSidebar();
+            setupSidebarEvents();
+            setupEvents();
+            updateNotificationBadge();
+            await loadPolls();
+        }
+        
+        function getOwnerSession() {
+            try {
+                const d = sessionStorage.getItem('kmca_owner');
+                if (!d) {
+                    const b = localStorage.getItem('kmca_owner_backup');
+                    return b ? JSON.parse(b) : null;
+                }
+                return JSON.parse(d);
+            } catch (e) { return null; }
+        }
+        
+        function renderSidebar() {
+            const o = state.owner;
+            const initials = getInitials(o.jina);
+            const hasPic = o.profile_picture && o.profile_picture !== 'null' && o.profile_picture.trim() !== '';
+            
+            if (hasPic) {
+                els.sidebarAvatar.innerHTML = `<img src="${o.profile_picture}" alt="${o.jina}">`;
+            } else {
+                els.sidebarAvatar.textContent = initials;
+            }
+            
+            els.sidebarName.textContent = o.jina || 'Owner';
+            els.sidebarRole.textContent = o.is_super_admin ? '👑 Super Admin' : (o.phone || 'Owner');
+        }
+        
+        function setupSidebarEvents() {
+            els.menuToggle.addEventListener('click', () => {
+                els.sidebar.classList.add('open');
+                els.sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            const close = () => {
+                els.sidebar.classList.remove('open');
+                els.sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            
+            els.sidebarClose.addEventListener('click', close);
+            els.sidebarOverlay.addEventListener('click', close);
+            
+            document.querySelectorAll('.nav-category-header').forEach(h => {
+                h.addEventListener('click', function() {
+                    this.parentElement.classList.toggle('collapsed');
+                });
+            });
+            
+            els.logoutBtn.addEventListener('click', () => {
+                if (confirm('Toka?')) {
+                    sessionStorage.clear();
+                    localStorage.removeItem('kmca_owner');
+                    localStorage.removeItem('kmca_owner_backup');
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+        
+        async function loadPolls() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('polls')
+                    .select('*, poll_options(*)')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                state.polls = data || [];
+                
+                // Load vote counts
+                const pollIds = state.polls.map(p => p.id);
+                if (pollIds.length > 0) {
+                    try {
+                        const { data: votes } = await supabaseClient
+                            .from('poll_votes')
+                            .select('poll_id')
+                            .in('poll_id', pollIds);
+                        
+                        state.voteCounts = {};
+                        (votes || []).forEach(v => {
+                            state.voteCounts[v.poll_id] = (state.voteCounts[v.poll_id] || 0) + 1;
+                        });
+                    } catch (e) {}
+                }
+                
+                applyFilters();
+            } catch (e) {
+                console.error('Load polls error:', e);
+                els.pollsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Imeshindikana</h3>
+                        <p>${e.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function getPollStatus(poll) {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const currentDateTime = now.toISOString().slice(0, 16);
+            
+            if (poll.tarehe_send > currentDateTime) return 'upcoming';
+            if (poll.tarehe_delete < today) return 'ended';
+            return 'active';
+        }
+        
+        function applyFilters() {
+            let r = [...state.polls];
+            
+            // Status filter
+            if (state.filters.status !== 'all') {
+                r = r.filter(p => getPollStatus(p) === state.filters.status);
+            }
+            
+            // Search
+            if (state.filters.search) {
+                const t = state.filters.search.toLowerCase();
+                r = r.filter(p => {
+                    const swali = (p.swali || '').toLowerCase();
+                    const opts = (p.poll_options || []).map(o => (o.chaguo || '').toLowerCase()).join(' ');
+                    return swali.includes(t) || opts.includes(t);
+                });
+            }
+            
+            // Sort
+            if (state.filters.sort === 'newest') {
+                r.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (state.filters.sort === 'oldest') {
+                r.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            } else if (state.filters.sort === 'popular') {
+                r.sort((a, b) => (state.voteCounts[b.id] || 0) - (state.voteCounts[a.id] || 0));
+            }
+            
+            state.filteredPolls = r;
+            renderPolls();
+        }
+        
+        function renderPolls() {
+            const list = els.pollsList;
+            
+            if (state.filteredPolls.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-vote-yea"></i>
+                        <h3>Hakuna polls</h3>
+                        <p>Anza ku-add poll mpya</p>
+                        <button id="emptyAddBtn"><i class="fas fa-plus"></i> Add Poll</button>
+                    </div>
+                `;
+                document.getElementById('emptyAddBtn')?.addEventListener('click', openAddModal);
+                els.pagination.innerHTML = '';
+                return;
+            }
+            
+            const total = state.filteredPolls.length;
+            const totalPages = Math.ceil(total / state.perPage);
+            if (state.currentPage > totalPages) state.currentPage = 1;
+            
+            const start = (state.currentPage - 1) * state.perPage;
+            const items = state.filteredPolls.slice(start, start + state.perPage);
+            
+            list.innerHTML = items.map((p, i) => renderPollItem(p, i)).join('');
+            items.forEach(p => setupPollItemEvents(p));
+            renderPagination(totalPages);
+        }
+        
+        function renderPollItem(poll, idx) {
+            const options = poll.poll_options || [];
+            const totalVotes = state.voteCounts[poll.id] || 0;
+            const status = getPollStatus(poll);
+            
+            let statusBadge = '';
+            if (status === 'active') {
+                statusBadge = '<span class="poll-status active"><i class="fas fa-circle"></i> ACTIVE</span>';
+            } else if (status === 'upcoming') {
+                statusBadge = '<span class="poll-status upcoming"><i class="fas fa-clock"></i> UPCOMING</span>';
+            } else {
+                statusBadge = '<span class="poll-status ended">ENDED</span>';
+            }
+            
+            // Options preview (max 3)
+            let optionsPreview = '';
+            if (options.length > 0) {
+                const show = options.slice(0, 3);
+                optionsPreview = show.map(o => `
+                    <div class="poll-option-preview">
+                        <div class="poll-option-preview-radio"></div>
+                        <div class="poll-option-preview-text">${escapeHtml(o.chaguo)}</div>
+                    </div>
+                `).join('');
+                
+                if (options.length > 3) {
+                    optionsPreview += `<div class="poll-options-more">+${options.length - 3} zaidi</div>`;
+                }
+            }
+            
+            // Time info
+            let timeInfo = '';
+            if (status === 'active') {
+                const daysLeft = daysBetween(new Date(), new Date(poll.tarehe_delete));
+                timeInfo = `<span><i class="fas fa-hourglass-half"></i> Siku ${daysLeft} zimebaki</span>`;
+            } else if (status === 'upcoming') {
+                const daysUntil = daysBetween(new Date(), new Date(poll.tarehe_send));
+                timeInfo = `<span><i class="fas fa-clock"></i> Inaanza siku ${daysUntil}</span>`;
+            } else {
+                timeInfo = `<span><i class="fas fa-flag-checkered"></i> Imeisha</span>`;
+            }
+            
+            return `
+                <div class="poll-item" data-poll-id="${poll.id}" style="animation-delay: ${idx * 0.05}s">
+                    <div class="poll-header">
+                        <div class="poll-icon">
+                            <i class="fas fa-vote-yea"></i>
+                        </div>
+                        <div class="poll-header-info">
+                            <h3>${escapeHtml(poll.swali || 'Bila Swali')}</h3>
+                            <div class="poll-meta">
+                                ${statusBadge}
+                                <span><i class="fas fa-list"></i> ${options.length} chaguo</span>
+                                ${timeInfo}
+                            </div>
+                        </div>
+                        <div class="poll-header-actions">
+                            <button class="poll-action-btn" data-action="view" title="Matokeo">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="poll-action-btn" data-action="edit" title="Hariri">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="poll-action-btn" data-action="duplicate" title="Duplicate">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="poll-action-btn" data-action="share" title="Share">
+                                <i class="fas fa-share"></i>
+                            </button>
+                            <button class="poll-action-btn" data-action="export" title="Export JSON">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="poll-action-btn danger" data-action="delete" title="Futa">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    ${optionsPreview ? `
+                        <div class="poll-body">
+                            <div class="poll-options-preview">
+                                ${optionsPreview}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="poll-stats">
+                        <div class="poll-stat">
+                            <i class="fas fa-users"></i>
+                            <span>${totalVotes} kura</span>
+                        </div>
+                        <div class="poll-stat">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>Imepost: ${formatDate(poll.tarehe_send)}</span>
+                        </div>
+                        <div class="poll-stat">
+                            <i class="fas fa-calendar-times"></i>
+                            <span>Inaisha: ${formatDate(poll.tarehe_delete)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function setupPollItemEvents(poll) {
+            const item = document.querySelector(`.poll-item[data-poll-id="${poll.id}"]`);
+            if (!item) return;
+            
+            item.querySelectorAll('.poll-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    
+                    if (action === 'view') await viewResults(poll);
+                    else if (action === 'edit') editPoll(poll);
+                    else if (action === 'duplicate') await duplicatePoll(poll);
+                    else if (action === 'share') await sharePoll(poll);
+                    else if (action === 'export') exportPoll(poll);
+                    else if (action === 'delete') await deletePoll(poll);
+                });
+            });
+        }
+        
+        async function viewResults(poll) {
+            const options = poll.poll_options || [];
+            
+            let totalVotes = 0;
+            const voteCounts = {};
+            
+            try {
+                const { data: votes } = await supabaseClient
+                    .from('poll_votes')
+                    .select('option_id')
+                    .eq('poll_id', poll.id);
+                
+                (votes || []).forEach(v => {
+                    voteCounts[v.option_id] = (voteCounts[v.option_id] || 0) + 1;
+                    totalVotes++;
+                });
+            } catch (e) {}
+            
+            let html = `
+                <div style="margin-bottom: 16px;">
+                    <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px;">${escapeHtml(poll.swali)}</h3>
+                    <div style="font-size: 13px; color: var(--text-muted);">
+                        <i class="fas fa-users"></i> ${totalVotes} kura jumla
+                    </div>
+                </div>
+            `;
+            
+            if (options.length === 0) {
+                html += '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Hakuna chaguo</p>';
+            } else {
+                options.forEach(opt => {
+                    const count = voteCounts[opt.id] || 0;
+                    const percent = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+                    
+                    html += `
+                        <div class="result-bar">
+                            <div class="result-label">
+                                <span>${escapeHtml(opt.chaguo)}</span>
+                                <span>${count} (${percent}%)</span>
+                            </div>
+                            <div class="result-bar-bg">
+                                <div class="result-bar-fill" style="width: ${percent}%;">${percent > 15 ? percent + '%' : ''}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            els.viewPollBody.innerHTML = html;
+            openModal(els.viewPollModal);
+        }
+        
+        async function duplicatePoll(poll) {
+            try {
+                const options = poll.poll_options || [];
+                
+                const { data: newPoll, error: err1 } = await supabaseClient
+                    .from('polls')
+                    .insert([{
+                        swali: (poll.swali || 'Poll') + ' (Copy)',
+                        tarehe_send: poll.tarehe_send,
+                        tarehe_delete: poll.tarehe_delete
+                    }])
+                    .select();
+                
+                if (err1) throw err1;
+                
+                const newPollId = newPoll[0].id;
+                
+                for (const opt of options) {
+                    await supabaseClient
+                        .from('poll_options')
+                        .insert([{
+                            poll_id: newPollId,
+                            chaguo: opt.chaguo
+                        }]);
+                }
+                
+                showToast('Poll imeduplicatewa!', 'success');
+                await loadPolls();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        async function sharePoll(poll) {
+            const url = `${window.location.origin}/home.html?poll=${poll.id}`;
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: poll.swali,
+                        text: 'Piga kura yako!',
+                        url: url
+                    });
+                    return;
+                } catch (e) {}
+            }
+            
+            try {
+                await navigator.clipboard.writeText(url);
+                showToast('Link imecopywa!', 'success');
+            } catch (e) {
+                showToast('Imeshindikana kushare', 'error');
+            }
+        }
+        
+        function exportPoll(poll) {
+            const options = poll.poll_options || [];
+            
+            const data = {
+                poll: {
+                    id: poll.id,
+                    swali: poll.swali,
+                    tarehe_send: poll.tarehe_send,
+                    tarehe_delete: poll.tarehe_delete,
+                    created_at: poll.created_at
+                },
+                options: options.map(o => ({
+                    id: o.id,
+                    chaguo: o.chaguo
+                })),
+                total_votes: state.voteCounts[poll.id] || 0,
+                exported_at: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `poll-${poll.id.substring(0, 8)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast('Poll ime-export!', 'success');
+        }
+        
+        async function deletePoll(poll) {
+            if (!confirm(`Futa poll hii?\n\n"${poll.swali}"`)) return;
+            
+            try {
+                // Delete votes
+                await supabaseClient.from('poll_votes').delete().eq('poll_id', poll.id);
+                
+                // Delete options
+                await supabaseClient.from('poll_options').delete().eq('poll_id', poll.id);
+                
+                // Delete poll
+                await supabaseClient.from('polls').delete().eq('id', poll.id);
+                
+                showToast('Poll imefutwa!', 'success');
+                await loadPolls();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            }
+        }
+        
+        function editPoll(poll) {
+            state.editingId = poll.id;
+            state.options = (poll.poll_options || []).map(o => ({ chaguo: o.chaguo, id: o.id }));
+            
+            els.modalTitle.textContent = 'Edit Poll';
+            els.pollSwali.value = poll.swali || '';
+            els.pollTareheSend.value = poll.tarehe_send || '';
+            els.pollTareheDelete.value = poll.tarehe_delete || '';
+            
+            renderOptions();
+            openModal(els.pollModal);
+        }
+        
+        function openAddModal() {
+            state.editingId = null;
+            state.options = [
+                { chaguo: '' },
+                { chaguo: '' }
+            ];
+            
+            els.modalTitle.textContent = 'Add Poll Mpya';
+            els.pollSwali.value = '';
+            
+            // Default dates
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            els.pollTareheSend.value = now.toISOString().slice(0, 16);
+            
+            const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            els.pollTareheDelete.value = nextWeek.toISOString().split('T')[0];
+            
+            renderOptions();
+            openModal(els.pollModal);
+        }
+        
+        function renderOptions() {
+            const container = els.optionsList;
+            
+            container.innerHTML = state.options.map((opt, i) => `
+                <div class="option-row">
+                    <input type="text" class="form-input option-input" value="${escapeAttr(opt.chaguo)}" placeholder="Chaguo ${i + 1}" data-index="${i}">
+                    ${state.options.length > 2 ? `
+                        <button type="button" class="option-row-remove" data-index="${i}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            // Setup events
+            container.querySelectorAll('.option-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const idx = parseInt(this.getAttribute('data-index'));
+                    state.options[idx].chaguo = this.value;
+                });
+            });
+            
+            container.querySelectorAll('.option-row-remove').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-index'));
+                    state.options.splice(idx, 1);
+                    renderOptions();
+                });
+            });
+        }
+        
+        async function handleSavePoll() {
+            const swali = els.pollSwali.value.trim();
+            const tareheSend = els.pollTareheSend.value;
+            const tareheDelete = els.pollTareheDelete.value;
+            
+            if (!swali) {
+                showToast('Weka swali', 'warning');
+                els.pollSwali.focus();
+                return;
+            }
+            
+            if (!tareheSend || !tareheDelete) {
+                showToast('Weka tarehe', 'warning');
+                return;
+            }
+            
+            // Collect options from state
+            const options = state.options.map(o => o.chaguo.trim()).filter(o => o);
+            
+            if (options.length < 2) {
+                showToast('Weka chaguo angalau 2', 'warning');
+                return;
+            }
+            
+            els.savePollBtn.disabled = true;
+            els.savePollBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Inahifadhi...';
+            
+            try {
+                if (state.editingId) {
+                    // Update poll
+                    await supabaseClient
+                        .from('polls')
+                        .update({
+                            swali,
+                            tarehe_send: tareheSend,
+                            tarehe_delete: tareheDelete
+                        })
+                        .eq('id', state.editingId);
+                    
+                    // Delete old options
+                    await supabaseClient.from('poll_options').delete().eq('poll_id', state.editingId);
+                    
+                    // Insert new options
+                    for (const opt of options) {
+                        await supabaseClient.from('poll_options').insert([{
+                            poll_id: state.editingId,
+                            chaguo: opt
+                        }]);
+                    }
+                } else {
+                    // Insert new poll
+                    const { data: newPoll, error: pollError } = await supabaseClient
+                        .from('polls')
+                        .insert([{
+                            swali,
+                            tarehe_send: tareheSend,
+                            tarehe_delete: tareheDelete
+                        }])
+                        .select();
+                    
+                    if (pollError) throw pollError;
+                    
+                    const pollId = newPoll[0].id;
+                    
+                    for (const opt of options) {
+                        await supabaseClient.from('poll_options').insert([{
+                            poll_id: pollId,
+                            chaguo: opt
+                        }]);
+                    }
+                }
+                
+                showToast(state.editingId ? 'Imehaririwa!' : 'Imeongezwa!', 'success');
+                closeModal(els.pollModal);
+                await loadPolls();
+            } catch (e) {
+                showToast('Error: ' + e.message, 'error');
+            } finally {
+                els.savePollBtn.disabled = false;
+                els.savePollBtn.innerHTML = '<i class="fas fa-save"></i> <span>Hifadhi</span>';
+            }
+        }
+        
+        function openModal(m) {
+            m.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(m) {
+            m.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function setupEvents() {
+            els.refreshBtn.addEventListener('click', async function() {
+                this.querySelector('i').style.animation = 'spin 1s linear';
+                await loadPolls();
+                setTimeout(() => this.querySelector('i').style.animation = '', 1000);
+                showToast('Imerefresh!', 'success');
+            });
+            
+            els.notificationBtn.addEventListener('click', () => {
+                window.location.href = 'announcements.html';
+            });
+            
+            let searchTimer;
+            els.searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    state.filters.search = this.value.trim();
+                    state.currentPage = 1;
+                    applyFilters();
+                }, 300);
+            });
+            
+            els.filterToggle.addEventListener('click', function() {
+                els.filtersPanel.classList.toggle('show');
+                this.classList.toggle('active', els.filtersPanel.classList.contains('show'));
+            });
+            
+            document.querySelectorAll('.filter-chips').forEach(g => {
+                const k = g.getAttribute('data-filter');
+                g.querySelectorAll('.filter-chip').forEach(c => {
+                    c.addEventListener('click', function() {
+                        g.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+                        this.classList.add('active');
+                        state.filters[k] = this.getAttribute('data-value');
+                        state.currentPage = 1;
+                        applyFilters();
+                    });
+                });
+            });
+            
+            els.addPollBtn.addEventListener('click', openAddModal);
+            
+            els.addOptionBtn.addEventListener('click', () => {
+                state.options.push({ chaguo: '' });
+                renderOptions();
+            });
+            
+            els.pollModalClose.addEventListener('click', () => closeModal(els.pollModal));
+            els.viewPollClose.addEventListener('click', () => closeModal(els.viewPollModal));
+            els.cancelPollBtn.addEventListener('click', () => closeModal(els.pollModal));
+            els.savePollBtn.addEventListener('click', handleSavePoll);
+            
+            [els.pollModal, els.viewPollModal].forEach(m => {
+                m.addEventListener('click', (e) => {
+                    if (e.target === m) closeModal(m);
+                });
+            });
+        }
+        
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
+            
+            let h = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} data-page="${state.currentPage - 1}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+                    h += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+                    h += `<button class="pagination-btn" disabled>...</button>`;
+                }
+            }
+            
+            h += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} data-page="${state.currentPage + 1}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            els.pagination.innerHTML = h;
+            
+            els.pagination.querySelectorAll('.pagination-btn[data-page]').forEach(b => {
+                b.addEventListener('click', function() {
+                    const p = parseInt(this.getAttribute('data-page'));
+                    if (p >= 1 && p <= totalPages) {
+                        state.currentPage = p;
+                        renderPolls();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+        
+        async function updateNotificationBadge() {
+            try {
+                const { count } = await supabaseClient
+                    .from('notifications')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', state.owner.id)
+                    .eq('is_read', false)
+                    .eq('is_deleted', false);
+                
+                if (count > 0) {
+                    els.notificationBadge.textContent = count > 99 ? '99+' : count;
+                    els.notificationBadge.classList.add('show');
+                } else {
+                    els.notificationBadge.classList.remove('show');
+                }
+            } catch (e) {}
+        }
+        
+        // Helpers
+        function getInitials(j) {
+            if (!j) return '??';
+            const c = j.trim().replace(/\s+/g, ' ');
+            const n = c.split(' ');
+            if (n.length >= 2) return (n[0][0] + n[1][0]).toUpperCase();
+            if (n.length === 1 && n[0].length >= 2) return n[0].substring(0, 2).toUpperCase();
+            return '??';
+        }
+        
+        function escapeHtml(t) {
+            if (!t) return '';
+            const d = document.createElement('div');
+            d.textContent = t;
+            return d.innerHTML;
+        }
+        
+        function escapeAttr(t) {
+            if (!t) return '';
+            return String(t).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        
+        function formatDate(d) {
+            if (!d) return '—';
+            try {
+                return new Date(d).toLocaleDateString('sw-TZ', { day: 'numeric', month: 'short', year: 'numeric' });
+            } catch (e) { return d; }
+        }
+        
+        function daysBetween(a, b) {
+            const d = Math.ceil((b - a) / (1000 * 60 * 60 * 24));
+            if (d < 0) return 0;
+            return d;
+        }
+        
+        function showToast(msg, type = 'success') {
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            els.toast.className = 'toast ' + type;
+            els.toast.querySelector('i').className = 'fas ' + (icons[type] || icons.success);
+            els.toastText.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => els.toast.classList.remove('show'), 3000);
+        }
+        
+        function ready(fn) {
+            if (document.readyState !== 'loading') fn();
+            else document.addEventListener('DOMContentLoaded', fn);
+        }
+        
+        ready(init);
+        
+        console.log('✅ OWNER_POLLS loaded');
+    })();
+    </script>
+</body>
+</html>

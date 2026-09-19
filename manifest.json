@@ -1,0 +1,71 @@
+{
+  "name": "KMCA Owner Panel",
+  "short_name": "KMCA Owner",
+  "description": "Jukwaa la Usimamizi la Kwaya ya Vijana Mtakatifu Carlo Acutis",
+  "start_url": "./dashboard.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "lang": "sw",
+  "dir": "ltr",
+  "categories": ["productivity", "business", "utilities"],
+  "icons": [
+    {
+      "src": "owner-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "owner-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "owner-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "owner-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Fungua Dashboard",
+      "url": "./dashboard.html",
+      "icons": [{ "src": "owner-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Posts",
+      "short_name": "Posts",
+      "description": "Simamia Posts",
+      "url": "./posts.html",
+      "icons": [{ "src": "owner-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Users",
+      "short_name": "Users",
+      "description": "Simamia Users",
+      "url": "./users.html",
+      "icons": [{ "src": "owner-icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Mipangilio",
+      "url": "./settings.html",
+      "icons": [{ "src": "owner-icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}
